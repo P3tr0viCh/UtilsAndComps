@@ -39,6 +39,7 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	String &CompanyName, String &FileDescription, String &FileVersion,
 		String &InternalName, String &LegalCopyright, String &OriginalFilename,
 		String &ProductName, String &ProductVersion);
+String GetFileVer(String FileName, bool SmallFormat = true);
 
 bool IsValueInWord(DWORD AWord, DWORD AValue);
 
@@ -54,3 +55,6 @@ bool IsWinNT();
 void ShowErrorBox(DWORD Error = 0, String AddStr = NULL, HWND hHWND = NULL);
 
 double Round(double Number);
+
+DWORD StartTimer();
+String StopTimer(DWORD FirstTick, bool FormatMSec = true);

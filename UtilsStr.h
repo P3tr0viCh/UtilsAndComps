@@ -9,6 +9,7 @@
 
 const Char COMMA = ',';
 const Char SPACE = ' ';
+const Char DOT = '.';
 
 int PosPlace(String Substr, String S, int Place);
 void SplitStr(String S, const String SplitString, const int SplitPlace,
@@ -26,3 +27,6 @@ String ConcatStrings(const String S1, const String S2, const String Separator);
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High);
 String Format(const String F, const String S);
 String Format(const NativeUInt Ident, const String S);
+
+String IToS(int Value);
+String IToS_0(int Value, int ZeroCount = 1);

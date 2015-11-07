@@ -1,0 +1,13 @@
+#include "UtilsLogStr.h"
+
+STRINGTABLE
+BEGIN
+IDS_DATETIME_FORMAT_LOG
+        "yyyy'-'mm'-'dd' 'hh':'nn':'ss"
+IDS_DATETIME_FORMAT_FILENAME
+        "yyyy'-'mm'-'dd' 'hh'-'nn'-'ss"
+IDS_LOG_EXT
+        ".log"
+IDS_LOG_PATH
+        "log"
+END

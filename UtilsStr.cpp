@@ -200,3 +200,13 @@ String Format(const String F, const String S) {
 String Format(const NativeUInt Ident, const String S) {
 	return Format(LoadStr(Ident), S);
 }
+
+String IToS(int Value) {
+	return IntToStr(Value);
+}
+
+String IToS_0(int Value, int ZeroCount) {
+	String Result = IToS(Value);
+	while (Result.Length() < ZeroCount + 1) Result = "0" + Result;
+	return Result;
+}

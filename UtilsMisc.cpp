@@ -11,6 +11,7 @@
 
 #include "UtilsMisc.h"
 #include "UtilsStr.h"
+#include "UtilsDate.h"
 
 int MsgBox(UnicodeString sMessage, UINT iType, UnicodeString sCaption,
 	HWND hHWND, WORD wLanguage) {
@@ -144,6 +145,41 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	return Result;
 }
 
+String SmallFileVersion(String FileVersion) {
+	String S1, S2, S3;
+
+	SplitStr(FileVersion, DOT, 1, S1, S2);
+
+	SplitStr(S2, DOT, 0, S2, S3);
+
+	if (S3 == "0") {
+		S3 = "";
+		if (S2 == "0") S2 = "";
+	}
+
+	return S1 + S2 + S3;
+}
+
+String GetFileVer(String FileName, bool SmallFormat) {
+	TVSFixedFileInfo FileVersionInfo;
+	String CompanyName, FileDescription, FileVersion,
+		InternalName, LegalCopyright, OriginalFilename,
+		ProductName, ProductVersion;
+
+	String Result = "";
+
+	if (GetFileVerInfo(FileName, FileVersionInfo, CompanyName, FileDescription,
+		FileVersion, InternalName, LegalCopyright, OriginalFilename,
+		ProductName, ProductVersion)) {
+		Result = FileVersion;
+		if (SmallFormat) Result = SmallFileVersion(Result);
+		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG))
+			Result = Result + " (Debug build)";
+	}
+
+	return Result;
+}
+
 bool IsValueInWord(DWORD AWord, DWORD AValue) {
 	return (AWord & AValue);
 }
@@ -222,3 +258,15 @@ void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
 double Round(double Number) {
 	return Number < 0.0 ? ceil(Number - 0.5) : floor(Number + 0.5);
 }
+
+DWORD StartTimer() {
+	return GetTickCount();
+}
+
+String StopTimer(DWORD FirstTick, bool FormatMSec) {
+	DWORD ElapsedTime = GetTickCount() - FirstTick;
+	return FormatMSec ?
+		MyFormatTime(ExtractHMSFromMS(ElapsedTime), true) :
+		FormatFloat("0,# msec.", ElapsedTime);
+}
+

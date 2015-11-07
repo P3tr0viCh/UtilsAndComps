@@ -13,3 +13,5 @@ bool ShellExec(const String FileName);
 HINSTANCE ShellExecEx(const String FileName, const String Params);
 
 String FileInAppDir(String FileName);
+String FileWithoutExt(String FileName);
+String OnlyFileName(String FileName);
