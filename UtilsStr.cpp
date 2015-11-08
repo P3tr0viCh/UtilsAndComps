@@ -205,8 +205,8 @@ String IToS(int Value) {
 	return IntToStr(Value);
 }
 
-String IToS_0(int Value, int ZeroCount) {
+String IToS_0(int Value, int MinLength) {
 	String Result = IToS(Value);
-	while (Result.Length() < ZeroCount + 1) Result = "0" + Result;
+	while (Result.Length() < MinLength) Result = "0" + Result;
 	return Result;
 }

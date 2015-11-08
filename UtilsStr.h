@@ -29,4 +29,4 @@ String Format(const String F, const String S);
 String Format(const NativeUInt Ident, const String S);
 
 String IToS(int Value);
-String IToS_0(int Value, int ZeroCount = 1);
+String IToS_0(int Value, int MinLength = 2);

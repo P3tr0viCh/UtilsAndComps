@@ -32,9 +32,10 @@ SYSTEMTIME ExtractHMSFromMS(DWORD MilliSeconds) {
 String MyFormatTime(SYSTEMTIME SystemTime, bool WithMSec) {
 	String Result = "";
 
-	Result = IToS_0(SystemTime.wHour) + ":" +
+	if (SystemTime.wDay != 0) Result = IToS_0(SystemTime.wDay) + "d ";
+	Result = Result + IToS_0(SystemTime.wHour) + ":" +
 		IToS_0(SystemTime.wMinute) + ":" + IToS_0(SystemTime.wSecond);
-	if (WithMSec) Result = Result + "." + IToS_0(SystemTime.wMilliseconds, 2);
+	if (WithMSec) Result = Result + "." + IToS_0(SystemTime.wMilliseconds, 3);
 
 	return Result;
 }
