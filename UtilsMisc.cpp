@@ -218,11 +218,12 @@ String GetCPUSpeed() {
 }
 
 String GetTotalPhys() {
-	TMemoryStatus MS;
+	TMemoryStatusEx MS;
 
-	MS.dwLength = sizeof(TMemoryStatus);
-	GlobalMemoryStatus(&MS);
-	return FormatBytes(MS.dwTotalPhys);
+	MS.dwLength = sizeof(TMemoryStatusEx);
+	GlobalMemoryStatusEx(&MS);
+
+	return FormatBytes(MS.ullTotalPhys);
 }
 
 void CopyToClipBoard(String S) {
