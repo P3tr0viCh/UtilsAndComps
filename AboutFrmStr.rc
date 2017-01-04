@@ -3,7 +3,7 @@
 STRINGTABLE
 BEGIN
 IDS_ABOUT_CAPTION,      "О программе..."
-IDS_ABOUT_DEBUG,        " (Debug build)"
+IDS_ABOUT_DEBUG,        " (debug)"
 IDS_ABOUT_RC,           " (RC)"
 IDS_ABOUT_MEMORY,       "Физическая память:"
 IDS_ABOUT_PROCESSOR,    "Процессор:"

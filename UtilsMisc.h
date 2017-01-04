@@ -1,32 +1,20 @@
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #ifndef UtilsMiscH
 #define UtilsMiscH
-//---------------------------------------------------------------------------
-#endif
+// ---------------------------------------------------------------------------
 
 #include <vcl.h>
 
-int MsgBox(UnicodeString sMessage = "Groovy!!",
-		UINT iType = MB_OK | MB_ICONINFORMATION,
-		UnicodeString sCaption = NULL,
-		HWND hHWND = NULL,
-		WORD wLanguage = 0x00400);
-int MsgBox(int iValue,
-		UINT iType = MB_OK | MB_ICONINFORMATION,
-		UnicodeString sCaption = NULL,
-		HWND hHWND = NULL,
-		WORD wLanguage = 0x00400);
-int MsgBox(Extended fValue,
-		UINT iType = MB_OK | MB_ICONINFORMATION,
-		UnicodeString sCaption = NULL,
-		HWND hHWND = NULL,
-		WORD wLanguage = 0x00400);
-int MsgBox(bool bValue,
-	   UINT iType = MB_OK | MB_ICONINFORMATION,
-	   UnicodeString sCaption = NULL,
-	   HWND hHWND = NULL,
-	   WORD wLanguage = 0x00400);
+int MsgBox(UnicodeString sMessage = "Groovy!!", UINT iType =
+	MB_OK | MB_ICONINFORMATION, UnicodeString sCaption = NULL, HWND hHWND =
+	NULL, WORD wLanguage = 0x00400);
+int MsgBox(int iValue, UINT iType = MB_OK | MB_ICONINFORMATION,
+	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
+int MsgBox(Extended fValue, UINT iType = MB_OK | MB_ICONINFORMATION,
+	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
+int MsgBox(bool bValue, UINT iType = MB_OK | MB_ICONINFORMATION,
+	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 void MsgBoxErr(UnicodeString sMessage = "Error !?!", HWND hHWND = NULL);
 
 void ProcMess();
@@ -37,8 +25,8 @@ void SetCurPosToCenter(TControl *Control);
 
 bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	String &CompanyName, String &FileDescription, String &FileVersion,
-		String &InternalName, String &LegalCopyright, String &OriginalFilename,
-		String &ProductName, String &ProductVersion);
+	String &InternalName, String &LegalCopyright, String &OriginalFilename,
+	String &ProductName, String &ProductVersion);
 String GetFileVer(String FileName, bool SmallFormat = true);
 
 bool IsValueInWord(DWORD AWord, DWORD AValue);
@@ -58,3 +46,4 @@ double Round(double Number);
 
 DWORD StartTimer();
 String StopTimer(DWORD FirstTick, bool FormatMSec = true);
+#endif

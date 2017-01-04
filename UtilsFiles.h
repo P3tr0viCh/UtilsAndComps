@@ -1,9 +1,8 @@
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #ifndef UtilsFilesH
 #define UtilsFilesH
-//---------------------------------------------------------------------------
-#endif
+// ---------------------------------------------------------------------------
 
 #include <System.Types.hpp>
 
@@ -15,3 +14,4 @@ HINSTANCE ShellExecEx(const String FileName, const String Params);
 String FileInAppDir(String FileName);
 String FileWithoutExt(String FileName);
 String OnlyFileName(String FileName);
+#endif

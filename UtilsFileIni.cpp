@@ -16,20 +16,31 @@ __fastcall TFileIni::TFileIni(const System::UnicodeString FileName)
 
 }
 
-void __fastcall TFileIni::UpdateFile(void)
-{
+TFileIni* TFileIni::GetNewInstance(System::UnicodeString FileName) {
+	if (FileName == NULL)
+		FileName = ChangeFileExt(Application->ExeName, ".ini");
+	else {
+		if (ExtractFileExt(FileName) == NULL)
+			FileName = FileName + ".ini";
+		// if (ExtractFilePath(FileName) == NULL) FileName = FileInAppDir(FileName);
+	};
+	return new TFileIni(FileName);
+}
+
+void __fastcall TFileIni::UpdateFile(void) {
 	try {
 		TIniFile::UpdateFile();
-	} catch (...) {
+	}
+	catch (...) {
 	}
 }
 
 void __fastcall TFileIni::WriteString(const System::UnicodeString Section,
-	const System::UnicodeString Ident, const System::UnicodeString Value)
-{
+	const System::UnicodeString Ident, const System::UnicodeString Value) {
 	try {
 		TIniFile::WriteString(Section, Ident, Value);
-	} catch (...) {
+	}
+	catch (...) {
 	}
 }
 
@@ -93,15 +104,4 @@ void TFileIni::WriteFormBounds(const TForm* Form, String Section) {
 		WriteBool(Section, "Maximized", false);
 		WriteBounds(Form, Section, "Position");
 	}
-}
-
-TFileIni* CreateINIFile(System::UnicodeString FileName) {
-	if (FileName == NULL)
-		FileName = ChangeFileExt(Application->ExeName, ".ini");
-	else {
-		if (ExtractFileExt(FileName) == NULL)
-			FileName = FileName + ".ini";
-		// if (ExtractFilePath(FileName) == NULL) FileName = FileInAppDir(FileName);
-	};
-	return new TFileIni(FileName);
 }

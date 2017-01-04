@@ -25,12 +25,12 @@ __fastcall TGradientPanel::TGradientPanel(TComponent* Owner)
 	Caption = Name;
 	SetBounds(Left, Top, 200, 100);
 	FColorStart = clActiveCaption;
-	FColorEnd   = clInactiveCaption;
+	FColorEnd = clInactiveCaption;
 	// FTextPosition = tpTopLeft;
 	FFillDirection = fdLeftToRight;
-	Font->Name     = "Tahoma";
-	Font->Size     = 18;
-	Font->Color    = clActiveCaption;
+	Font->Name = "Tahoma";
+	Font->Size = 18;
+	Font->Color = clActiveCaption;
 	EndUpdate();
 }
 
@@ -96,7 +96,8 @@ void GradientFill(TCanvas *ACanvas, TColor StartColor, TColor EndColor,
 		DH = (double)(AHeight - ATop) / 256;
 
 		for (int X = 0; X < 256; X++) {
-			ACanvas->Brush->Color = (TColor) RGB(R + Round(DR * X), G + Round(DG * X),
+			ACanvas->Brush->Color =
+				(TColor) RGB(R + Round(DR * X), G + Round(DG * X),
 				B + Round(DB * X));
 			ACanvas->FillRect(Rect(ALeft, ATop + Round(X * DH), AWidth,
 				ATop + Round((X + 1) * DH)));
@@ -107,7 +108,8 @@ void GradientFill(TCanvas *ACanvas, TColor StartColor, TColor EndColor,
 		DH = (double)(AWidth - ALeft) / 256;
 
 		for (int X = 0; X < 256; X++) {
-			ACanvas->Brush->Color = (TColor) RGB(R + Round(DR * X), G + Round(DG * X),
+			ACanvas->Brush->Color =
+				(TColor) RGB(R + Round(DR * X), G + Round(DG * X),
 				B + Round(DB * X));
 			ACanvas->FillRect(Rect(ALeft + Round(X * DH), ATop,
 				ALeft + Round((X + 1) * DH), AHeight));

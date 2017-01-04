@@ -18,13 +18,9 @@
 
 #include "GradientPanel.h"
 
-TLabel *lblMemory;
-TLabel *lblProc;
-TLabel *lblMemoryValue;
-TLabel *lblProcValue;
-
 class TAboutObject : public TObject {
 public:
+	TLabel *lblMemoryValue, *lblProcValue;
 	String MailAddress, MailSubject;
 
 	TAboutObject() {
@@ -38,6 +34,11 @@ public:
 	void __fastcall MouseLeave(TObject *Sender);
 
 	void __fastcall Click(TObject *Sender);
+
+	void __fastcall SetLabels(TLabel *lblMemoryValue, TLabel *lblProcValue) {
+		this->lblMemoryValue = lblMemoryValue;
+		this->lblProcValue = lblProcValue;
+	}
 };
 
 void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
@@ -53,23 +54,30 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	String CompanyName, FileDescription, FileVersion, InternalName,
 		LegalCopyright, OriginalFilename, ProductName, ProductVersion;
 
+	TLabel *lblMemory;
+	TLabel *lblProc;
+	TLabel *lblMemoryValue;
+	TLabel *lblProcValue;
+
 	TAboutObject *AboutObject;
 
 	ShowWaitCursor();
-//	Randomize;
+	// Randomize;
+
+	AboutObject = new TAboutObject();
 
 	if (IsShift() & IsCtrl()) {
 		sAppName = "Дураев";
 		sAppName += sLineBreak;
 		sAppName += "Константин Петрович";
 		sCopyright = "";
-		sCaption   = "Автор";
-		sDate      = "29.03.1981";
-		sVersion   = "";
-		iFontSize  = 16;
-		sAddComp   = NULL;
-		pPicture   = NULL;
-		sText      = "";
+		sCaption = "Автор";
+		sDate = "29.03.1981";
+		sVersion = "";
+		iFontSize = 16;
+		sAddComp = NULL;
+		pPicture = NULL;
+		sText = "";
 		for (int i = 1; i < 280; i++)
 			if (i % 40 == 0)
 				sText = sText + sLineBreak;
@@ -113,7 +121,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 		}
 
 		if (bLineBreak != MAXBYTE) {
-			I        = PosPlace(SPACE, sAppName, bLineBreak);
+			I = PosPlace(SPACE, sAppName, bLineBreak);
 			sAppName = sAppName.SubString(1, I - 1) + sLineBreak +
 				sAppName.SubString(I + 1, MAXINT);
 		}
@@ -122,16 +130,14 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	if (hIcon == NULL)
 		hIcon = LoadIcon(HInstance, L"MAINICON");
 
-	AboutObject = new TAboutObject();
-
-	Form               = new TForm(Application); // Owner;
-	Form->ShowHint     = true;
-	Form->Font->Name   = "Arial";
-	Form->Font->Size   = 10;
-	Form->BorderStyle  = bsDialog;
-	Form->Caption      = sCaption;
+	Form = new TForm(Application); // Owner;
+	Form->ShowHint = true;
+	Form->Font->Name = "Arial";
+	Form->Font->Size = 10;
+	Form->BorderStyle = bsDialog;
+	Form->Caption = sCaption;
 	Form->ClientHeight = 165;
-	Form->ClientWidth  = 420;
+	Form->ClientWidth = 420;
 
 	TBevel *bvlIconFrame = new TBevel(Form);
 	bvlIconFrame->Parent = Form;
@@ -141,21 +147,21 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	TPanel *pnlIcon = new TPanel(Form);
 	pnlIcon->Parent = Form;
 	pnlIcon->SetBounds(16, 22, 36, 36);
-	pnlIcon->Caption          = "";
-	pnlIcon->BevelOuter       = bvNone;
-	pnlIcon->BorderStyle      = bsSingle;
+	pnlIcon->Caption = "";
+	pnlIcon->BevelOuter = bvNone;
+	pnlIcon->BorderStyle = bsSingle;
 	pnlIcon->ParentBackground = false;
-	pnlIcon->Color            = (TColor) Random(0xFFFFFF);
+	pnlIcon->Color = (TColor) Random(0xFFFFFF);
 
-	TImage *imgIcon                = new TImage(Form); // Icon
-	imgIcon->Parent                = pnlIcon;
-	imgIcon->Align                 = alClient;
-	imgIcon->Transparent           = true;
+	TImage *imgIcon = new TImage(Form); // Icon
+	imgIcon->Parent = pnlIcon;
+	imgIcon->Align = alClient;
+	imgIcon->Transparent = true;
 	imgIcon->Picture->Icon->Handle = hIcon;
 
-	TLabel *lblCopyright      = new TLabel(Form); // Copyright
-	lblCopyright->Tag         = 1;
-	lblCopyright->Parent      = Form;
+	TLabel *lblCopyright = new TLabel(Form); // Copyright
+	lblCopyright->Tag = 1;
+	lblCopyright->Parent = Form;
 	lblCopyright->Font->Style = TFontStyles() << fsBold;
 	lblCopyright->SetBounds(8, 80, 0, 0);
 
@@ -163,9 +169,9 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	if (PosHint == 0)
 		lblCopyright->Caption = sCopyright;
 	else {
-		lblCopyright->Caption      = sCopyright.SubString(1, PosHint - 1);
-		lblCopyright->Hint         = sCopyright.SubString(PosHint + 1, MAXINT);
-		lblCopyright->Cursor       = crHandPoint;
+		lblCopyright->Caption = sCopyright.SubString(1, PosHint - 1);
+		lblCopyright->Hint = sCopyright.SubString(PosHint + 1, MAXINT);
+		lblCopyright->Cursor = crHandPoint;
 		lblCopyright->OnMouseEnter = AboutObject->MouseEnter;
 		lblCopyright->OnMouseLeave = AboutObject->MouseLeave;
 		if (lblCopyright->Hint[1] == '@') {
@@ -178,7 +184,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	}
 
 	TLabel *lblText = new TLabel(Form); // Text
-	lblText->Parent   = Form;
+	lblText->Parent = Form;
 	lblText->WordWrap = true;
 	lblText->SetBounds(8, 100, Form->ClientWidth - 16, 0);
 	lblText->Caption = sText;
@@ -228,24 +234,24 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	bvlBottom->SetBounds(7, Form->ClientHeight - 43, Form->ClientWidth - 15, 5);
 	bvlBottom->Shape = bsTopLine;
 
-	lblMemory         = new TLabel(Form); // Физическая ...
+	lblMemory = new TLabel(Form); // Физическая ...
 	lblMemory->Parent = Form;
 	lblMemory->SetBounds(8, Form->ClientHeight - 38, 0, 0);
 	lblMemory->Caption = LoadStr(IDS_ABOUT_MEMORY);
 
-	lblMemoryValue              = new TLabel(Form); // TotalPhys
-	lblMemoryValue->Parent      = Form;
+	lblMemoryValue = new TLabel(Form); // TotalPhys
+	lblMemoryValue->Parent = Form;
 	lblMemoryValue->Font->Style = TFontStyles() << fsBold;
 	lblMemoryValue->SetBounds(lblMemory->Width + 13,
 		Form->ClientHeight - 38, 0, 0);
 
-	lblProc         = new TLabel(Form); // Процессор:
+	lblProc = new TLabel(Form); // Процессор:
 	lblProc->Parent = Form;
 	lblProc->SetBounds(8, Form->ClientHeight - 22, 0, 0);
 	lblProc->Caption = LoadStr(IDS_ABOUT_PROCESSOR);
 
-	lblProcValue              = new TLabel(Form); // CPUSpeed
-	lblProcValue->Parent      = Form;
+	lblProcValue = new TLabel(Form); // CPUSpeed
+	lblProcValue->Parent = Form;
 	lblProcValue->Font->Style = TFontStyles() << fsBold;
 	lblProcValue->SetBounds(lblMemory->Width + 13,
 		Form->ClientHeight - 22, 0, 0);
@@ -256,10 +262,12 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	pnlName->SetBounds(68, 8, Form->ClientWidth - 76, 64);
 	pnlName->BorderStyle = bsSingle;
 
-	pnlName->BevelOuter       = bvNone;
+	pnlName->BevelOuter = bvNone;
 	pnlName->ParentBackground = false;
-	if (pPicture == NULL) pnlName->ColorStart = pnlIcon->Color;
-	else pnlName->ColorStart = clBlack;
+	if (pPicture == NULL)
+		pnlName->ColorStart = pnlIcon->Color;
+	else
+		pnlName->ColorStart = clBlack;
 	pnlName->ColorEnd = clBlack;
 	pnlName->EndUpdate();
 
@@ -267,56 +275,56 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 		TLabel *lblAppName = new TLabel(Form); // Application Name (1)
 		lblAppName->Parent = pnlName;
 		lblAppName->SetBounds(2, 2, Form->ClientWidth - 83, 58);
-		lblAppName->Alignment     = taCenter;
-		lblAppName->AutoSize      = false;
-		lblAppName->Caption       = sAppName;
-		lblAppName->ParentColor   = false;
-		lblAppName->Color         = clBlack;
-		lblAppName->ParentFont    = false;
+		lblAppName->Alignment = taCenter;
+		lblAppName->AutoSize = false;
+		lblAppName->Caption = sAppName;
+		lblAppName->ParentColor = false;
+		lblAppName->Color = clBlack;
+		lblAppName->ParentFont = false;
 		lblAppName->Font->Charset = DEFAULT_CHARSET;
-		lblAppName->Font->Color   = clBlack;
-		lblAppName->Font->Height  = -51;
-		lblAppName->Font->Name    = "Courier New";
-		lblAppName->Font->Style   = TFontStyles() << fsBold << fsItalic;
-		lblAppName->Font->Size    = iFontSize;
-		lblAppName->Transparent   = true;
-		lblAppName->Layout        = tlCenter;
-		lblAppName->WordWrap      = true;
+		lblAppName->Font->Color = clBlack;
+		lblAppName->Font->Height = -51;
+		lblAppName->Font->Name = "Courier New";
+		lblAppName->Font->Style = TFontStyles() << fsBold << fsItalic;
+		lblAppName->Font->Size = iFontSize;
+		lblAppName->Transparent = true;
+		lblAppName->Layout = tlCenter;
+		lblAppName->WordWrap = true;
 
 		TLabel *lblAppName2 = new TLabel(Form); // Application Name (2)
 		lblAppName2->Parent = pnlName;
 		lblAppName2->SetBounds(0, 0, Form->ClientWidth - 83, 58);
-		lblAppName2->Alignment     = taCenter;
-		lblAppName2->AutoSize      = false;
-		lblAppName2->Caption       = sAppName;
-		lblAppName2->ParentColor   = false;
-		lblAppName2->Color         = clBlack;
-		lblAppName2->ParentFont    = false;
+		lblAppName2->Alignment = taCenter;
+		lblAppName2->AutoSize = false;
+		lblAppName2->Caption = sAppName;
+		lblAppName2->ParentColor = false;
+		lblAppName2->Color = clBlack;
+		lblAppName2->ParentFont = false;
 		lblAppName2->Font->Charset = DEFAULT_CHARSET;
-		lblAppName2->Font->Color   = clWhite;
-		lblAppName2->Font->Height  = -51;
-		lblAppName2->Font->Name    = "Courier New";
-		lblAppName2->Font->Style   = TFontStyles() << fsBold << fsItalic;
-		lblAppName2->Font->Size    = iFontSize;
-		lblAppName2->Transparent   = true;
-		lblAppName2->Layout        = tlCenter;
-		lblAppName2->WordWrap      = true;
+		lblAppName2->Font->Color = clWhite;
+		lblAppName2->Font->Height = -51;
+		lblAppName2->Font->Name = "Courier New";
+		lblAppName2->Font->Style = TFontStyles() << fsBold << fsItalic;
+		lblAppName2->Font->Size = iFontSize;
+		lblAppName2->Transparent = true;
+		lblAppName2->Layout = tlCenter;
+		lblAppName2->WordWrap = true;
 	} // pPicture == NULL
 	else {
 		TImage *imgPicture = new TImage(Form);
 		imgPicture->Parent = pnlName;
-		imgPicture->Align  = alClient;
+		imgPicture->Align = alClient;
 		imgPicture->Picture->Assign(pPicture);
 	}
 
 	TLabel *lblDate = new TLabel(Form); // Date
-	lblDate->Parent  = pnlName;
+	lblDate->Parent = pnlName;
 	lblDate->Caption = sDate;
 	lblDate->Font->Assign(Form->Font);
 	lblDate->Font->Style = TFontStyles() << fsBold;
 	lblDate->Font->Color = clWhite;
-	lblDate->Font->Size  = 8;
-	lblDate->Alignment   = taRightJustify;
+	lblDate->Font->Size = 8;
+	lblDate->Alignment = taRightJustify;
 
 	switch (3) {
 	case 0:
@@ -337,13 +345,13 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	}
 	lblDate->Transparent = true;
 
-	TLabel *lblVerion  = new TLabel(Form); // Version
-	lblVerion->Parent  = pnlName;
+	TLabel *lblVerion = new TLabel(Form); // Version
+	lblVerion->Parent = pnlName;
 	lblVerion->Caption = sVersion;
 	lblVerion->Font->Assign(Form->Font);
 	lblVerion->Font->Style = TFontStyles() << fsBold;
 	lblVerion->Font->Color = clWhite;
-	lblVerion->Font->Size  = 8;
+	lblVerion->Font->Size = 8;
 
 	switch (2) {
 	case 0:
@@ -364,42 +372,40 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	}
 	lblVerion->Transparent = true;
 
-	TButton *btnClose     = new TButton(Form);
-	btnClose->Parent      = Form;
-	btnClose->Caption     = "OK";
+	TButton *btnClose = new TButton(Form);
+	btnClose->Parent = Form;
+	btnClose->Caption = "OK";
 	btnClose->ModalResult = mrCancel;
-	btnClose->Cancel      = true;
+	btnClose->Cancel = true;
 	btnClose->SetBounds(Form->ClientWidth - 83, Form->ClientHeight - 34,
 		75, 26);
 	btnClose->TabOrder = 0;
 
-	TTimer *timer   = new TTimer(Form);
-	timer->OnTimer  = AboutObject->TimerTimer;
+	AboutObject->SetLabels(lblMemoryValue, lblProcValue);
+
+	TTimer *timer = new TTimer(Form);
+	timer->OnTimer = AboutObject->TimerTimer;
 	timer->Interval = 1;
-	timer->Enabled  = true;
+	timer->Enabled = true;
 
 	RestoreCursor();
 
 	Form->Left = (Screen->Width - Form->Width) / 2;
-	Form->Top  = (Screen->Height - Form->Height) / 2;
+	Form->Top = (Screen->Height - Form->Height) / 2;
 
 	SetCurPosToCenter(btnClose);
 
 	Form->ShowModal();
 
 	Form->Free();
-	AboutObject->Free();
 
-	lblMemory      = NULL;
-	lblProc        = NULL;
-	lblMemoryValue = NULL;
-	lblProcValue   = NULL;
+	AboutObject->Free();
 }
 
 void __fastcall TAboutObject::TimerTimer(TObject *Sender) {
 	((TTimer*) Sender)->Enabled = false;
 	lblMemoryValue->Caption = GetTotalPhys();
-	lblProcValue->Caption   = GetCPUSpeed();
+	lblProcValue->Caption = GetCPUSpeed();
 }
 
 void __fastcall TAboutObject::MouseEnter(TObject *Sender) {

@@ -139,15 +139,16 @@ String FileInAppDir(String FileName) {
 }
 
 String FileWithoutExt(String FileName) {
-  if (Pos('.', FileName) == 0) return FileName;
+	if (Pos('.', FileName) == 0)
+		return FileName;
 
-  int PosDot = FileName.Length();
+	int PosDot = FileName.Length();
 
-  while ((FileName[PosDot] != '.') & (PosDot > 1)) {
-	PosDot--;
-  }
+	while ((FileName[PosDot] != '.') & (PosDot > 1)) {
+		PosDot--;
+	}
 
-  return FileName.SubString(1, PosDot - 1);
+	return FileName.SubString(1, PosDot - 1);
 }
 
 String OnlyFileName(String FileName) {
