@@ -28,6 +28,8 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	String &InternalName, String &LegalCopyright, String &OriginalFilename,
 	String &ProductName, String &ProductVersion);
 String GetFileVer(String FileName, bool SmallFormat = true);
+String SmallFileVersion(String FileVersion);
+String GetFileVerDate();
 
 bool IsValueInWord(DWORD AWord, DWORD AValue);
 
@@ -46,4 +48,6 @@ double Round(double Number);
 
 DWORD StartTimer();
 String StopTimer(DWORD FirstTick, bool FormatMSec = true);
+
+bool IsWinVistaOrGreat();
 #endif

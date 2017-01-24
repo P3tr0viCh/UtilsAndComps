@@ -8,25 +8,31 @@
 #include <System.hpp>
 #include <stdio.h>
 #include <Vcl.Clipbrd.hpp>
+#include <System.DateUtils.hpp>
 
 #include "UtilsMisc.h"
 #include "UtilsStr.h"
 #include "UtilsDate.h"
+#include "UtilsCPUSpeed.h"
 
 int MsgBox(UnicodeString sMessage, UINT iType, UnicodeString sCaption,
 	HWND hHWND, WORD wLanguage) {
-	if (sCaption == NULL)
+	if (sCaption == NULL) {
 		sCaption = Application->Title;
+	}
 	if (hHWND == NULL) {
 		if (Screen->ActiveForm) {
-			if ((Screen->ActiveForm == Application->MainForm) |
-				(Screen->ActiveForm->FormState.Contains(fsModal)))
+			if ((Screen->ActiveForm == Application->MainForm) ||
+				(Screen->ActiveForm->FormState.Contains(fsModal))) {
 				hHWND = Screen->ActiveForm->Handle;
-			else
+			}
+			else {
 				hHWND = Application->Handle;
+			}
 		}
-		else
+		else {
 			hHWND = Application->Handle;
+		}
 	}
 
 	return MessageBoxEx(hHWND, sMessage.w_str(), sCaption.w_str(), iType,
@@ -73,8 +79,9 @@ void SetCurPosToCenter(TControl *Control) {
 		EndPoint = Control->ClientToScreen(Point(Control->Width / 2,
 			Control->Height / 2));
 	}
-	else
+	else {
 		EndPoint = Point(Screen->Width / 2, Screen->Height / 2);
+	}
 
 	SetCursorPos(EndPoint.x, EndPoint.y);
 }
@@ -107,7 +114,7 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 
 	bool Result;
 
-	dwLen  = GetFileVersionInfoSize(FileName.w_str(), &dwHandle);
+	dwLen = GetFileVersionInfoSize(FileName.w_str(), &dwHandle);
 	Result = dwLen != 0;
 	if (Result) {
 		lpData = (LPTSTR) malloc(dwLen);
@@ -128,14 +135,14 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 
 			FileVersionInfo = *pFileInfo;
 
-			CompanyName     = InternalVerQueryValue(lpData, "CompanyName");
+			CompanyName = InternalVerQueryValue(lpData, "CompanyName");
 			FileDescription = InternalVerQueryValue(lpData, "FileDescription");
-			FileVersion     = InternalVerQueryValue(lpData, "FileVersion");
-			InternalName    = InternalVerQueryValue(lpData, "InternalName");
-			LegalCopyright  = InternalVerQueryValue(lpData, "LegalCopyright");
+			FileVersion = InternalVerQueryValue(lpData, "FileVersion");
+			InternalName = InternalVerQueryValue(lpData, "InternalName");
+			LegalCopyright = InternalVerQueryValue(lpData, "LegalCopyright");
 			OriginalFilename = InternalVerQueryValue(lpData,
 				"OriginalFilename");
-			ProductName    = InternalVerQueryValue(lpData, "ProductName");
+			ProductName = InternalVerQueryValue(lpData, "ProductName");
 			ProductVersion = InternalVerQueryValue(lpData, "ProductVersion");
 		}
 
@@ -143,6 +150,13 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	}
 
 	return Result;
+}
+
+String GetFileVerDate() {
+	return FormatDateTime("yyyy.mm.dd",
+		UnixToDateTime(((PIMAGE_NT_HEADERS)((DWORD)((PIMAGE_DOS_HEADER)
+		HInstance) + (((PIMAGE_DOS_HEADER) HInstance)->e_lfanew)))
+		->FileHeader.TimeDateStamp));
 }
 
 String SmallFileVersion(String FileVersion) {
@@ -154,7 +168,9 @@ String SmallFileVersion(String FileVersion) {
 
 	if (S3 == "0") {
 		S3 = "";
-		if (S2 == "0") S2 = "";
+		if (S2 == "0") {
+			S2 = "";
+		}
 	}
 
 	return S1 + S2 + S3;
@@ -162,9 +178,8 @@ String SmallFileVersion(String FileVersion) {
 
 String GetFileVer(String FileName, bool SmallFormat) {
 	TVSFixedFileInfo FileVersionInfo;
-	String CompanyName, FileDescription, FileVersion,
-		InternalName, LegalCopyright, OriginalFilename,
-		ProductName, ProductVersion;
+	String CompanyName, FileDescription, FileVersion, InternalName,
+		LegalCopyright, OriginalFilename, ProductName, ProductVersion;
 
 	String Result = "";
 
@@ -172,9 +187,12 @@ String GetFileVer(String FileName, bool SmallFormat) {
 		FileVersion, InternalName, LegalCopyright, OriginalFilename,
 		ProductName, ProductVersion)) {
 		Result = FileVersion;
-		if (SmallFormat) Result = SmallFileVersion(Result);
-		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG))
+		if (SmallFormat) {
+			Result = SmallFileVersion(Result);
+		}
+		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
 			Result = Result + " (Debug build)";
+		}
 	}
 
 	return Result;
@@ -185,36 +203,7 @@ bool IsValueInWord(DWORD AWord, DWORD AValue) {
 }
 
 String GetCPUSpeed() {
-	const DelayTime = 500;
-
-	DWORD TimerHi, TimerLo;
-
-	int PriorityClass = GetPriorityClass(GetCurrentProcess());
-	int Priority      = GetThreadPriority(GetCurrentThread());
-	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-
-	Sleep(10);
-	asm {
-		dw 310Fh
-		mov TimerLo, eax
-		mov TimerHi, edx
-	}
-
-	Sleep(DelayTime);
-
-	asm {
-		dw 310Fh
-		sub eax, TimerLo
-		sbb edx, TimerHi
-		mov TimerLo, eax
-		mov TimerHi, edx
-	}
-
-	SetThreadPriority(GetCurrentThread(), Priority);
-	SetPriorityClass(GetCurrentProcess(), PriorityClass);
-
-	return FormatHerzs(floor(1000.0 * TimerLo / (DelayTime)));
+	return FormatHerzs(floor(_GetCPUSpeed()));
 }
 
 String GetTotalPhys() {
@@ -243,16 +232,21 @@ bool IsWinNT() {
 }
 
 void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
-	if (Error == 0)
+	if (Error == 0) {
 		Error = GetLastError();
+	}
 
-	if (AddStr == NULL)
+	if (AddStr == NULL) {
 		AddStr = SysErrorMessage(Error);
-	else if (Pos("%s", AddStr) == 0)
-		AddStr = AddStr + SysErrorMessage(Error);
-	else
-		AddStr = Format(AddStr, ARRAYOFCONST((SysErrorMessage(Error))));
-
+	}
+	else {
+		if (Pos("%s", AddStr) == 0) {
+			AddStr = AddStr + SysErrorMessage(Error);
+		}
+		else {
+			AddStr = Format(AddStr, ARRAYOFCONST((SysErrorMessage(Error))));
+		}
+	}
 	MsgBoxErr(AddStr, hHWND);
 }
 
@@ -266,8 +260,10 @@ DWORD StartTimer() {
 
 String StopTimer(DWORD FirstTick, bool FormatMSec) {
 	DWORD ElapsedTime = GetTickCount() - FirstTick;
-	return FormatMSec ?
-		MyFormatTime(ExtractHMSFromMS(ElapsedTime), true) :
+	return FormatMSec ? MyFormatTime(ExtractHMSFromMS(ElapsedTime), true) :
 		FormatFloat("0,# msec.", ElapsedTime);
 }
 
+bool IsWinVistaOrGreat() {
+	return (Win32MajorVersion >= 6) && (Win32MinorVersion >= 0);
+}
