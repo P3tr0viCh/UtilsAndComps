@@ -17,6 +17,9 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 TRect StrToRect(String S);
 String RectToStr(TRect R);
 
+TPoint StrToPoint(String S);
+String PointToStr(TPoint P);
+
 String FormatBytes(SIZE_T Bytes);
 String FormatHerzs(SIZE_T Herzs);
 

@@ -37,12 +37,13 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 	FirstHalf == S;
 	SecondHalf == "";
 
-	if (S == NULL)
+	if (IsEmpty(S)) {
 		return;
+	}
 
 	P = PosPlace(SplitString, S, SplitPlace);
 	if (P != 0) {
-		FirstHalf  = S.SubString(1, P - 1);
+		FirstHalf = S.SubString(1, P - 1);
 		SecondHalf = S.SubString(P + SplitString.Length(), MaxInt);
 	}
 }
@@ -50,10 +51,11 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 TRect StrToRect(String S) {
 	String FirstHalf, SecondHalf;
 
-	TRect Result;
+	TRect Result = TRect(0, 0, 0, 0);
 
-	if (S == NULL)
+	if (IsEmpty(S)) {
 		return Result;
+	}
 
 	try {
 		SplitStr(S, COMMA, 0, FirstHalf, SecondHalf);
@@ -61,12 +63,13 @@ TRect StrToRect(String S) {
 		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
 		Result.Top = StrToInt(FirstHalf);
 		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
-		Result.Right  = StrToInt(FirstHalf);
+		Result.Right = StrToInt(FirstHalf);
 		Result.Bottom = StrToInt(SecondHalf);
 	}
 	catch (Exception *e) {
 		throw Exception("Строка '" + S + "' не является записью TRect");
 	}
+
 	return Result;
 }
 
@@ -75,8 +78,33 @@ String RectToStr(TRect R) {
 		IntToStr((int) R.Right) + COMMA + IntToStr((int) R.Bottom);
 }
 
+TPoint StrToPoint(String S) {
+	String FirstHalf, SecondHalf;
+
+	TPoint Result = TPoint(0, 0);
+
+	if (IsEmpty(S)) {
+		return Result;
+	}
+
+	try {
+		SplitStr(S, COMMA, 0, FirstHalf, SecondHalf);
+		Result.X = StrToInt(FirstHalf);
+		Result.Y = StrToInt(SecondHalf);
+	}
+	catch (Exception *e) {
+		throw Exception("Строка '" + S + "' не является записью TPoint");
+	}
+
+	return Result;
+}
+
+String PointToStr(TPoint P) {
+	return IToS(P.x) + COMMA + IToS(P.y);
+}
+
 String FormatBytes(SIZE_T Bytes) {
-	const kb         = 1024, Mb = 1048576;
+	const kb = 1024, Mb = 1048576;
 	const __int64 Gb = 1073741824LL;
 	const __int64 Tb = 1099511627776LL;
 
@@ -125,7 +153,7 @@ String FormatBytes(SIZE_T Bytes) {
 }
 
 String FormatHerzs(SIZE_T Herzs) {
-	const kHz         = 1000, MHz = 1000000;
+	const kHz = 1000, MHz = 1000000;
 	const __int64 GHz = 1000000000LL;
 	const __int64 THz = 1000000000000LL;
 
@@ -174,7 +202,7 @@ String FormatHerzs(SIZE_T Herzs) {
 }
 
 bool IsEmpty(const String S) {
-	return S == NULL | S.IsEmpty();
+	return S == NULL || S.IsEmpty();
 }
 
 String ConcatStrings(const String S1, const String S2, const String Separator) {
@@ -207,6 +235,7 @@ String IToS(int Value) {
 
 String IToS_0(int Value, int MinLength) {
 	String Result = IToS(Value);
-	while (Result.Length() < MinLength) Result = "0" + Result;
+	while (Result.Length() < MinLength)
+		Result = "0" + Result;
 	return Result;
 }

@@ -17,13 +17,15 @@ __fastcall TFileIni::TFileIni(const System::UnicodeString FileName)
 }
 
 TFileIni* TFileIni::GetNewInstance(System::UnicodeString FileName) {
-	if (FileName == NULL)
+	if (IsEmpty(FileName)) {
 		FileName = ChangeFileExt(Application->ExeName, ".ini");
+	}
 	else {
-		if (ExtractFileExt(FileName) == NULL)
+		if (IsEmpty(ExtractFileExt(FileName))) {
 			FileName = FileName + ".ini";
-		// if (ExtractFilePath(FileName) == NULL) FileName = FileInAppDir(FileName);
-	};
+		}
+	}
+
 	return new TFileIni(FileName);
 }
 
@@ -46,22 +48,19 @@ void __fastcall TFileIni::WriteString(const System::UnicodeString Section,
 
 TRect TFileIni::ReadRect(const String Section, const String Ident,
 	TRect Default) {
-	String RectStr;
-	TRect Result;
+	String RectStr = ReadString(Section, Ident, NULL);
 
-	RectStr = ReadString(Section, Ident, NULL);
-
-	if (RectStr == NULL)
-		Result = Default;
+	if (IsEmpty(RectStr)) {
+		return Default;
+	}
 	else {
 		try {
-			Result = StrToRect(RectStr);
+			return StrToRect(RectStr);
 		}
 		catch (...) {
-			Result = Default;
+			return Default;
 		}
 	}
-	return Result;
 }
 
 void TFileIni::WriteRect(const String Section, const String Ident, TRect Value)
@@ -69,21 +68,56 @@ void TFileIni::WriteRect(const String Section, const String Ident, TRect Value)
 	WriteString(Section, Ident, RectToStr(Value));
 }
 
-void TFileIni::ReadBounds(TControl* Control, const String Section,
+TPoint TFileIni::ReadPoint(const String Section, const String Ident,
+	TPoint Default) {
+	String PointStr = ReadString(Section, Ident, NULL);
+
+	if (IsEmpty(PointStr)) {
+		return Default;
+	}
+	else {
+		try {
+			return StrToPoint(PointStr);
+		}
+		catch (...) {
+			return Default;
+		}
+	}
+}
+
+void TFileIni::WritePoint(const String Section, const String Ident,
+	TPoint Value) {
+	WriteString(Section, Ident, PointToStr(Value));
+}
+
+void TFileIni::ReadBounds(TControl * Control, const String Section,
 	const String Ident, TRect Default) {
 	TRect Rect = ReadRect(Section, Ident, Default);
 	Control->SetBounds(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom);
 }
 
-void TFileIni::WriteBounds(const TControl* Control, const String Section,
+void TFileIni::WriteBounds(const TControl * Control, const String Section,
 	const String Ident) {
 	WriteRect(Section, Ident, Rect(Control->Left, Control->Top, Control->Width,
 		Control->Height));
 }
 
-void TFileIni::ReadFormBounds(TForm* Form, String Section) {
-	if (Section == NULL)
+void TFileIni::ReadPosition(TControl * Control, const String Section,
+	const String Ident) {
+	TPoint Point = ReadPoint(Section, Ident,
+		TPoint(Control->Left, Control->Top));
+	Control->SetBounds(Point.X, Point.Y, Control->Width, Control->Height);
+}
+
+void TFileIni::WritePosition(const TControl * Control, const String Section,
+	const String Ident) {
+	WritePoint(Section, Ident, TPoint(Control->Left, Control->Top));
+}
+
+void TFileIni::ReadFormBounds(TForm * Form, String Section) {
+	if (IsEmpty(Section)) {
 		Section = Form->Name;
+	}
 
 	ReadBounds(Form, Section, "Position",
 		Rect((Screen->Width - Form->Width) / 2,
@@ -91,17 +125,42 @@ void TFileIni::ReadFormBounds(TForm* Form, String Section) {
 
 	Form->MakeFullyVisible();
 
-	if (ReadBool(Section, "Maximized", false))
+	if (ReadBool(Section, "Maximized", false)) {
 		Form->WindowState = wsMaximized;
+	}
 }
 
-void TFileIni::WriteFormBounds(const TForm* Form, String Section) {
-	if (Section == NULL)
+void TFileIni::WriteFormBounds(const TForm * Form, String Section) {
+	if (IsEmpty(Section)) {
 		Section = Form->Name;
-	if (Form->WindowState == wsMaximized)
+	}
+
+	if (Form->WindowState == wsMaximized) {
 		WriteBool(Section, "Maximized", true);
+	}
 	else {
 		WriteBool(Section, "Maximized", false);
 		WriteBounds(Form, Section, "Position");
 	}
+}
+
+void TFileIni::ReadFormPosition(TForm* Form, String Section) {
+	if (IsEmpty(Section)) {
+		Section = Form->Name;
+	}
+
+	Form->SetBounds((Screen->Width - Form->Width) / 2,
+		(Screen->Height - Form->Height) / 2, Form->Width, Form->Height);
+
+	ReadPosition(Form, Section, "Position");
+
+	Form->MakeFullyVisible();
+}
+
+void TFileIni::WriteFormPosition(const TForm* Form, String Section) {
+	if (IsEmpty(Section)) {
+		Section = Form->Name;
+	}
+
+	WritePosition(Form, Section, "Position");
 }
