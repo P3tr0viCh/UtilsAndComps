@@ -127,8 +127,9 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 		}
 	} // IsShift and IsCtrl
 
-	if (hIcon == NULL)
+	if (hIcon == NULL) {
 		hIcon = LoadIcon(HInstance, L"MAINICON");
+	}
 
 	Form = new TForm(Application); // Owner;
 	Form->ShowHint = true;
@@ -139,14 +140,9 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	Form->ClientHeight = 165;
 	Form->ClientWidth = 420;
 
-	TBevel *bvlIconFrame = new TBevel(Form);
-	bvlIconFrame->Parent = Form;
-	bvlIconFrame->SetBounds(8, 14, 52, 52);
-	bvlIconFrame->Shape = bsFrame;
-
 	TPanel *pnlIcon = new TPanel(Form);
 	pnlIcon->Parent = Form;
-	pnlIcon->SetBounds(16, 22, 36, 36);
+	pnlIcon->SetBounds(8, 8, 64, 64);
 	pnlIcon->Caption = "";
 	pnlIcon->BevelOuter = bvNone;
 	pnlIcon->BorderStyle = bsSingle;
@@ -157,6 +153,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	imgIcon->Parent = pnlIcon;
 	imgIcon->Align = alClient;
 	imgIcon->Transparent = true;
+	imgIcon->Center = true;
 	imgIcon->Picture->Icon->Handle = hIcon;
 
 	TLabel *lblCopyright = new TLabel(Form); // Copyright
@@ -166,8 +163,9 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	lblCopyright->SetBounds(8, 80, 0, 0);
 
 	int PosHint = Pos('|', sCopyright);
-	if (PosHint == 0)
+	if (PosHint == 0) {
 		lblCopyright->Caption = sCopyright;
+	}
 	else {
 		lblCopyright->Caption = sCopyright.SubString(1, PosHint - 1);
 		lblCopyright->Hint = sCopyright.SubString(PosHint + 1, MAXINT);
@@ -259,7 +257,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	TGradientPanel *pnlName = new TGradientPanel(Form);
 	pnlName->Parent = Form;
 	pnlName->StartUpdate();
-	pnlName->SetBounds(68, 8, Form->ClientWidth - 76, 64);
+	pnlName->SetBounds(78, 8, Form->ClientWidth - 86, 64);
 	pnlName->BorderStyle = bsSingle;
 
 	pnlName->BevelOuter = bvNone;
