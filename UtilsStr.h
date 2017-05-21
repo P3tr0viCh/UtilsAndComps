@@ -20,7 +20,7 @@ String RectToStr(TRect R);
 TPoint StrToPoint(String S);
 String PointToStr(TPoint P);
 
-String FormatBytes(SIZE_T Bytes);
+String FormatBytes(Extended Bytes);
 String FormatHerzs(SIZE_T Herzs);
 
 bool IsEmpty(const String S);

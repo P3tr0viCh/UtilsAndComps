@@ -103,51 +103,31 @@ String PointToStr(TPoint P) {
 	return IToS(P.x) + COMMA + IToS(P.y);
 }
 
-String FormatBytes(SIZE_T Bytes) {
-	const kb = 1024, Mb = 1048576;
+String FormatBytes(Extended Bytes) {
+	const Kb = 1024, Mb = 1048576;
 	const __int64 Gb = 1073741824LL;
 	const __int64 Tb = 1099511627776LL;
 
-	String BytesArray[5] = {"á", "Êá", "Ìá", "Ãá", "Òá"};
+	Extended EBytes[5] = {1, Kb, Mb, Gb, Tb};
+	String SBytes[5] = {"á", "Êá", "Ìá", "Ãá", "Òá"};
 
-	Byte i;
-	Extended DivBytes;
+	int i;
 	String Result;
 
-	if ((Bytes / Tb) != 0)
-		i = 4;
-	else if ((Bytes / Gb) != 0)
-		i = 3;
-	else if ((Bytes / Mb) != 0)
-		i = 2;
-	else if ((Bytes / kb) != 0)
-		i = 1;
-	else
-		i = 0;
-
-	switch (i) {
-	case 1:
-		DivBytes = (Extended) Bytes / kb;
-		break;
-	case 2:
-		DivBytes = (Extended) Bytes / Mb;
-		break;
-	case 3:
-		DivBytes = (Extended) Bytes / Gb;
-		break;
-	case 4:
-		DivBytes = (Extended) Bytes / Tb;
-		break;
-	default:
-		DivBytes = 0;
+	for (i = 4; i >= 0; i--) {
+		if (Bytes >= EBytes[i]) {
+			break;
+		}
 	}
 
-	if (i == 0)
+	if (i == 0) {
 		Result = IntToStr((__int64) Bytes);
-	else
-		Result = FloatToStrF(DivBytes, ffFixed, 18, 1);
+	}
+	else {
+		Result = FloatToStrF(Bytes / EBytes[i], ffFixed, 18, 1);
+	}
 
-	Result = Result + SPACE + BytesArray[i];
+	Result = Result + SPACE + SBytes[i];
 
 	return Result;
 }

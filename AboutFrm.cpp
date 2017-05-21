@@ -41,9 +41,9 @@ public:
 	}
 };
 
-void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
-	TPicture *pPicture, String sAddComp, String sVersion, String sAppName,
-	String sCopyright, String sText, HICON hIcon) {
+void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
+	String sDate, TPicture *pPicture, String sAddComp, String sVersion,
+	String sAppName, String sCopyright, String sText, HICON hIcon) {
 	TForm *Form;
 
 	int I;
@@ -66,7 +66,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 
 	AboutObject = new TAboutObject();
 
-	if (IsShift() & IsCtrl()) {
+	if (IsShift() && IsCtrl()) {
 		sAppName = "Дураев";
 		sAppName += sLineBreak;
 		sAppName += "Константин Петрович";
@@ -78,13 +78,16 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 		sAddComp = NULL;
 		pPicture = NULL;
 		sText = "";
-		for (int i = 1; i < 280; i++)
-			if (i % 40 == 0)
+		for (int i = 1; i < 280; i++) {
+			if (i % 40 == 0) {
 				sText = sText + sLineBreak;
-			else
+			}
+			else {
 				// TODO: 				sText = sText + String(AnsiChar(Chr(Ord('А') +
 				// Random(Ord('Я') - Ord('А')))));
-					sText = sText + L"Я";
+				sText = sText + L"Я";
+			}
+		}
 	}
 	else {
 		GetFileVerInfo(Application->ExeName, FileVersionInfo, CompanyName,
@@ -93,26 +96,33 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 
 		sCaption = LoadStr(IDS_ABOUT_CAPTION);
 
-		if (sDate == NULL)
+		if (sDate == NULL) {
 			sDate = FormatDateTime("yyyy.mm.dd",
-			UnixToDateTime(((PIMAGE_NT_HEADERS)((DWORD)((PIMAGE_DOS_HEADER)
-			HInstance) + (((PIMAGE_DOS_HEADER) HInstance)->e_lfanew)))
-			->FileHeader.TimeDateStamp));
-
+				UnixToDateTime(((PIMAGE_NT_HEADERS)
+				((DWORD)((PIMAGE_DOS_HEADER) HInstance) +
+				(((PIMAGE_DOS_HEADER) HInstance)->e_lfanew)))
+				->FileHeader.TimeDateStamp));
+		}
 		if (sVersion == NULL) {
 			sVersion = FileVersion;
-			if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG))
+			if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
 				sVersion = sVersion + LoadStr(IDS_ABOUT_DEBUG);
-			else if (IsValueInWord(FileVersionInfo.dwFileFlags,
-				VS_FF_PRERELEASE))
-				sVersion = sVersion + LoadStr(IDS_ABOUT_RC);
+			}
+			else {
+				if (IsValueInWord(FileVersionInfo.dwFileFlags,
+				VS_FF_PRERELEASE)) {
+					sVersion = sVersion + LoadStr(IDS_ABOUT_RC);
+				}
+			}
 		}
 
-		if (sAppName == NULL)
+		if (sAppName == NULL) {
 			sAppName = ProductName;
+		}
 
-		if (sCopyright == NULL)
+		if (sCopyright == NULL) {
 			sCopyright = LegalCopyright + "|@P3tr0viCh@mail.ru";
+		}
 
 		if (sText == NULL) {
 			sText = LoadStr(IDS_ABOUT_EULA1) + sLineBreak +
@@ -125,7 +135,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 			sAppName = sAppName.SubString(1, I - 1) + sLineBreak +
 				sAppName.SubString(I + 1, MAXINT);
 		}
-	} // IsShift and IsCtrl
+	} // IsShift && IsCtrl
 
 	if (hIcon == NULL) {
 		hIcon = LoadIcon(HInstance, L"MAINICON");
@@ -191,6 +201,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	Form->ClientHeight = Form->ClientHeight + lblText->Height;
 
 	if (sAddComp != NULL) {
+		// TODO
 		/* with TBevel.Create(Form) do
 		 {
 		 Parent = Form;
@@ -224,8 +235,9 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 		 };
 		 } */
 	}
-	else // sAddComp != NULL
-			Form->ClientHeight = Form->ClientHeight - 12;
+	else { // sAddComp != NULL
+		Form->ClientHeight = Form->ClientHeight - 12;
+	}
 
 	TBevel *bvlBottom = new TBevel(Form);
 	bvlBottom->Parent = Form;
@@ -262,10 +274,12 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 
 	pnlName->BevelOuter = bvNone;
 	pnlName->ParentBackground = false;
-	if (pPicture == NULL)
+	if (pPicture == NULL) {
 		pnlName->ColorStart = pnlIcon->Color;
-	else
+	}
+	else {
 		pnlName->ColorStart = clBlack;
+	}
 	pnlName->ColorEnd = clBlack;
 	pnlName->EndUpdate();
 
@@ -324,16 +338,16 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	lblDate->Font->Size = 8;
 	lblDate->Alignment = taRightJustify;
 
-	switch (3) {
+	switch (bDatePos) {
 	case 0:
 		lblDate->SetBounds(2, 2, lblDate->Width, lblDate->Height);
 		break;
 	case 1:
-		lblDate->SetBounds(2, pnlName->ClientHeight - lblDate->Height - 2,
+		lblDate->SetBounds(pnlName->ClientWidth - lblDate->Width - 2, 2,
 			lblDate->Width, lblDate->Height);
 		break;
 	case 2:
-		lblDate->SetBounds(pnlName->ClientWidth - lblDate->Width - 2, 2,
+		lblDate->SetBounds(2, pnlName->ClientHeight - lblDate->Height - 2,
 			lblDate->Width, lblDate->Height);
 		break;
 	default:
@@ -351,22 +365,22 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bVersionPos, String sDate,
 	lblVerion->Font->Color = clWhite;
 	lblVerion->Font->Size = 8;
 
-	switch (2) {
+	switch (bVersionPos) {
 	case 0:
 		lblVerion->SetBounds(2, 2, lblVerion->Width, lblVerion->Height);
 		break;
-	case 1:
+	case 2:
 		lblVerion->SetBounds(2, pnlName->ClientHeight - lblVerion->Height - 2,
 			lblVerion->Width, lblVerion->Height);
 		break;
-	case 2:
-		lblVerion->SetBounds(pnlName->ClientWidth - lblVerion->Width - 2, 2,
-			lblVerion->Width, lblVerion->Height);
-		break;
-	default:
+	case 3:
 		lblVerion->SetBounds(pnlName->ClientWidth - lblVerion->Width - 2,
 			pnlName->ClientHeight - lblVerion->Height - 2, lblVerion->Width,
 			lblVerion->Height);
+		break;
+	default:
+		lblVerion->SetBounds(pnlName->ClientWidth - lblVerion->Width - 2, 2,
+			lblVerion->Width, lblVerion->Height);
 	}
 	lblVerion->Transparent = true;
 
