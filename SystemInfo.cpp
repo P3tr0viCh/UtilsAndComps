@@ -11,16 +11,16 @@ using namespace P3tr0viCh;
 // ---------------------------------------------------------------------------
 __fastcall TSystemInfo::TSystemInfo() {
 	FComputerName = "";
-	FIPAddress = "";
+	FIPAddressList = new TStringList();
 
 	FWindows64Bit = false;
 	FWindowsProductName = "";
 	FWindowsCSDVersion = "";
 
-	FBIOSSystemManufacturer = "";
-	FBIOSSystemProductName = "";
-	FBIOSBaseBoardManufacturer = "";
-	FBIOSBaseBoardProduct = "";
+	FSystemManufacturer = "";
+	FSystemProductName = "";
+	FBaseBoardManufacturer = "";
+	FBaseBoardProduct = "";
 
 	FProcessorName = "";
 
@@ -29,6 +29,7 @@ __fastcall TSystemInfo::TSystemInfo() {
 
 // ---------------------------------------------------------------------------
 __fastcall TSystemInfo::~TSystemInfo() {
+	FIPAddressList->Free();
 	FLogicalDrives->Free();
 }
 
@@ -42,28 +43,36 @@ String TSystemInfo::GetComputerName() {
 }
 
 // ---------------------------------------------------------------------------
-String TSystemInfo::GetIPAddress() {
-	String SIPAddress = "";
+void TSystemInfo::GetIPAddress(TStringList *IPAddressList) {
+	IPAddressList->Clear();
+
 	WSADATA wsaData;
+
 	if (!WSAStartup(WINSOCK_VERSION, &wsaData)) {
 		char chInfo[64];
+
 		if (!gethostname(chInfo, sizeof(chInfo))) {
 			hostent *sh;
 			sh = gethostbyname((char*)&chInfo);
+
 			if (sh != NULL) {
 				int nAdapter = 0;
+
 				while (sh->h_addr_list[nAdapter]) {
 					struct sockaddr_in adr;
+
 					memcpy(&adr.sin_addr, sh->h_addr_list[nAdapter],
 						sh->h_length);
-					SIPAddress = inet_ntoa(adr.sin_addr);
+
+					IPAddressList->Add(inet_ntoa(adr.sin_addr));
+
 					nAdapter++;
 				}
 			}
 		}
 	}
+
 	WSACleanup();
-	return SIPAddress;
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +131,7 @@ String TSystemInfo::GetProcessorName() {
 
 	if (Registry) {
 		Registry->RootKey = HKEY_LOCAL_MACHINE;
+
 		if (Registry->OpenKeyReadOnly
 			("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0")) {
 			S = Registry->ReadString("ProcessorNameString");
@@ -129,6 +139,7 @@ String TSystemInfo::GetProcessorName() {
 			Registry->CloseKey();
 		}
 	}
+
 	return S;
 }
 
@@ -230,13 +241,14 @@ void TSystemInfo::Update() {
 	Registry = new TRegistry();
 
 	FComputerName = GetComputerName();
-	FIPAddress = GetIPAddress();
+
+	GetIPAddress(FIPAddressList);
 
 	FWindows64Bit = GetWindows64Bit();
 	GetWindowsVersion(FWindowsProductName, FWindowsCSDVersion);
 
-	GetSystemBoard(FBIOSSystemManufacturer, FBIOSSystemProductName,
-		FBIOSBaseBoardManufacturer, FBIOSBaseBoardProduct);
+	GetSystemBoard(FSystemManufacturer, FSystemProductName,
+		FBaseBoardManufacturer, FBaseBoardProduct);
 
 	FProcessorName = GetProcessorName();
 

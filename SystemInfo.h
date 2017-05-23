@@ -11,6 +11,7 @@
 #include "Registry.hpp"
 
 namespace P3tr0viCh {
+
 	// ---------------------------------------------------------------------------
 	class PACKAGE TLogicalDrive : public TObject {
 	private:
@@ -45,16 +46,16 @@ namespace P3tr0viCh {
 		TRegistry *Registry;
 
 		String FComputerName;
-		String FIPAddress;
+		TStringList* FIPAddressList;
 
 		String FWindowsProductName;
 		String FWindowsCSDVersion;
 		bool FWindows64Bit;
 
-		String FBIOSSystemManufacturer;
-		String FBIOSSystemProductName;
-		String FBIOSBaseBoardManufacturer;
-		String FBIOSBaseBoardProduct;
+		String FBaseBoardManufacturer;
+		String FBaseBoardProduct;
+		String FSystemManufacturer;
+		String FSystemProductName;
 
 		String FProcessorName;
 
@@ -65,7 +66,8 @@ namespace P3tr0viCh {
 		TLogicalDrives* FLogicalDrives;
 
 		String GetComputerName();
-		String GetIPAddress();
+
+		void GetIPAddress(TStringList *IPAddressList);
 
 		bool GetWindows64Bit();
 		void GetWindowsVersion(String &ProductName, String &CSDVersion);
@@ -90,19 +92,17 @@ namespace P3tr0viCh {
 
 	__published:
 		__property String ComputerName = {read = FComputerName};
-		__property String IPAddress = {read = FIPAddress};
+		__property TStringList* IPAddressList = {read = FIPAddressList};
 
 		__property String WindowsProductName = {read = FWindowsProductName};
 		__property String WindowsCSDVersion = {read = FWindowsCSDVersion};
 		__property bool IsWindows64Bit = {read = FWindows64Bit};
 
-		__property String BIOSSystemManufacturer = {
-			read = FBIOSSystemManufacturer};
-		__property String BIOSSystemProductName = {read = FBIOSSystemProductName
+		__property String BaseBoardManufacturer = {read = FBaseBoardManufacturer
 		};
-		__property String BIOSBaseBoardManufacturer = {
-			read = FBIOSBaseBoardManufacturer};
-		__property String BIOSBaseBoardProduct = {read = FBIOSBaseBoardProduct};
+		__property String BaseBoardProduct = {read = FBaseBoardProduct};
+		__property String SystemManufacturer = {read = FSystemManufacturer};
+		__property String SystemProductName = {read = FSystemProductName};
 
 		__property String ProcessorName = {read = FProcessorName};
 
