@@ -103,13 +103,33 @@ String PointToStr(TPoint P) {
 	return IToS(P.x) + COMMA + IToS(P.y);
 }
 
-String FormatBytes(Extended Bytes) {
+String FormatBytes(Extended Bytes, TStrings *ByteNames) {
 	const Kb = 1024, Mb = 1048576;
 	const __int64 Gb = 1073741824LL;
 	const __int64 Tb = 1099511627776LL;
 
+	TStrings *Names = new TStringList();
+
+	if (ByteNames != NULL) {
+		Names->AddStrings(ByteNames);
+	}
+
+	while (Names->Count < 5) {
+		Names->Add("");
+	}
+
+	if (IsEmpty(Names->Strings[0]))
+		Names->Strings[0] = "á";
+	if (IsEmpty(Names->Strings[1]))
+		Names->Strings[1] = "Êá";
+	if (IsEmpty(Names->Strings[2]))
+		Names->Strings[2] = "Ìá";
+	if (IsEmpty(Names->Strings[3]))
+		Names->Strings[3] = "Ãá";
+	if (IsEmpty(Names->Strings[4]))
+		Names->Strings[4] = "Òá";
+
 	Extended EBytes[5] = {1, Kb, Mb, Gb, Tb};
-	String SBytes[5] = {"á", "Êá", "Ìá", "Ãá", "Òá"};
 
 	int i;
 	String Result;
@@ -127,7 +147,9 @@ String FormatBytes(Extended Bytes) {
 		Result = FloatToStrF(Bytes / EBytes[i], ffFixed, 18, 1);
 	}
 
-	Result = Result + SPACE + SBytes[i];
+	Result = Result + SPACE + Names->Strings[i];
+
+	Names->Free();
 
 	return Result;
 }

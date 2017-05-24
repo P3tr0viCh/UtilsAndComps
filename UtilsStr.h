@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 #include <System.Types.hpp>
+#include <System.Classes.hpp>
 
 const Char COMMA = ',';
 const Char SPACE = ' ';
@@ -20,7 +21,7 @@ String RectToStr(TRect R);
 TPoint StrToPoint(String S);
 String PointToStr(TPoint P);
 
-String FormatBytes(Extended Bytes);
+String FormatBytes(Extended Bytes, TStrings *ByteNames = NULL);
 String FormatHerzs(SIZE_T Herzs);
 
 bool IsEmpty(const String S);

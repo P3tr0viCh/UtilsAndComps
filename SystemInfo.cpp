@@ -35,10 +35,11 @@ __fastcall TSystemInfo::~TSystemInfo() {
 
 // ------------------------------------------------------------------------
 String TSystemInfo::GetComputerName() {
-	DWORD Size;
-	char CComputerName[MAX_COMPUTERNAME_LENGTH];
-	Size = MAX_COMPUTERNAME_LENGTH;
-	GetComputerNameA(CComputerName, &Size);
+	DWORD Size = MAX_COMPUTERNAME_LENGTH;
+	wchar_t CComputerName[MAX_COMPUTERNAME_LENGTH];
+
+	::GetComputerName(CComputerName, &Size);
+
 	return String(CComputerName);
 }
 
@@ -77,10 +78,10 @@ void TSystemInfo::GetIPAddress(TStringList *IPAddressList) {
 
 // ---------------------------------------------------------------------------
 bool TSystemInfo::GetWindows64Bit() {
-	DWORD Size;
-	char Directory[MAX_PATH];
-	Size = MAX_PATH;
-	return GetSystemWow64DirectoryA(Directory, Size) > 0;
+	DWORD Size = MAX_PATH;
+	wchar_t Directory[MAX_PATH];
+
+	return GetSystemWow64Directory(Directory, Size) > 0;
 }
 
 // ---------------------------------------------------------------------------
