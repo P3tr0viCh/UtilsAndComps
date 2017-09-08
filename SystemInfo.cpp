@@ -25,12 +25,15 @@ __fastcall TSystemInfo::TSystemInfo() {
 	FProcessorName = "";
 
 	FLogicalDrives = new TLogicalDrives();
+
+	FPhysicalDrives = new TPhysicalDrives();
 }
 
 // ---------------------------------------------------------------------------
 __fastcall TSystemInfo::~TSystemInfo() {
-	FIPAddressList->Free();
+	FPhysicalDrives->Free();
 	FLogicalDrives->Free();
+	FIPAddressList->Free();
 }
 
 // ------------------------------------------------------------------------
@@ -173,13 +176,33 @@ String TSystemInfo::GetPrinterName() {
 // ---------------------------------------------------------------------------
 __fastcall TLogicalDrive::TLogicalDrive(char ALetter, String ALabel,
 	unsigned __int64 AAvailable, unsigned __int64 ATotal,
-	unsigned __int64 AFree) {
+	unsigned __int64 AFree, int APhysicalDriveNum) {
 	FLetter = ALetter;
 	FLabel = ALabel;
 
 	FAvailable = AAvailable;
 	FTotal = ATotal;
 	FFree = AFree;
+
+	FPhysicalDriveNum = APhysicalDriveNum;
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TPhysicalDrive::TPhysicalDrive(String APath, String AVendor,
+	String AProduct, String AProductRevision, String ASerialNumber, float ASize)
+{
+	FPath = APath;
+	FVendor = AVendor;
+	FProduct = AProduct;
+	FProductRevision = AProductRevision;
+	FSerialNumber = ASerialNumber;
+
+	FSize = ASize;
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TPhysicalDrive::TPhysicalDrive(String APath, String AVendor) {
+	::TPhysicalDrive(APath, AVendor, NULL, NULL, NULL, -1);
 }
 
 // ---------------------------------------------------------------------------
@@ -203,6 +226,33 @@ void GetDiskSpace(String Path, unsigned __int64 &Available,
 		Total = 0;
 		Free = 0;
 	}
+}
+
+// ---------------------------------------------------------------------------
+int GetPhysicalDriveNumByLetter(char Letter) {
+	String DrivePath = Format("\\\\.\\%s:", ARRAYOFCONST((Letter)));
+
+	HANDLE hDevice = CreateFile(DrivePath.c_str(), 0,
+		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+
+	if (hDevice == NULL || hDevice == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+
+	STORAGE_DEVICE_NUMBER storageDeviceNumber = {0};
+	DWORD dwBytesReturned = 0;
+
+	if (!DeviceIoControl(hDevice, IOCTL_STORAGE_GET_DEVICE_NUMBER, NULL, 0,
+		&storageDeviceNumber, sizeof(storageDeviceNumber), &dwBytesReturned,
+		NULL)) {
+		CloseHandle(hDevice);
+
+		return -1;
+	}
+
+	CloseHandle(hDevice);
+
+	return storageDeviceNumber.DeviceNumber;
 }
 
 // ---------------------------------------------------------------------------
@@ -230,11 +280,128 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 
 				GetDiskSpace(Path, Available, Total, Free);
 
+				int PhysicalDriveNum = GetPhysicalDriveNumByLetter(Letter);
+
 				LogicalDrives->Add(new TLogicalDrive(Letter, Label, Available,
-					Total, Free));
+					Total, Free, PhysicalDriveNum));
 			}
 		}
 	}
+}
+
+// ---------------------------------------------------------------------------
+TPhysicalDrive* GetPhysicalDriveInfo(int DriveNum) {
+	String DrivePath = Format("\\\\.\\PhysicalDrive%d",
+		ARRAYOFCONST((DriveNum)));
+
+	HANDLE hDevice = CreateFile(DrivePath.c_str(), 0,
+		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+
+	if (hDevice == NULL || hDevice == INVALID_HANDLE_VALUE) {
+		return NULL;
+	}
+
+	STORAGE_PROPERTY_QUERY storagePropertyQuery;
+	ZeroMemory(&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY));
+
+	storagePropertyQuery.PropertyId = StorageDeviceProperty;
+	storagePropertyQuery.QueryType = PropertyStandardQuery;
+
+	TPhysicalDrive *PhysicalDrive;
+
+	DWORD dwRet;
+	STORAGE_DESCRIPTOR_HEADER storageDescriptorHeader = {0};
+	DWORD dwBytesReturned = 0;
+
+	if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
+		&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
+		&storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER),
+		&dwBytesReturned, NULL)) {
+		dwRet = GetLastError();
+
+		CloseHandle(hDevice);
+
+		return new TPhysicalDrive(DrivePath,
+			"Exception: " + IntToStr((int)dwRet), NULL, NULL, NULL, 0);
+	}
+
+	const DWORD dwOutBufferSize = storageDescriptorHeader.Size;
+	BYTE* pOutBuffer = new BYTE[dwOutBufferSize];
+	ZeroMemory(pOutBuffer, dwOutBufferSize);
+
+	if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
+		&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY), pOutBuffer,
+		dwOutBufferSize, &dwBytesReturned, NULL)) {
+		dwRet = GetLastError();
+
+		delete[]pOutBuffer;
+
+		CloseHandle(hDevice);
+
+		return new TPhysicalDrive(DrivePath,
+			"Exception: " + IntToStr((int)dwRet));
+	}
+
+	DISK_GEOMETRY geometry;
+
+	if (!DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0,
+		&geometry, sizeof(geometry), &dwBytesReturned, NULL)) {
+		dwRet = GetLastError();
+
+		CloseHandle(hDevice);
+
+		return new TPhysicalDrive(DrivePath,
+			"Exception: " + IntToStr((int)dwRet));
+	}
+
+	CloseHandle(hDevice);
+
+	STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor =
+		(STORAGE_DEVICE_DESCRIPTOR*)pOutBuffer;
+
+	String Vendor = (pDeviceDescriptor->VendorIdOffset != 0 ?
+		String((char*)((char*)pDeviceDescriptor +
+		pDeviceDescriptor->VendorIdOffset)) : String(""));
+	String Product = pDeviceDescriptor->ProductIdOffset != 0 ?
+		String((char*)((char*)pDeviceDescriptor +
+		pDeviceDescriptor->ProductIdOffset)) : String("");
+	String ProductRevision = pDeviceDescriptor->ProductRevisionOffset != 0 ?
+		String((char*)((char*)pDeviceDescriptor +
+		pDeviceDescriptor->ProductRevisionOffset)) : String("");
+	String SerialNumber = pDeviceDescriptor->SerialNumberOffset != 0 ?
+		Trim(String((char*)((char*)pDeviceDescriptor +
+		pDeviceDescriptor->SerialNumberOffset))) : String("");
+
+	delete[]pOutBuffer;
+
+	double Size =
+		(double)geometry.BytesPerSector * geometry.Cylinders.QuadPart *
+		geometry.SectorsPerTrack * geometry.TracksPerCylinder;
+
+	PhysicalDrive = new TPhysicalDrive(DrivePath, Vendor, Product,
+		ProductRevision, SerialNumber, Size);
+
+	return PhysicalDrive;
+}
+
+// ---------------------------------------------------------------------------
+void TSystemInfo::GetPhysicalDrives(TPhysicalDrives * PhysicalDrives) {
+	PhysicalDrives->Clear();
+
+	int DriveNum = 0;
+
+	TPhysicalDrive *PhysicalDrive;
+
+	do {
+		PhysicalDrive = GetPhysicalDriveInfo(DriveNum);
+
+		if (PhysicalDrive != NULL) {
+			PhysicalDrives->Add(PhysicalDrive);
+		}
+
+		DriveNum++;
+	}
+	while (PhysicalDrive != NULL);
 }
 
 // ---------------------------------------------------------------------------
@@ -258,6 +425,8 @@ void TSystemInfo::Update() {
 	FPrinterName = GetPrinterName();
 
 	GetLogicalDrives(FLogicalDrives);
+
+	GetPhysicalDrives(FPhysicalDrives);
 
 	if (Registry) {
 		delete Registry;
