@@ -5,6 +5,7 @@
 #include <System.SysUtils.hpp>
 
 #include "UtilsStr.h"
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -129,13 +130,15 @@ String FormatBytes(Extended Bytes, TStrings *ByteNames) {
 	if (IsEmpty(Names->Strings[4]))
 		Names->Strings[4] = "вс";
 
-	Extended EBytes[5] = {1, Kb, Mb, Gb, Tb};
+	Extended EBytes[5] = {0, Kb, Mb, Gb, Tb};
 
 	int i;
 	String Result;
 
-	for (i = 4; i >= 0; i--) {
-		if (Bytes >= EBytes[i]) {
+	Extended AbsBytes = fabs(Bytes);
+
+	for (i = 4; i > 0; i--) {
+		if (AbsBytes >= EBytes[i]) {
 			break;
 		}
 	}

@@ -263,6 +263,9 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 	String Path;
 	String Label;
 
+	UINT DriveType;
+	int PhysicalDriveNum;
+
 	DWORD Drives = ::GetLogicalDrives();
 
 	for (int i = 2; i < 26; i++) {
@@ -271,7 +274,8 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 
 			Path = String(Letter) + ":\\";
 
-			if (GetDriveType(Path.w_str()) == DRIVE_FIXED) {
+			DriveType = GetDriveType(Path.w_str());
+			if (DriveType == DRIVE_FIXED || DriveType == DRIVE_REMOVABLE) {
 				Label = GetVolumeLabel(Path);
 
 				unsigned __int64 Available;
@@ -280,7 +284,7 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 
 				GetDiskSpace(Path, Available, Total, Free);
 
-				int PhysicalDriveNum = GetPhysicalDriveNumByLetter(Letter);
+				PhysicalDriveNum = GetPhysicalDriveNumByLetter(Letter);
 
 				LogicalDrives->Add(new TLogicalDrive(Letter, Label, Available,
 					Total, Free, PhysicalDriveNum));
