@@ -38,10 +38,22 @@ __fastcall TSystemInfo::~TSystemInfo() {
 
 // ------------------------------------------------------------------------
 String TSystemInfo::GetComputerName() {
-	DWORD Size = MAX_COMPUTERNAME_LENGTH;
-	wchar_t CComputerName[MAX_COMPUTERNAME_LENGTH];
+	DWORD Size = 0;
 
-	::GetComputerName(CComputerName, &Size);
+	wchar_t *CComputerName;
+
+	GetComputerNameEx(ComputerNameDnsFullyQualified, NULL, &Size);
+
+	if (GetLastError() != ERROR_MORE_DATA) {
+		return NULL;
+	}
+
+	CComputerName = new wchar_t[Size];
+
+	if (!GetComputerNameEx(ComputerNameDnsFullyQualified, CComputerName, &Size))
+	{
+		return NULL;
+	}
 
 	return String(CComputerName);
 }
@@ -163,14 +175,18 @@ String TSystemInfo::GetPrinterName() {
 
 	unsigned int DeviceMode;
 
-	if (Printer()->Printers->Count == 0) {
-		return "";
+	if (Printer()->Printers->Count < 1) {
+		return NULL;
 	}
-	else {
-		Printer()->GetPrinter(Device, Driver, Port, DeviceMode);
 
-		return Device;
+	try {
+		Printer()->GetPrinter(Device, Driver, Port, DeviceMode);
 	}
+	catch (...) {
+		return NULL;
+	}
+
+	return Device;
 }
 
 // ---------------------------------------------------------------------------
