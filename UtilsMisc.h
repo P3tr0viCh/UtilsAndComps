@@ -50,4 +50,10 @@ DWORD StartTimer();
 String StopTimer(DWORD FirstTick, bool FormatMSec = true);
 
 bool IsWinVistaOrGreat();
+
+float Percent(float Number, float Max);
+int Percent(int Number, int Max);
+
+bool Odd(int I);
+
 #endif

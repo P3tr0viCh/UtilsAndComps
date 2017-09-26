@@ -267,3 +267,18 @@ String StopTimer(DWORD FirstTick, bool FormatMSec) {
 bool IsWinVistaOrGreat() {
 	return (Win32MajorVersion >= 6) && (Win32MinorVersion >= 0);
 }
+
+float Percent(float Number, float Max) {
+	if (Number == 0.0 || Max == 0.0) {
+		return 0;
+	}
+	return (Number / Max) * 100.0;
+}
+
+int Percent(int Number, int Max) {
+	return (int)Percent((float)Number, (float)Max);
+}
+
+bool Odd(int I) {
+	return I & 1;
+}
