@@ -244,3 +244,19 @@ String IToS_0(int Value, int MinLength) {
 		Result = "0" + Result;
 	return Result;
 }
+
+String WinShortCutToText(TShortCut ShortCut, bool HasWinKey) {
+	String Result = ShortCutToText(ShortCut);
+	if ((!IsEmpty(Result) && HasWinKey)) {
+		Result = "Win+" + Result;
+	}
+	return Result;
+}
+
+TShortCut TextToWinShortCut(String Text, bool &HasWinKey) {
+	HasWinKey = Text.Pos("Win+") == 1;
+	if (HasWinKey) {
+		Text.Delete(1, 4);
+	}
+	return TextToShortCut(Text);
+}

@@ -6,6 +6,7 @@
 
 #include <System.Types.hpp>
 #include <System.Classes.hpp>
+#include <Vcl.Menus.hpp>
 
 const Char COMMA = ',';
 const Char SPACE = ' ';
@@ -33,4 +34,8 @@ String Format(const NativeUInt Ident, const String S);
 
 String IToS(int Value);
 String IToS_0(int Value, int MinLength = 2);
+
+String WinShortCutToText(TShortCut ShortCut, bool HasWinKey);
+TShortCut TextToWinShortCut(String Text, bool &HasWinKey);
+
 #endif
