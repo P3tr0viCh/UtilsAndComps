@@ -3,7 +3,8 @@
 #ifndef UtilsFileIniH
 #define UtilsFileIniH
 // ---------------------------------------------------------------------------
-
+#include <Vcl.Controls.hpp>
+#include <Vcl.Forms.hpp>
 #include <System.IniFiles.hpp>
 
 class TFileIni : public TIniFile {
