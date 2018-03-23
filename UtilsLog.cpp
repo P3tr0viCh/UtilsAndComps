@@ -32,8 +32,9 @@ void WriteToLog(String S) {
 		DateTime = Now();
 
 		LogPath = ExtractFilePath(Application->ExeName) + LoadStr(IDS_LOG_PATH);
-		if (!DirectoryExists(LogPath))
+		if (!DirectoryExists(LogPath)) {
 			CreateDir(LogPath);
+		}
 
 		LogFileName = IncludeTrailingPathDelimiter(LogPath) +
 			ChangeFileExt(ExtractFileName(Application->ExeName),
@@ -66,9 +67,10 @@ void WriteToLog(String S) {
 				sLineBreak);
 
 			if (SetFilePointer(LogFile, 0, NULL,
-				FILE_END) != INVALID_SET_FILE_POINTER)
+				FILE_END) != INVALID_SET_FILE_POINTER) {
 				WriteFile(LogFile, SS.c_str(), SS.Length(),
-				NumberOfBytesWritten, NULL);
+					NumberOfBytesWritten, NULL);
+			}
 
 			CloseHandle(LogFile);
 		}
@@ -86,10 +88,12 @@ void WriteToLogForm(bool AShow, String AFormName) {
 
 	AFormName = ": " + AFormName;
 
-	if (AShow)
+	if (AShow) {
 		AFormName = "show" + AFormName;
-	else
+	}
+	else {
 		AFormName = "close" + AFormName;
+	}
 
 	WriteToLog(AFormName);
 }
