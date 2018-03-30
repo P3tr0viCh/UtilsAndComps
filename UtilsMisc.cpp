@@ -15,11 +15,12 @@
 #include "UtilsDate.h"
 #include "UtilsCPUSpeed.h"
 
-int MsgBox(UnicodeString sMessage, UINT iType, UnicodeString sCaption,
-	HWND hHWND, WORD wLanguage) {
-	if (sCaption == NULL) {
+int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
+	WORD wLanguage) {
+	if (IsEmpty(sCaption)) {
 		sCaption = Application->Title;
 	}
+
 	if (hHWND == NULL) {
 		if (Screen->ActiveForm) {
 			if ((Screen->ActiveForm == Application->MainForm) ||
@@ -39,24 +40,38 @@ int MsgBox(UnicodeString sMessage, UINT iType, UnicodeString sCaption,
 		wLanguage);
 }
 
-int MsgBox(int iValue, UINT iType, UnicodeString sCaption, HWND hHWND,
-	WORD wLanguage) {
+int MsgBox(int iValue, UINT iType, String sCaption, HWND hHWND, WORD wLanguage)
+{
 	return MsgBox(IntToStr(iValue), iType, sCaption, hHWND, wLanguage);
 }
 
-int MsgBox(Extended fValue, UINT iType, UnicodeString sCaption, HWND hHWND,
+int MsgBox(Extended fValue, UINT iType, String sCaption, HWND hHWND,
 	WORD wLanguage) {
 	return MsgBox(FormatFloat(",0.00", fValue), iType, sCaption, hHWND,
 		wLanguage);
 }
 
-int MsgBox(bool bValue, UINT iType, UnicodeString sCaption, HWND hHWND,
-	WORD wLanguage) {
+int MsgBox(bool bValue, UINT iType, String sCaption, HWND hHWND, WORD wLanguage)
+{
 	return MsgBox(BoolToStr(bValue, true), iType, sCaption, hHWND, wLanguage);
 }
 
-void MsgBoxErr(UnicodeString sMessage, HWND hHWND) {
+void MsgBoxErr(String sMessage, HWND hHWND) {
 	MsgBox(sMessage, MB_OK | MB_ICONERROR, "Ошибка", hHWND);
+}
+
+bool MsgBoxYesNo(String sMessage, bool DefaultNo, HWND hHWND) {
+	DWORD uType = MB_YESNO | MB_ICONQUESTION;
+
+	if (IsEmpty(sMessage)) {
+		sMessage = "To be or not to be?";
+	}
+
+	if (DefaultNo) {
+		uType = uType | MB_DEFBUTTON2;
+	}
+
+	return MsgBox(sMessage, uType, NULL, hHWND) == ID_YES;
 }
 
 void ProcMess() {

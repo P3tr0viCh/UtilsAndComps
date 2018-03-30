@@ -1,4 +1,6 @@
 __history
+UtilsEncryptDecrypt.h
+UtilsEncryptDecrypt.cpp
 
 # Windows image file caches
 Thumbs.db

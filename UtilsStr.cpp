@@ -35,8 +35,8 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 	String &FirstHalf, String &SecondHalf) {
 	int P;
 
-	FirstHalf == S;
-	SecondHalf == "";
+	FirstHalf = S;
+	SecondHalf = "";
 
 	if (IsEmpty(S)) {
 		return;

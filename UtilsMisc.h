@@ -6,8 +6,8 @@
 
 #include <vcl.h>
 
-int MsgBox(UnicodeString sMessage = "Groovy!!", UINT iType =
-	MB_OK | MB_ICONINFORMATION, UnicodeString sCaption = NULL, HWND hHWND =
+int MsgBox(String sMessage = "Groovy!!", UINT iType =
+	MB_OK | MB_ICONINFORMATION, String sCaption = NULL, HWND hHWND =
 	NULL, WORD wLanguage = 0x00400);
 int MsgBox(int iValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
@@ -15,7 +15,9 @@ int MsgBox(Extended fValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(bool bValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
-void MsgBoxErr(UnicodeString sMessage = "Error !?!", HWND hHWND = NULL);
+void MsgBoxErr(String sMessage = "Error !?!", HWND hHWND = NULL);
+bool MsgBoxYesNo(String sMessage = NULL, bool DefaultNo = true,
+	HWND hHWND = NULL);
 
 void ProcMess();
 

@@ -11,6 +11,7 @@
 const Char COMMA = ',';
 const Char SPACE = ' ';
 const Char DOT = '.';
+const Char TAB = '\t';
 
 int PosPlace(String Substr, String S, int Place);
 void SplitStr(String S, const String SplitString, const int SplitPlace,
