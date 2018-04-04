@@ -40,6 +40,21 @@ public:
 		}
 	}
 
+	String __fastcall ToString() {
+		String S;
+
+		S = "TObjList";
+		S += "{";
+
+		for (int i = 0; i < Count; i++) {
+			S += sLineBreak;
+			S += "Item" + IntToStr(i) + "='" + Items[i]->ToString() + "'";
+		}
+		S += "}";
+
+		return S;
+	}
+
 	T* operator[](int Index) {
 		return Items[Index];
 	}
