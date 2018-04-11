@@ -18,6 +18,7 @@
 
 #include "GradientPanel.h"
 
+// ---------------------------------------------------------------------------
 class TAboutObject : public TObject {
 public:
 	TLabel *lblMemoryValue, *lblProcValue;
@@ -405,7 +406,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 	Form->Left = (Screen->Width - Form->Width) / 2;
 	Form->Top = (Screen->Height - Form->Height) / 2;
 
-//	SetCurPosToCenter(btnClose);
+	// SetCurPosToCenter(btnClose);
 
 	Form->ShowModal();
 

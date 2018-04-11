@@ -6,9 +6,9 @@
 
 #include "UtilsStr.h"
 
-// ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+// ---------------------------------------------------------------------------
 int PosPlace(String Substr, String S, int Place) {
 	int i, P;
 
@@ -211,7 +211,7 @@ bool IsEmpty(const String S) {
 }
 
 String ConcatStrings(const String S1, const String S2, const String Separator) {
-	if (IsEmpty(S1) & IsEmpty(S2))
+	if (IsEmpty(S1) && IsEmpty(S2))
 		return "";
 	else if (IsEmpty(S1))
 		return S2;
@@ -219,6 +219,12 @@ String ConcatStrings(const String S1, const String S2, const String Separator) {
 		return S1;
 	else
 		return S1 + Separator + S2;
+}
+
+String RemoveLineBreaks(const String S) {
+	return StringReplace(StringReplace(S, "\r\n", " ",
+		TReplaceFlags() << rfReplaceAll), "\n", " ",
+		TReplaceFlags() << rfReplaceAll);
 }
 
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High)

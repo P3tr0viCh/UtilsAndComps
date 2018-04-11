@@ -2,7 +2,6 @@
 
 #pragma hdrstop
 
-// ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 #include <System.hpp>
@@ -15,6 +14,7 @@
 #include "UtilsDate.h"
 #include "UtilsCPUSpeed.h"
 
+// ---------------------------------------------------------------------------
 int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
 	WORD wLanguage) {
 	if (IsEmpty(sCaption)) {

@@ -2,12 +2,12 @@
 
 #ifndef UtilsStrH
 #define UtilsStrH
-// ---------------------------------------------------------------------------
 
 #include <System.Types.hpp>
 #include <System.Classes.hpp>
 #include <Vcl.Menus.hpp>
 
+// ---------------------------------------------------------------------------
 const Char COMMA = ',';
 const Char SPACE = ' ';
 const Char DOT = '.';
@@ -28,6 +28,7 @@ String FormatHerzs(SIZE_T Herzs);
 
 bool IsEmpty(const String S);
 String ConcatStrings(const String S1, const String S2, const String Separator);
+String RemoveLineBreaks(const String S);
 
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High);
 String Format(const String F, const String S);
@@ -39,4 +40,5 @@ String IToS_0(int Value, int MinLength = 2);
 String WinShortCutToText(TShortCut ShortCut, bool HasWinKey);
 TShortCut TextToWinShortCut(String Text, bool &HasWinKey);
 
+// ---------------------------------------------------------------------------
 #endif

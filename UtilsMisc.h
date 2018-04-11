@@ -2,13 +2,13 @@
 
 #ifndef UtilsMiscH
 #define UtilsMiscH
-// ---------------------------------------------------------------------------
 
 #include <vcl.h>
 
+// ---------------------------------------------------------------------------
 int MsgBox(String sMessage = "Groovy!!", UINT iType =
-	MB_OK | MB_ICONINFORMATION, String sCaption = NULL, HWND hHWND =
-	NULL, WORD wLanguage = 0x00400);
+	MB_OK | MB_ICONINFORMATION, String sCaption = NULL, HWND hHWND = NULL,
+	WORD wLanguage = 0x00400);
 int MsgBox(int iValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(Extended fValue, UINT iType = MB_OK | MB_ICONINFORMATION,
@@ -58,4 +58,5 @@ int Percent(int Number, int Max);
 
 bool Odd(int I);
 
+// ---------------------------------------------------------------------------
 #endif

@@ -3,11 +3,12 @@
 #pragma hdrstop
 
 #include "UtilsDate.h"
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
 
 #include "UtilsStr.h"
 
+//---------------------------------------------------------------------------
 SYSTEMTIME ExtractHMSFromMS(DWORD MilliSeconds) {
 	const MSInSec  = 1000;
 	const MSInMin  = 60 * MSInSec;

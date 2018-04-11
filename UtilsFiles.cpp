@@ -2,7 +2,6 @@
 
 #pragma hdrstop
 
-// ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 #include <windows.h>
@@ -16,6 +15,7 @@
 
 #include "UtilsFilesStr.h"
 
+// ---------------------------------------------------------------------------
 void CreateWin9xProcessList(TStringList *List) {
 	throw(Exception("TODO: CreateWin9xProcessList"));
 

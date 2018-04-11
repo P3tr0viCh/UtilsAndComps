@@ -3,9 +3,10 @@
 #pragma hdrstop
 
 #include "UtilsKAndM.h"
-// ---------------------------------------------------------------------------
+
 #pragma package(smart_init)
 
+// ---------------------------------------------------------------------------
 bool IsKey(int Key) {
 	return GetAsyncKeyState(Key) < 0;
 }

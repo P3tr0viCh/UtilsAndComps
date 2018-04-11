@@ -2,11 +2,12 @@
 
 #ifndef UtilsFileIniH
 #define UtilsFileIniH
-// ---------------------------------------------------------------------------
+
 #include <Vcl.Controls.hpp>
 #include <Vcl.Forms.hpp>
 #include <System.IniFiles.hpp>
 
+// ---------------------------------------------------------------------------
 class TFileIni : public TIniFile {
 public:
 	__fastcall TFileIni(const System::UnicodeString FileName);
@@ -39,4 +40,6 @@ public:
 	void ReadFormPosition(TForm* Form, String Section = NULL);
 	void WriteFormPosition(const TForm* Form, String Section = NULL);
 };
+
+// ---------------------------------------------------------------------------
 #endif

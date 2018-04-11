@@ -11,11 +11,10 @@
 
 #include "UtilsLog.h"
 
+#include "UtilsStr.h"
 #include "UtilsFiles.h"
 
 #include "UtilsLogStr.h"
-
-const String SPACE = " ";
 
 const MaxLogSize = 1024 * 1024; // 1 Mb
 
@@ -63,8 +62,7 @@ void WriteToLog(String S) {
 
 		if (LogFile != INVALID_HANDLE_VALUE) {
 			SS = AnsiString(FormatDateTime(LoadStr(IDS_DATETIME_FORMAT_LOG),
-				DateTime) + "; " + AnsiReplaceStr(S, sLineBreak, SPACE) +
-				sLineBreak);
+				DateTime) + "; " + RemoveLineBreaks(S) + sLineBreak);
 
 			if (SetFilePointer(LogFile, 0, NULL,
 				FILE_END) != INVALID_SET_FILE_POINTER) {
