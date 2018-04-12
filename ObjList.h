@@ -59,6 +59,10 @@ public:
 		return Items[Index];
 	}
 
+	bool IsEmpty() {
+		return Count == 0;
+	}
+
 	__property T* Items[int Index] = {read = GetItem, write = SetItem};
 };
 
