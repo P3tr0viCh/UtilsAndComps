@@ -6,16 +6,16 @@
 #include <vcl.h>
 
 // ---------------------------------------------------------------------------
-int MsgBox(String sMessage = "Groovy!!", UINT iType =
-	MB_OK | MB_ICONINFORMATION, String sCaption = NULL, HWND hHWND = NULL,
-	WORD wLanguage = 0x00400);
+int MsgBox(String sMessage = "TODO", UINT iType = MB_OK | MB_ICONINFORMATION,
+	String sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(int iValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(Extended fValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(bool bValue, UINT iType = MB_OK | MB_ICONINFORMATION,
 	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
-void MsgBoxErr(String sMessage = "Error !?!", HWND hHWND = NULL);
+void MsgBoxErr(String sMessage = "ERROR", HWND hHWND = NULL);
+void MsgBoxErr(NativeUInt Ident, HWND hHWND = NULL);
 bool MsgBoxYesNo(String sMessage = NULL, bool DefaultNo = true,
 	HWND hHWND = NULL);
 

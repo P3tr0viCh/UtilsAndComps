@@ -60,6 +60,10 @@ void MsgBoxErr(String sMessage, HWND hHWND) {
 	MsgBox(sMessage, MB_OK | MB_ICONERROR, "Ошибка", hHWND);
 }
 
+void MsgBoxErr(NativeUInt Ident, HWND hHWND) {
+	MsgBoxErr(LoadStr(Ident), hHWND);
+}
+
 bool MsgBoxYesNo(String sMessage, bool DefaultNo, HWND hHWND) {
 	DWORD uType = MB_YESNO | MB_ICONQUESTION;
 
