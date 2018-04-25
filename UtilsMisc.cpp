@@ -40,37 +40,25 @@ int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
 		wLanguage);
 }
 
-int MsgBox(int iValue, UINT iType, String sCaption, HWND hHWND, WORD wLanguage)
-{
-	return MsgBox(IntToStr(iValue), iType, sCaption, hHWND, wLanguage);
-}
-
-int MsgBox(Extended fValue, UINT iType, String sCaption, HWND hHWND,
+// ---------------------------------------------------------------------------
+int MsgBox(NativeUInt Ident, UINT iType, UnicodeString sCaption, HWND hHWND,
 	WORD wLanguage) {
-	return MsgBox(FormatFloat(",0.00", fValue), iType, sCaption, hHWND,
-		wLanguage);
+	return MsgBox(LoadStr(Ident), iType, sCaption, hHWND, wLanguage);
 }
 
-int MsgBox(bool bValue, UINT iType, String sCaption, HWND hHWND, WORD wLanguage)
-{
-	return MsgBox(BoolToStr(bValue, true), iType, sCaption, hHWND, wLanguage);
-}
-
+// ---------------------------------------------------------------------------
 void MsgBoxErr(String sMessage, HWND hHWND) {
 	MsgBox(sMessage, MB_OK | MB_ICONERROR, "Îøèáêà", hHWND);
 }
 
+// ---------------------------------------------------------------------------
 void MsgBoxErr(NativeUInt Ident, HWND hHWND) {
 	MsgBoxErr(LoadStr(Ident), hHWND);
 }
 
+// ---------------------------------------------------------------------------
 bool MsgBoxYesNo(String sMessage, bool DefaultNo, HWND hHWND) {
 	DWORD uType = MB_YESNO | MB_ICONQUESTION;
-
-	if (IsEmpty(sMessage)) {
-		sMessage = "To be or not to be?";
-	}
-
 	if (DefaultNo) {
 		uType = uType | MB_DEFBUTTON2;
 	}
@@ -78,19 +66,28 @@ bool MsgBoxYesNo(String sMessage, bool DefaultNo, HWND hHWND) {
 	return MsgBox(sMessage, uType, NULL, hHWND) == ID_YES;
 }
 
+// ---------------------------------------------------------------------------
+bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo, HWND hHWND) {
+	return MsgBoxYesNo(LoadStr(Ident), DefaultNo, hHWND);
+}
+
+// ---------------------------------------------------------------------------
 void ProcMess() {
 	Application->ProcessMessages();
 }
 
+// ---------------------------------------------------------------------------
 void ShowWaitCursor() {
 	Screen->Cursor = crHourGlass;
 	ProcMess();
 }
 
+// ---------------------------------------------------------------------------
 void RestoreCursor() {
 	Screen->Cursor = crDefault;
 }
 
+// ---------------------------------------------------------------------------
 void SetCurPosToCenter(TControl *Control) {
 	TPoint EndPoint;
 
@@ -105,6 +102,7 @@ void SetCurPosToCenter(TControl *Control) {
 	SetCursorPos(EndPoint.x, EndPoint.y);
 }
 
+// ---------------------------------------------------------------------------
 String InternalVerQueryValue(LPTSTR lpData, String SubBlock) {
 	LPTSTR lpBuffer;
 	DWORD dwBytes;
@@ -115,6 +113,7 @@ String InternalVerQueryValue(LPTSTR lpData, String SubBlock) {
 	return lpBuffer;
 }
 
+// ---------------------------------------------------------------------------
 bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	String &CompanyName, String &FileDescription, String &FileVersion,
 	String &InternalName, String &LegalCopyright, String &OriginalFilename,
@@ -171,6 +170,7 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String GetFileVerDate() {
 	return FormatDateTime("yyyy.mm.dd",
 		UnixToDateTime(((PIMAGE_NT_HEADERS)((DWORD)((PIMAGE_DOS_HEADER)
@@ -178,6 +178,7 @@ String GetFileVerDate() {
 		->FileHeader.TimeDateStamp));
 }
 
+// ---------------------------------------------------------------------------
 String SmallFileVersion(String FileVersion) {
 	String S1, S2, S3;
 
@@ -195,6 +196,7 @@ String SmallFileVersion(String FileVersion) {
 	return S1 + S2 + S3;
 }
 
+// ---------------------------------------------------------------------------
 String GetFileVer(String FileName, bool SmallFormat) {
 	TVSFixedFileInfo FileVersionInfo;
 	String CompanyName, FileDescription, FileVersion, InternalName,
@@ -217,14 +219,17 @@ String GetFileVer(String FileName, bool SmallFormat) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 bool IsValueInWord(DWORD AWord, DWORD AValue) {
 	return (AWord & AValue);
 }
 
+// ---------------------------------------------------------------------------
 String GetCPUSpeed() {
-	return FormatHerzs(floor(_GetCPUSpeed()));
+	return FormatHerzs(floor((double)_GetCPUSpeed()));
 }
 
+// ---------------------------------------------------------------------------
 String GetTotalPhys() {
 	TMemoryStatusEx MS;
 
@@ -234,10 +239,12 @@ String GetTotalPhys() {
 	return FormatBytes(MS.ullTotalPhys);
 }
 
+// ---------------------------------------------------------------------------
 void CopyToClipBoard(String S) {
 	Clipboard()->AsText = S;
 }
 
+// ---------------------------------------------------------------------------
 void Delay(DWORD mSecs) {
 	DWORD FirstTick = GetTickCount();
 	do {
@@ -246,10 +253,7 @@ void Delay(DWORD mSecs) {
 	while ((GetTickCount() - FirstTick) < mSecs);
 }
 
-bool IsWinNT() {
-	return Win32Platform == VER_PLATFORM_WIN32_NT;
-}
-
+// ---------------------------------------------------------------------------
 void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
 	if (Error == 0) {
 		Error = GetLastError();
@@ -266,27 +270,38 @@ void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
 			AddStr = Format(AddStr, ARRAYOFCONST((SysErrorMessage(Error))));
 		}
 	}
+
 	MsgBoxErr(AddStr, hHWND);
 }
 
+// ---------------------------------------------------------------------------
 double Round(double Number) {
 	return Number < 0.0 ? ceil(Number - 0.5) : floor(Number + 0.5);
 }
 
+// ---------------------------------------------------------------------------
 DWORD StartTimer() {
 	return GetTickCount();
 }
 
+// ---------------------------------------------------------------------------
 String StopTimer(DWORD FirstTick, bool FormatMSec) {
 	DWORD ElapsedTime = GetTickCount() - FirstTick;
 	return FormatMSec ? MyFormatTime(ExtractHMSFromMS(ElapsedTime), true) :
 		FormatFloat("0,# msec.", ElapsedTime);
 }
 
+// ---------------------------------------------------------------------------
+bool IsWinNT() {
+	return Win32Platform == VER_PLATFORM_WIN32_NT;
+}
+
+// ---------------------------------------------------------------------------
 bool IsWinVistaOrGreat() {
 	return (Win32MajorVersion >= 6) && (Win32MinorVersion >= 0);
 }
 
+// ---------------------------------------------------------------------------
 float Percent(float Number, float Max) {
 	if (Number == 0.0 || Max == 0.0) {
 		return 0;
@@ -294,10 +309,14 @@ float Percent(float Number, float Max) {
 	return (Number / Max) * 100.0;
 }
 
+// ---------------------------------------------------------------------------
 int Percent(int Number, int Max) {
 	return (int)Percent((float)Number, (float)Max);
 }
 
+// ---------------------------------------------------------------------------
 bool Odd(int I) {
 	return I & 1;
 }
+
+// ---------------------------------------------------------------------------
