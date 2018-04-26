@@ -33,6 +33,7 @@ String RemoveLineBreaks(const String S);
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High);
 String Format(const String F, const String S);
 String Format(const NativeUInt Ident, const String S);
+String Format(const NativeUInt Ident, const int I);
 
 String IToS(int Value);
 String IToS_0(int Value, int MinLength = 2);

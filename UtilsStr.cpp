@@ -240,6 +240,10 @@ String Format(const NativeUInt Ident, const String S) {
 	return Format(LoadStr(Ident), S);
 }
 
+String Format(const NativeUInt Ident, const int I) {
+	return Format(Ident, ARRAYOFCONST((I)));
+}
+
 String IToS(int Value) {
 	return IntToStr(Value);
 }
