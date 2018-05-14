@@ -6,6 +6,8 @@
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+#pragma link "CryptoPP.lib"
+
 #include "default.h"
 #include "hex.h"
 #include "aes.h"
