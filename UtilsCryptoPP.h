@@ -10,4 +10,7 @@ String EncryptAES(String Text, String Key);
 String DecryptAES(String Text, String Key);
 
 // ---------------------------------------------------------------------------
+String HashSHA256(String Text);
+
+// ---------------------------------------------------------------------------
 #endif
