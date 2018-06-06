@@ -79,10 +79,11 @@ namespace P3tr0viCh {
 	// ---------------------------------------------------------------------------
 	class PACKAGE TSystemInfo : public TObject {
 	private:
-		TRegistry *Registry;
+		TRegistry * Registry;
 
 		String FComputerName;
-		TStringList* FIPAddressList;
+
+		TStringList * FIPAddressList;
 
 		String FWindowsProductName;
 		String FWindowsCSDVersion;
@@ -99,13 +100,15 @@ namespace P3tr0viCh {
 
 		String FPrinterName;
 
-		TLogicalDrives* FLogicalDrives;
+		TLogicalDrives * FLogicalDrives;
 
-		TPhysicalDrives* FPhysicalDrives;
+		TPhysicalDrives * FPhysicalDrives;
+
+		TStringList * FMonitorList;
 
 		String GetComputerName();
 
-		void GetIPAddress(TStringList *IPAddressList);
+		void GetIPAddress(TStringList * IPAddressList);
 
 		bool GetWindows64Bit();
 		void GetWindowsVersion(String &ProductName, String &CSDVersion);
@@ -120,9 +123,11 @@ namespace P3tr0viCh {
 
 		String GetPrinterName();
 
-		void GetLogicalDrives(TLogicalDrives *LogicalDrives);
+		void GetLogicalDrives(TLogicalDrives * LogicalDrives);
 
-		void GetPhysicalDrives(TPhysicalDrives *PhysicalDrives);
+		void GetPhysicalDrives(TPhysicalDrives * PhysicalDrives);
+
+		void GetMonitors(TStringList * MonitorList);
 
 	public:
 		__fastcall TSystemInfo();
@@ -132,7 +137,8 @@ namespace P3tr0viCh {
 
 	__published:
 		__property String ComputerName = {read = FComputerName};
-		__property TStringList* IPAddressList = {read = FIPAddressList};
+
+		__property TStringList * IPAddressList = {read = FIPAddressList};
 
 		__property String WindowsProductName = {read = FWindowsProductName};
 		__property String WindowsCSDVersion = {read = FWindowsCSDVersion};
@@ -150,9 +156,12 @@ namespace P3tr0viCh {
 
 		__property String PrinterName = {read = FPrinterName};
 
-		__property TLogicalDrives* LogicalDrives = {read = FLogicalDrives};
+		__property TLogicalDrives * LogicalDrives = {read = FLogicalDrives};
 
-		__property TPhysicalDrives* PhysicalDrives = {read = FPhysicalDrives};
+		__property TPhysicalDrives * PhysicalDrives = {read = FPhysicalDrives};
+
+		__property TStringList * MonitorList = {read = FMonitorList};
 	};
 }
+
 #endif

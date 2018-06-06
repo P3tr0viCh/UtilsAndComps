@@ -11,6 +11,7 @@ using namespace P3tr0viCh;
 // ---------------------------------------------------------------------------
 __fastcall TSystemInfo::TSystemInfo() {
 	FComputerName = "";
+
 	FIPAddressList = new TStringList();
 
 	FWindows64Bit = false;
@@ -27,10 +28,13 @@ __fastcall TSystemInfo::TSystemInfo() {
 	FLogicalDrives = new TLogicalDrives();
 
 	FPhysicalDrives = new TPhysicalDrives();
+
+	FMonitorList = new TStringList();
 }
 
 // ---------------------------------------------------------------------------
 __fastcall TSystemInfo::~TSystemInfo() {
+	FMonitorList->Free();
 	FPhysicalDrives->Free();
 	FLogicalDrives->Free();
 	FIPAddressList->Free();
@@ -450,30 +454,66 @@ void TSystemInfo::GetPhysicalDrives(TPhysicalDrives * PhysicalDrives) {
 }
 
 // ---------------------------------------------------------------------------
+void TSystemInfo::GetMonitors(TStringList * MonitorList) {
+	MonitorList->Clear();
+
+	DISPLAY_DEVICE DD;
+	DD.cb = sizeof(DD);
+
+	int DeviceIndex = 0;
+	int MonitorIndex;
+
+	std::wstring DeviceName;
+
+	while (EnumDisplayDevices(0, DeviceIndex, &DD, 0)) {
+		DeviceName = DD.DeviceName;
+
+		MonitorIndex = 0;
+
+		while (EnumDisplayDevices(DeviceName.c_str(), MonitorIndex, &DD, 0)) {
+			MonitorList->Add(DD.DeviceString);
+
+			MonitorIndex++;
+		}
+
+		DeviceIndex++;
+	}
+
+}
+
+// ---------------------------------------------------------------------------
 void TSystemInfo::Update() {
 	Registry = new TRegistry();
 
-	FComputerName = GetComputerName();
+	try {
+		try {
+			FComputerName = GetComputerName();
 
-	GetIPAddress(FIPAddressList);
+			GetIPAddress(FIPAddressList);
 
-	FWindows64Bit = GetWindows64Bit();
-	GetWindowsVersion(FWindowsProductName, FWindowsCSDVersion);
+			FWindows64Bit = GetWindows64Bit();
+			GetWindowsVersion(FWindowsProductName, FWindowsCSDVersion);
 
-	GetSystemBoard(FSystemManufacturer, FSystemProductName,
-		FBaseBoardManufacturer, FBaseBoardProduct);
+			GetSystemBoard(FSystemManufacturer, FSystemProductName,
+				FBaseBoardManufacturer, FBaseBoardProduct);
 
-	FProcessorName = GetProcessorName();
+			FProcessorName = GetProcessorName();
 
-	FPhysMemory = GetPhysMemory();
+			FPhysMemory = GetPhysMemory();
 
-	FPrinterName = GetPrinterName();
+			FPrinterName = GetPrinterName();
 
-	GetLogicalDrives(FLogicalDrives);
+			GetLogicalDrives(FLogicalDrives);
 
-	GetPhysicalDrives(FPhysicalDrives);
+			GetPhysicalDrives(FPhysicalDrives);
 
-	if (Registry) {
+			GetMonitors(FMonitorList);
+		}
+		catch (Exception * E) {
+			FComputerName = "Unknown Error: " + E->Message;
+		}
+	}
+	__finally {
 		delete Registry;
 	}
 }
