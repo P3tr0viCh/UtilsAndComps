@@ -222,6 +222,23 @@ __fastcall TPhysicalDrive::TPhysicalDrive(String APath, String AVendor) {
 }
 
 // ---------------------------------------------------------------------------
+bool IsDriveReady(String Path) {
+	WORD OldErrorMode;
+
+	bool Result;
+
+	OldErrorMode = SetErrorMode(SEM_FAILCRITICALERRORS);
+	try {
+		Result = DirectoryExists(Path);
+	}
+	__finally {
+		SetErrorMode(OldErrorMode);
+	}
+
+	return Result;
+}
+
+// ---------------------------------------------------------------------------
 String GetVolumeLabel(String Path) {
 	wchar_t Label[30];
 
@@ -230,7 +247,7 @@ String GetVolumeLabel(String Path) {
 		return Label;
 	}
 
-	return "error";
+	return "";
 }
 
 // ---------------------------------------------------------------------------
@@ -284,6 +301,10 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 
 	DWORD Drives = ::GetLogicalDrives();
 
+	unsigned __int64 Available;
+	unsigned __int64 Total;
+	unsigned __int64 Free;
+
 	for (int i = 2; i < 26; i++) {
 		if ((Drives >> i) & 1) {
 			Letter = AnsiString(char(65 + i))[1];
@@ -291,14 +312,18 @@ void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
 			Path = String(Letter) + ":\\";
 
 			DriveType = GetDriveType(Path.w_str());
+
 			if (DriveType == DRIVE_FIXED || DriveType == DRIVE_REMOVABLE) {
 				Label = GetVolumeLabel(Path);
 
-				unsigned __int64 Available;
-				unsigned __int64 Total;
-				unsigned __int64 Free;
-
-				GetDiskSpace(Path, Available, Total, Free);
+				if (IsDriveReady(Path)) {
+					GetDiskSpace(Path, Available, Total, Free);
+				}
+				else {
+					Available = 0;
+					Total = 0;
+					Free = 0;
+				}
 
 				PhysicalDriveNum = GetPhysicalDriveNumByLetter(Letter);
 
@@ -410,7 +435,7 @@ void TSystemInfo::GetPhysicalDrives(TPhysicalDrives * PhysicalDrives) {
 
 	int DriveNum = 0;
 
-	TPhysicalDrive *PhysicalDrive;
+	TPhysicalDrive * PhysicalDrive;
 
 	do {
 		PhysicalDrive = GetPhysicalDriveInfo(DriveNum);
