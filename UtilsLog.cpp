@@ -12,12 +12,15 @@
 #include "UtilsLog.h"
 
 #include "UtilsStr.h"
+#include "UtilsMisc.h"
 #include "UtilsFiles.h"
 
 #include "UtilsLogStr.h"
 
+// ---------------------------------------------------------------------------
 const MaxLogSize = 1024 * 1024; // 1 Mb
 
+// ---------------------------------------------------------------------------
 void WriteToLog(String S) {
 	HANDLE LogFile;
 	String LogPath;
@@ -77,10 +80,12 @@ void WriteToLog(String S) {
 	}
 }
 
+// ---------------------------------------------------------------------------
 void WriteToLog(NativeUInt Ident) {
 	WriteToLog(LoadStr(Ident));
 }
 
+// ---------------------------------------------------------------------------
 void WriteToLogForm(bool AShow, String AFormName) {
 	// show (close): Имя формы
 
@@ -95,3 +100,35 @@ void WriteToLogForm(bool AShow, String AFormName) {
 
 	WriteToLog(AFormName);
 }
+
+// ---------------------------------------------------------------------------
+void WriteToLogProgramStart() {
+	TVSFixedFileInfo FileVersionInfo;
+
+	String CompanyName, FileDescription, FileVersion, InternalName,
+		LegalCopyright, OriginalFilename, ProductName, ProductVersion;
+
+	String Name = "";
+	String Version = "";
+
+	if (GetFileVerInfo(Application->ExeName, FileVersionInfo, CompanyName,
+		FileDescription, FileVersion, InternalName, LegalCopyright,
+		OriginalFilename, ProductName, ProductVersion)) {
+		Name = InternalName;
+
+		Version = SmallFileVersion(FileVersion);
+
+		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
+			Version = Version + " (Debug build)";
+		}
+	}
+
+	WriteToLog(Format(IDS_LOG_PROGRAM_START, ARRAYOFCONST((Name, Version))));
+}
+
+// ---------------------------------------------------------------------------
+void WriteToLogProgramStop() {
+	WriteToLog(IDS_LOG_PROGRAM_STOP);
+}
+
+// ---------------------------------------------------------------------------

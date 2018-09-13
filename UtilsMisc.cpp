@@ -199,6 +199,7 @@ String SmallFileVersion(String FileVersion) {
 // ---------------------------------------------------------------------------
 String GetFileVer(String FileName, bool SmallFormat) {
 	TVSFixedFileInfo FileVersionInfo;
+
 	String CompanyName, FileDescription, FileVersion, InternalName,
 		LegalCopyright, OriginalFilename, ProductName, ProductVersion;
 

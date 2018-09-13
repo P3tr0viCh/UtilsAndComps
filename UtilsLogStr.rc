@@ -2,12 +2,17 @@
 
 STRINGTABLE
 BEGIN
-IDS_DATETIME_FORMAT_LOG
+IDS_DATETIME_FORMAT_LOG,
         "yyyy'-'mm'-'dd' 'hh':'nn':'ss"
-IDS_DATETIME_FORMAT_FILENAME
+IDS_DATETIME_FORMAT_FILENAME,
         "yyyy'-'mm'-'dd' 'hh'-'nn'-'ss"
-IDS_LOG_EXT
+IDS_LOG_EXT,
         ".log"
-IDS_LOG_PATH
+IDS_LOG_PATH,
         "log"
+IDS_LOG_PROGRAM_START,
+        ">>>>>>> START PROGRAM %s %s"
+IDS_LOG_PROGRAM_STOP,
+        "<<<<<<< STOP PROGRAM"
+
 END

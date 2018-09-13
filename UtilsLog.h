@@ -9,6 +9,8 @@
 void WriteToLog(String S);
 void WriteToLog(NativeUInt Ident);
 void WriteToLogForm(bool AShow, String AFormName);
+void WriteToLogProgramStart();
+void WriteToLogProgramStop();
 
 // ---------------------------------------------------------------------------
 #endif
