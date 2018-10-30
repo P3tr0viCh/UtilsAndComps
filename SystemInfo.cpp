@@ -9,14 +9,56 @@
 using namespace P3tr0viCh;
 
 // ---------------------------------------------------------------------------
+void TWindowsVersion::Update() {
+	FProductName = "";
+	FReleaseId = "";
+	FCurrentVersion = "";
+	FCurrentBuild = "";
+	FUBR = "";
+	FCSDBuildNumber = "";
+	FCSDVersion = "";
+	F64Bit = false;
+
+	TRegistry * Registry = new TRegistry(KEY_READ | KEY_WOW64_64KEY);
+
+	try {
+		Registry->RootKey = HKEY_LOCAL_MACHINE;
+		if (Registry->OpenKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+			false)) {
+			FProductName = Registry->ReadString("ProductName");
+			FReleaseId = Registry->ReadString("ReleaseId");
+			FCurrentVersion = Registry->ReadString("CurrentVersion");
+			FCurrentBuild = Registry->ReadString("CurrentBuild");
+
+			try {
+				FUBR = IntToStr(Registry->ReadInteger("UBR"));
+			}
+			catch (...) {
+			}
+
+			FCSDBuildNumber = Registry->ReadString("CSDBuildNumber");
+			FCSDVersion = Registry->ReadString("CSDVersion");
+
+			Registry->CloseKey();
+		}
+	}
+	__finally {
+		delete Registry;
+	}
+
+	DWORD Size = MAX_PATH;
+	wchar_t Directory[MAX_PATH];
+
+	F64Bit = GetSystemWow64Directory(Directory, Size) > 0;
+}
+
+// ---------------------------------------------------------------------------
 __fastcall TSystemInfo::TSystemInfo() {
 	FComputerName = "";
 
-	FIPAddressList = new TStringList();
+	FWindowsVersion = new TWindowsVersion();
 
-	FWindows64Bit = false;
-	FWindowsProductName = "";
-	FWindowsCSDVersion = "";
+	FIPAddressList = new TStringList();
 
 	FSystemManufacturer = "";
 	FSystemProductName = "";
@@ -38,6 +80,7 @@ __fastcall TSystemInfo::~TSystemInfo() {
 	FPhysicalDrives->Free();
 	FLogicalDrives->Free();
 	FIPAddressList->Free();
+	FWindowsVersion->Free();
 }
 
 // ------------------------------------------------------------------------
@@ -93,32 +136,6 @@ void TSystemInfo::GetIPAddress(TStringList *IPAddressList) {
 	}
 
 	WSACleanup();
-}
-
-// ---------------------------------------------------------------------------
-bool TSystemInfo::GetWindows64Bit() {
-	DWORD Size = MAX_PATH;
-	wchar_t Directory[MAX_PATH];
-
-	return GetSystemWow64Directory(Directory, Size) > 0;
-}
-
-// ---------------------------------------------------------------------------
-void TSystemInfo::GetWindowsVersion(String &ProductName, String &CSDVersion) {
-	ProductName = "";
-	CSDVersion = "";
-
-	if (Registry) {
-		Registry->RootKey = HKEY_LOCAL_MACHINE;
-		if (Registry->OpenKeyReadOnly
-			("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion")) {
-			ProductName = Registry->ReadString("ProductName");
-
-			CSDVersion = Registry->ReadString("CSDVersion");
-
-			Registry->CloseKey();
-		}
-	}
 }
 
 // ---------------------------------------------------------------------------
@@ -491,8 +508,7 @@ void TSystemInfo::Update() {
 
 			GetIPAddress(FIPAddressList);
 
-			FWindows64Bit = GetWindows64Bit();
-			GetWindowsVersion(FWindowsProductName, FWindowsCSDVersion);
+			FWindowsVersion->Update();
 
 			GetSystemBoard(FSystemManufacturer, FSystemProductName,
 				FBaseBoardManufacturer, FBaseBoardProduct);

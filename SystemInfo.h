@@ -13,6 +13,32 @@
 namespace P3tr0viCh {
 
 	// ---------------------------------------------------------------------------
+	class PACKAGE TWindowsVersion : public TObject {
+	private:
+		String FProductName;
+		String FReleaseId;
+		String FCurrentVersion;
+		String FCurrentBuild;
+		String FUBR;
+		String FCSDBuildNumber;
+		String FCSDVersion;
+		bool F64Bit;
+
+	public:
+		void Update();
+
+	__published:
+		__property String ProductName = {read = FProductName};
+		__property String ReleaseId = {read = FReleaseId};
+		__property String CurrentVersion = {read = FCurrentVersion};
+		__property String CurrentBuild = {read = FCurrentBuild};
+		__property String UBR = {read = FUBR};
+		__property String CSDBuildNumber = {read = FCSDBuildNumber};
+		__property String CSDVersion = {read = FCSDVersion};
+		__property bool Is64Bit = {read = F64Bit};
+	};
+
+	// ---------------------------------------------------------------------------
 	class PACKAGE TLogicalDrive : public TObject {
 	private:
 		char FLetter;
@@ -83,11 +109,9 @@ namespace P3tr0viCh {
 
 		String FComputerName;
 
-		TStringList * FIPAddressList;
+		TWindowsVersion * FWindowsVersion;
 
-		String FWindowsProductName;
-		String FWindowsCSDVersion;
-		bool FWindows64Bit;
+		TStringList * FIPAddressList;
 
 		String FBaseBoardManufacturer;
 		String FBaseBoardProduct;
@@ -109,9 +133,6 @@ namespace P3tr0viCh {
 		String GetComputerName();
 
 		void GetIPAddress(TStringList * IPAddressList);
-
-		bool GetWindows64Bit();
-		void GetWindowsVersion(String &ProductName, String &CSDVersion);
 
 		void GetSystemBoard(String &SystemManufacturer,
 			String &SystemProductName, String &BaseBoardManufacturer,
@@ -138,11 +159,9 @@ namespace P3tr0viCh {
 	__published:
 		__property String ComputerName = {read = FComputerName};
 
-		__property TStringList * IPAddressList = {read = FIPAddressList};
+		__property TWindowsVersion * WindowsVersion = {read = FWindowsVersion};
 
-		__property String WindowsProductName = {read = FWindowsProductName};
-		__property String WindowsCSDVersion = {read = FWindowsCSDVersion};
-		__property bool IsWindows64Bit = {read = FWindows64Bit};
+		__property TStringList * IPAddressList = {read = FIPAddressList};
 
 		__property String BaseBoardManufacturer = {read = FBaseBoardManufacturer
 		};
