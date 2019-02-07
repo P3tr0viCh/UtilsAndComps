@@ -66,6 +66,11 @@ __fastcall TSystemInfo::TSystemInfo() {
 	FBaseBoardProduct = "";
 
 	FProcessorName = "";
+	FProcessorSocket = "";
+
+	FPhysMemory = 0;
+	FPhysMemoryType = 0;
+	FPhysMemoryCount = 0;
 
 	FLogicalDrives = new TLogicalDrives();
 
@@ -499,6 +504,185 @@ void TSystemInfo::GetMonitors(TStringList * MonitorList) {
 }
 
 // ---------------------------------------------------------------------------
+typedef struct _RawSMBIOSData {
+	BYTE Used20CallingMethod;
+	BYTE SMBIOSMajorVersion;
+	BYTE SMBIOSMinorVersion;
+	BYTE DmiRevision;
+	DWORD Length;
+	PBYTE SMBIOSTableData;
+} RawSMBIOSData, *PRawSMBIOSData;
+
+// ---------------------------------------------------------------------------
+typedef struct _SMBIOSHEADER_ {
+	BYTE Type;
+	BYTE Length;
+	WORD Handle;
+} SMBIOSHEADER, *PSMBIOSHEADER;
+
+// ---------------------------------------------------------------------------
+typedef struct _TYPE_4_ {
+	SMBIOSHEADER Header;
+
+	BYTE SocketDesignation;
+	BYTE ProcessorType;
+	BYTE ProcessorFamily;
+	BYTE ProcessorManufacturer;
+	DWORD64 ProcessorID;
+	BYTE ProcessorVersion;
+	BYTE Voltage;
+	WORD ExternalClock;
+	WORD MaxSpeed;
+	WORD CurrentSpeed;
+	BYTE Status;
+	BYTE ProcessorUpgrade;
+	BYTE SerialNumber;
+	BYTE AssetTag;
+	BYTE PartNumber;
+} ProcessorInfo, *PProcessorInfo;
+
+// ---------------------------------------------------------------------------
+typedef struct _TYPE_17_ {
+	SMBIOSHEADER Header;
+
+	WORD PhysicalArrayHandle;
+	WORD ErrorInformationHandle;
+	WORD TotalWidth;
+	WORD DataWidth;
+	WORD Size;
+	BYTE FormFactor;
+	BYTE DeviceSet;
+	BYTE DeviceLocator;
+	BYTE BankLocator;
+	BYTE MemoryType;
+	WORD TypeDetail;
+	WORD Speed;
+	BYTE Manufacturer;
+	BYTE SerialNumber;
+	BYTE AssetTag;
+	BYTE PartNumber;
+} MemoryDevice, *PMemoryDevice;
+
+// ---------------------------------------------------------------------------
+#ifdef UNICODE
+#define LocateString	LocateStringW
+#else
+#define LocateString	LocateStringA
+#endif
+
+// ---------------------------------------------------------------------------
+const char* LocateStringA(const char* str, UINT i) {
+	static const char strNull[] = "";
+
+	if (0 == i || 0 == *str)
+		return strNull;
+
+	while (--i) {  // i-- ошибка
+		str += strlen((char*)str) + 1;
+	}
+
+	return str;
+}
+
+// ---------------------------------------------------------------------------
+const wchar_t* LocateStringW(const char* str, UINT i) {
+	static wchar_t buff[2048];
+	const char *pStr = LocateStringA(str, i);
+
+	SecureZeroMemory(buff, sizeof(buff));
+	MultiByteToWideChar(CP_OEMCP, 0, pStr, (int) strlen(pStr), buff,
+		sizeof(buff));
+
+	return buff;
+}
+
+// ---------------------------------------------------------------------------
+const char* toPointString(void* p) {
+	return (char*)p + ((PSMBIOSHEADER)p)->Length;
+}
+
+// ---------------------------------------------------------------------------
+String ProcProcessorInfo(void* p) {
+	PProcessorInfo pProcessor = (PProcessorInfo)p;
+	const char *str = toPointString(p);
+
+	return LocateString(str, pProcessor->SocketDesignation);
+}
+
+// ---------------------------------------------------------------------------
+unsigned int ProcMemoryDevice(void* p) {
+	PMemoryDevice pMD = (PMemoryDevice)p;
+
+	return pMD->Size != 0 ? pMD->MemoryType : 0;
+}
+
+// ---------------------------------------------------------------------------
+void TSystemInfo::GetSMBIOS(String &ProcessorSocket,
+	unsigned int &PhysMemoryType, int &PhysMemoryCount) {
+
+	if (Win32MajorVersion < 6) {
+		return;
+	}
+
+	const BYTE byteSignature[] = {'B', 'M', 'S', 'R'};
+	const DWORD Signature = *((DWORD*)byteSignature);
+
+	DWORD needBufferSize = GetSystemFirmwareTable(Signature, 0, NULL, 0);
+
+	LPBYTE pBuff = (LPBYTE) malloc(needBufferSize);
+
+	if (pBuff) {
+		try {
+			GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize);
+
+			const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
+
+			LPBYTE p = (LPBYTE)(&(pDMIData->SMBIOSTableData));
+			const LPBYTE lastAddress = p + pDMIData->Length;
+			PSMBIOSHEADER pHeader;
+
+			unsigned int MemoryType;
+
+			for (; ;) {
+				pHeader = (PSMBIOSHEADER)p;
+
+				switch (pHeader->Type) {
+				case 4:
+					ProcessorSocket = ProcProcessorInfo((void*)pHeader);
+					break;
+				case 17:
+					MemoryType = ProcMemoryDevice((void*)pHeader);
+					if (MemoryType > 0) {
+						PhysMemoryType = MemoryType;
+						PhysMemoryCount++;
+					}
+
+					break;
+				}
+
+				if ((pHeader->Type == 127) && (pHeader->Length == 4))
+					break;
+
+				LPBYTE nt = p + pHeader->Length;
+
+				while (0 != (*nt | *(nt + 1)))
+					nt++;
+
+				nt += 2;
+
+				if (nt >= lastAddress)
+					break;
+
+				p = nt;
+			}
+		}
+		__finally {
+			free(pBuff);
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
 void TSystemInfo::Update() {
 	Registry = new TRegistry();
 
@@ -517,6 +701,8 @@ void TSystemInfo::Update() {
 
 			FPhysMemory = GetPhysMemory();
 
+			GetSMBIOS(FProcessorSocket, FPhysMemoryType, FPhysMemoryCount);
+
 			FPrinterName = GetPrinterName();
 
 			GetLogicalDrives(FLogicalDrives);
@@ -531,5 +717,80 @@ void TSystemInfo::Update() {
 	}
 	__finally {
 		delete Registry;
+	}
+}
+
+// ---------------------------------------------------------------------------
+String P3tr0viCh::FormatProcessorSocket(String Socket) {
+	if (SameText(Socket, "CPU 1") || SameText(Socket, "SOCKET 0")) {
+		return "";
+	}
+
+	return Trim(ReplaceText(ReplaceText(Socket, "LGA", ""), "Socket", ""));
+}
+
+// ---------------------------------------------------------------------------
+String P3tr0viCh::FormatMemoryType(unsigned int Type) {
+	switch (Type) {
+	case 0x01:
+		return "Other";
+	case 0x02:
+		return "Unknown";
+	case 0x03:
+		return "DRAM";
+	case 0x04:
+		return "EDRAM";
+	case 0x05:
+		return "VRAM";
+	case 0x06:
+		return "SRAM";
+	case 0x07:
+		return "RAM";
+	case 0x08:
+		return "ROM";
+	case 0x09:
+		return "FLASH";
+	case 0x0A:
+		return "EEPROM";
+	case 0x0B:
+		return "FEPROM";
+	case 0x0C:
+		return "EPROM";
+	case 0x0D:
+		return "CDRAM";
+	case 0x0E:
+		return "3DRAM";
+	case 0x0F:
+		return "SDRAM (DDR|DDR2)";
+	case 0x10:
+		return "SGRAM";
+	case 0x11:
+		return "RDRAM";
+	case 0x12:
+		return "DDR";
+	case 0x13:
+		return "DDR2";
+	case 0x14:
+		return "DDR2 FB-DIMM";
+	case 0x15:
+	case 0x16:
+	case 0x17:
+		return "Reserved";
+	case 0x18:
+		return "DDR3";
+	case 0x19:
+		return "FBD2";
+	case 0x1A:
+		return "DDR4";
+	case 0x1B:
+		return "LPDDR";
+	case 0x1C:
+		return "LPDDR2";
+	case 0x1D:
+		return "LPDDR3";
+	case 0x1E:
+		return "LPDDR4";
+	default:
+		return Type;
 	}
 }

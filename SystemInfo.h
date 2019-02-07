@@ -4,6 +4,7 @@
 #define SystemInfoH
 
 #include <System.SysUtils.hpp>
+#include <System.StrUtils.hpp>
 #include <System.Classes.hpp>
 
 #include <Vcl.Printers.hpp>
@@ -119,8 +120,11 @@ namespace P3tr0viCh {
 		String FSystemProductName;
 
 		String FProcessorName;
+		String FProcessorSocket;
 
 		DWORDLONG FPhysMemory;
+		unsigned int FPhysMemoryType;
+		int FPhysMemoryCount;
 
 		String FPrinterName;
 
@@ -150,6 +154,9 @@ namespace P3tr0viCh {
 
 		void GetMonitors(TStringList * MonitorList);
 
+		void GetSMBIOS(String &ProcessorSocket, unsigned int &PhysMemoryType,
+			int &PhysMemoryCount);
+
 	public:
 		__fastcall TSystemInfo();
 		__fastcall ~TSystemInfo();
@@ -170,8 +177,11 @@ namespace P3tr0viCh {
 		__property String SystemProductName = {read = FSystemProductName};
 
 		__property String ProcessorName = {read = FProcessorName};
+		__property String ProcessorSocket = {read = FProcessorSocket};
 
 		__property DWORDLONG PhysMemory = {read = FPhysMemory};
+		__property unsigned int PhysMemoryType = {read = FPhysMemoryType};
+		__property int PhysMemoryCount = {read = FPhysMemoryCount};
 
 		__property String PrinterName = {read = FPrinterName};
 
@@ -181,6 +191,10 @@ namespace P3tr0viCh {
 
 		__property TStringList * MonitorList = {read = FMonitorList};
 	};
+
+	// ---------------------------------------------------------------------------
+	String FormatProcessorSocket(String Socket);
+	String FormatMemoryType(unsigned int Type);
 }
 
 #endif
