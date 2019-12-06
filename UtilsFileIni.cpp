@@ -90,6 +90,20 @@ void TFileIni::WritePoint(const String Section, const String Ident,
 	WriteString(Section, Ident, PointToStr(Value));
 }
 
+void TFileIni::ReadFont(const String Section, const String Ident, TFont * Value)
+{
+	try {
+		StrToFont(ReadString(Section, Ident, NULL), Value);
+	}
+	catch (...) {
+	}
+}
+
+void TFileIni::WriteFont(const String Section, const String Ident,
+	TFont * Value) {
+	WriteString(Section, Ident, FontToStr(Value));
+}
+
 void TFileIni::ReadBounds(TControl * Control, const String Section,
 	const String Ident, TRect Default) {
 	TRect Rect = ReadRect(Section, Ident, Default);
@@ -144,7 +158,7 @@ void TFileIni::WriteFormBounds(const TForm * Form, String Section) {
 	}
 }
 
-void TFileIni::ReadFormPosition(TForm* Form, String Section) {
+void TFileIni::ReadFormPosition(TForm * Form, String Section) {
 	if (IsEmpty(Section)) {
 		Section = Form->Name;
 	}
@@ -157,7 +171,7 @@ void TFileIni::ReadFormPosition(TForm* Form, String Section) {
 	Form->MakeFullyVisible();
 }
 
-void TFileIni::WriteFormPosition(const TForm* Form, String Section) {
+void TFileIni::WriteFormPosition(const TForm * Form, String Section) {
 	if (IsEmpty(Section)) {
 		Section = Form->Name;
 	}

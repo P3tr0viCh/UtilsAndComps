@@ -93,7 +93,7 @@ TPoint StrToPoint(String S) {
 		Result.X = StrToInt(FirstHalf);
 		Result.Y = StrToInt(SecondHalf);
 	}
-	catch (Exception *e) {
+	catch (...) {
 		throw Exception("Строка '" + S + "' не является записью TPoint");
 	}
 
@@ -102,6 +102,44 @@ TPoint StrToPoint(String S) {
 
 String PointToStr(TPoint P) {
 	return IToS(P.x) + COMMA + IToS(P.y);
+}
+
+void StrToFont(String S, TFont * Font) {
+//	Byte intFontStyle;
+//	TFontStyles FontStyle;
+	String FirstHalf, SecondHalf;
+
+	if (IsEmpty(S)) {
+		return;
+	}
+
+	try {
+		SplitStr(S, COMMA, 0, FirstHalf, SecondHalf);
+		Font->Name = FirstHalf;
+		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
+		Font->Charset = StrToInt(FirstHalf);
+		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
+		Font->Color = StrToInt(FirstHalf);
+		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
+		Font->Size = StrToInt(FirstHalf);
+//		intFontStyle = StrToInt(SecondHalf);
+////		Move(intFontStyle, FontStyle, 1);
+//		Font->Style = FontStyle;
+	}
+	catch (...) {
+		throw Exception("Строка '" + S + "' не является записью TFont");
+	}
+}
+
+String FontToStr(TFont * Font) {
+// TODO
+//	Byte intFontStyle  = Font->Style.ToInt();
+//	TFontStyles FontStyle = Font->Style;
+//	Move(FontStyle, intFontStyle, 1);
+
+	return Font->Name + COMMA + IToS(Font->Charset) + COMMA + IToS(Font->Color)
+		+ COMMA + IToS(Font->Size);
+//		 + COMMA + IToS(intFontStyle);
 }
 
 String FormatBytes(Extended Bytes, TStrings *ByteNames) {

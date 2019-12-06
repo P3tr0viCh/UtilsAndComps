@@ -23,14 +23,18 @@ String RectToStr(TRect R);
 TPoint StrToPoint(String S);
 String PointToStr(TPoint P);
 
-String FormatBytes(Extended Bytes, TStrings *ByteNames = NULL);
+void StrToFont(String S, TFont * Font);
+String FontToStr(TFont * Font);
+
+String FormatBytes(Extended Bytes, TStrings * ByteNames = NULL);
 String FormatHerzs(SIZE_T Herzs);
 
 bool IsEmpty(const String S);
 String ConcatStrings(const String S1, const String S2, const String Separator);
 String RemoveLineBreaks(const String S);
 
-String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High);
+String Format(const NativeUInt Ident, TVarRec const * Args,
+	const int Args_High);
 String Format(const String F, const String S);
 String Format(const NativeUInt Ident, const String S);
 String Format(const NativeUInt Ident, const int I);

@@ -15,5 +15,6 @@ String FileInAppDir(String FileName);
 String FileWithoutExt(String FileName);
 String OnlyFileName(String FileName);
 
+String GetSpecialFolderPath(int Csidl);
 // ---------------------------------------------------------------------------
 #endif

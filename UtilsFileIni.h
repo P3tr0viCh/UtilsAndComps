@@ -24,21 +24,24 @@ public:
 	TPoint ReadPoint(const String Section, const String Ident, TPoint Default);
 	void WritePoint(const String Section, const String Ident, TPoint Value);
 
-	void ReadBounds(TControl* Control, const String Section, const String Ident,
+	void ReadFont(const String Section, const String Ident, TFont * Value);
+	void WriteFont(const String Section, const String Ident, TFont * Value);
+
+	void ReadBounds(TControl * Control, const String Section, const String Ident,
 		TRect Default);
-	void WriteBounds(const TControl* Control, const String Section,
+	void WriteBounds(const TControl * Control, const String Section,
 		const String Ident);
 
-	void ReadPosition(TControl* Control, const String Section,
+	void ReadPosition(TControl * Control, const String Section,
 		const String Ident);
-	void WritePosition(const TControl* Control, const String Section,
+	void WritePosition(const TControl * Control, const String Section,
 		const String Ident);
 
-	void ReadFormBounds(TForm* Form, String Section = NULL);
-	void WriteFormBounds(const TForm* Form, String Section = NULL);
+	void ReadFormBounds(TForm * Form, String Section = NULL);
+	void WriteFormBounds(const TForm * Form, String Section = NULL);
 
-	void ReadFormPosition(TForm* Form, String Section = NULL);
-	void WriteFormPosition(const TForm* Form, String Section = NULL);
+	void ReadFormPosition(TForm * Form, String Section = NULL);
+	void WriteFormPosition(const TForm * Form, String Section = NULL);
 };
 
 // ---------------------------------------------------------------------------

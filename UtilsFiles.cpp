@@ -114,7 +114,7 @@ bool OKExec(const int Inst, String FileName) {
 
 		SetForegroundWindow(Application->Handle);
 
-		if ((Inst == ERROR_FILE_NOT_FOUND) & (FileName != NULL))
+		if ((Inst == ERROR_FILE_NOT_FOUND) && (FileName != NULL))
 			MsgBoxErr(Format(LoadStr(IDS_ERROR_FILE_NOT_FOUND),
 			ARRAYOFCONST((FileName))));
 		else
@@ -153,4 +153,15 @@ String FileWithoutExt(String FileName) {
 
 String OnlyFileName(String FileName) {
 	return FileWithoutExt(ExtractFileName(FileName));
+}
+
+String GetSpecialFolderPath(int Csidl) {
+	TCHAR pszPath[MAX_PATH];
+
+	if (SHGetSpecialFolderPath(NULL, pszPath, Csidl, false)) {
+		return pszPath;
+	}
+	else {
+		return "";
+	}
 }
