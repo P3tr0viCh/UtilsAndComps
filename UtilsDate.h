@@ -3,12 +3,14 @@
 #ifndef UtilsDateH
 #define UtilsDateH
 
-#include <windows.h>
 #include <System.Types.hpp>
+#include <System.Classes.hpp>
 
 // ---------------------------------------------------------------------------
-SYSTEMTIME ExtractHMSFromMS(DWORD MilliSeconds);
-String MyFormatTime(SYSTEMTIME SystemTime, bool WithMSec = false);
+TSystemTime ExtractHMSFromMS(DWORD MilliSeconds);
+String MyFormatTime(TSystemTime SystemTime, bool WithMSec = false);
 
+String FormatDate(String Format, TSystemTime SystemTime);
+String FormatTime(String Format, TSystemTime SystemTime);
 // ---------------------------------------------------------------------------
 #endif

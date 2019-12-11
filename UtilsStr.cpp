@@ -105,8 +105,8 @@ String PointToStr(TPoint P) {
 }
 
 void StrToFont(String S, TFont * Font) {
-//	Byte intFontStyle;
-//	TFontStyles FontStyle;
+	// Byte intFontStyle;
+	// TFontStyles FontStyle;
 	String FirstHalf, SecondHalf;
 
 	if (IsEmpty(S)) {
@@ -119,12 +119,12 @@ void StrToFont(String S, TFont * Font) {
 		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
 		Font->Charset = StrToInt(FirstHalf);
 		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
-		Font->Color = StrToInt(FirstHalf);
+		Font->Color = TColor(StrToInt(FirstHalf));
 		SplitStr(SecondHalf, COMMA, 0, FirstHalf, SecondHalf);
 		Font->Size = StrToInt(FirstHalf);
-//		intFontStyle = StrToInt(SecondHalf);
-////		Move(intFontStyle, FontStyle, 1);
-//		Font->Style = FontStyle;
+		// intFontStyle = StrToInt(SecondHalf);
+		////		Move(intFontStyle, FontStyle, 1);
+		// Font->Style = FontStyle;
 	}
 	catch (...) {
 		throw Exception("Строка '" + S + "' не является записью TFont");
@@ -132,14 +132,14 @@ void StrToFont(String S, TFont * Font) {
 }
 
 String FontToStr(TFont * Font) {
-// TODO
-//	Byte intFontStyle  = Font->Style.ToInt();
-//	TFontStyles FontStyle = Font->Style;
-//	Move(FontStyle, intFontStyle, 1);
+	// TODO
+	// Byte intFontStyle  = Font->Style.ToInt();
+	// TFontStyles FontStyle = Font->Style;
+	// Move(FontStyle, intFontStyle, 1);
 
 	return Font->Name + COMMA + IToS(Font->Charset) + COMMA + IToS(Font->Color)
 		+ COMMA + IToS(Font->Size);
-//		 + COMMA + IToS(intFontStyle);
+	// + COMMA + IToS(intFontStyle);
 }
 
 String FormatBytes(Extended Bytes, TStrings *ByteNames) {
