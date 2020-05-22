@@ -9,61 +9,15 @@
 using namespace P3tr0viCh;
 
 // ---------------------------------------------------------------------------
-void TWindowsVersion::Update() {
-	FProductName = "";
-	FReleaseId = "";
-	FCurrentVersion = "";
-	FCurrentBuild = "";
-	FUBR = "";
-	FCSDBuildNumber = "";
-	FCSDVersion = "";
-	F64Bit = false;
-
-	TRegistry * Registry = new TRegistry(KEY_READ | KEY_WOW64_64KEY);
-
-	try {
-		Registry->RootKey = HKEY_LOCAL_MACHINE;
-		if (Registry->OpenKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-			false)) {
-			FProductName = Registry->ReadString("ProductName");
-			FReleaseId = Registry->ReadString("ReleaseId");
-			FCurrentVersion = Registry->ReadString("CurrentVersion");
-			FCurrentBuild = Registry->ReadString("CurrentBuild");
-
-			try {
-				FUBR = IntToStr(Registry->ReadInteger("UBR"));
-			}
-			catch (...) {
-			}
-
-			FCSDBuildNumber = Registry->ReadString("CSDBuildNumber");
-			FCSDVersion = Registry->ReadString("CSDVersion");
-
-			Registry->CloseKey();
-		}
-	}
-	__finally {
-		delete Registry;
-	}
-
-	DWORD Size = MAX_PATH;
-	wchar_t Directory[MAX_PATH];
-
-	F64Bit = GetSystemWow64Directory(Directory, Size) > 0;
-}
-
-// ---------------------------------------------------------------------------
 __fastcall TSystemInfo::TSystemInfo() {
 	FComputerName = "";
 
 	FWindowsVersion = new TWindowsVersion();
 
 	FIPAddressList = new TStringList();
+	FAdapterInfoList = new TAdapterInfoList();
 
-	FSystemManufacturer = "";
-	FSystemProductName = "";
-	FBaseBoardManufacturer = "";
-	FBaseBoardProduct = "";
+	FSystemBoard = new TSystemBoard();
 
 	FProcessorName = "";
 	FProcessorSocket = "";
@@ -84,12 +38,14 @@ __fastcall TSystemInfo::~TSystemInfo() {
 	FMonitorList->Free();
 	FPhysicalDrives->Free();
 	FLogicalDrives->Free();
+	FSystemBoard->Free();
+	FAdapterInfoList->Free();
 	FIPAddressList->Free();
 	FWindowsVersion->Free();
 }
 
 // ------------------------------------------------------------------------
-String TSystemInfo::GetComputerName() {
+void TSystemInfo::GetComputerName() {
 	DWORD Size = 0;
 
 	wchar_t *CComputerName;
@@ -97,21 +53,63 @@ String TSystemInfo::GetComputerName() {
 	GetComputerNameEx(ComputerNameDnsFullyQualified, NULL, &Size);
 
 	if (GetLastError() != ERROR_MORE_DATA) {
-		return NULL;
+		return;
 	}
 
 	CComputerName = new wchar_t[Size];
 
 	if (!GetComputerNameEx(ComputerNameDnsFullyQualified, CComputerName, &Size))
 	{
-		return NULL;
+		return;
 	}
 
-	return String(CComputerName);
+	FComputerName = String(CComputerName);
 }
 
 // ---------------------------------------------------------------------------
-void TSystemInfo::GetIPAddress(TStringList *IPAddressList) {
+void TSystemInfo::GetWindowsVersion() {
+	FWindowsVersion->FProductName = "";
+	FWindowsVersion->FReleaseId = "";
+	FWindowsVersion->FCurrentVersion = "";
+	FWindowsVersion->FCurrentBuild = "";
+	FWindowsVersion->FUBR = "";
+	FWindowsVersion->FCSDBuildNumber = "";
+	FWindowsVersion->FCSDVersion = "";
+	FWindowsVersion->F64Bit = false;
+
+	if (Registry) {
+		Registry->RootKey = HKEY_LOCAL_MACHINE;
+		if (Registry->OpenKeyReadOnly
+			("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion")) {
+			FWindowsVersion->FProductName = Registry->ReadString("ProductName");
+			FWindowsVersion->FReleaseId = Registry->ReadString("ReleaseId");
+			FWindowsVersion->FCurrentVersion =
+				Registry->ReadString("CurrentVersion");
+			FWindowsVersion->FCurrentBuild =
+				Registry->ReadString("CurrentBuild");
+
+			try {
+				FWindowsVersion->FUBR = IntToStr(Registry->ReadInteger("UBR"));
+			}
+			catch (...) {
+			}
+
+			FWindowsVersion->FCSDBuildNumber =
+				Registry->ReadString("CSDBuildNumber");
+			FWindowsVersion->FCSDVersion = Registry->ReadString("CSDVersion");
+
+			Registry->CloseKey();
+		}
+	}
+
+	DWORD Size = MAX_PATH;
+	wchar_t Directory[MAX_PATH];
+
+	FWindowsVersion->F64Bit = GetSystemWow64Directory(Directory, Size) > 0;
+}
+
+// ---------------------------------------------------------------------------
+void TSystemInfo::GetIPAddress() {
 	IPAddressList->Clear();
 
 	WSADATA wsaData;
@@ -144,23 +142,131 @@ void TSystemInfo::GetIPAddress(TStringList *IPAddressList) {
 }
 
 // ---------------------------------------------------------------------------
-void TSystemInfo::GetSystemBoard(String &SystemManufacturer,
-	String &SystemProductName, String &BaseBoardManufacturer,
-	String &BaseBoardProduct) {
+void TSystemInfo::GetAdapterInfoList() {
+	AdapterInfoList->Clear();
 
-	SystemManufacturer = "";
-	SystemProductName = "";
-	BaseBoardManufacturer = "";
-	BaseBoardProduct = "";
+	PIP_ADAPTER_INFO pAdapterInfo;
+	PIP_ADAPTER_INFO pAdapter;
+
+	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+
+	try {
+		pAdapterInfo = (IP_ADAPTER_INFO*) malloc(sizeof(IP_ADAPTER_INFO));
+		if (pAdapterInfo == NULL) {
+			return;
+		}
+
+		if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)
+			== ERROR_BUFFER_OVERFLOW) {
+			free(pAdapterInfo);
+
+			pAdapterInfo = (IP_ADAPTER_INFO*) malloc(ulOutBufLen);
+
+			if (pAdapterInfo == NULL) {
+				return;
+			}
+		}
+
+		if ((GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+			pAdapter = pAdapterInfo;
+
+			TAdapterInfo * AdapterInfo;
+
+			while (pAdapter) {
+				if (AnsiContainsText(pAdapter->Description,
+					"Wi-Fi Direct Virtual Adapter")) {
+					pAdapter = pAdapter->Next;
+					continue;
+				}
+
+				AdapterInfo = new TAdapterInfo();
+
+				AdapterInfo->FGUID = pAdapter->AdapterName;
+				AdapterInfo->FName = pAdapter->AdapterName;
+				AdapterInfo->FDescription = pAdapter->Description;
+
+				String Address;
+				for (UINT i = 0; i < pAdapter->AddressLength - 1; i++) {
+					Address =
+						Address + Format("%0.2X",
+						ARRAYOFCONST((pAdapter->Address[i]))) + "-";
+				}
+				Address = Address + Format("%0.2X",
+					ARRAYOFCONST(
+					(pAdapter->Address[pAdapter->AddressLength - 1])));
+
+				AdapterInfo->FMACAddress = Address;
+
+				AdapterInfo->FType = pAdapter->Type;
+
+				AdapterInfo->FIPAddress =
+					pAdapter->IpAddressList.IpAddress.String;
+
+				AdapterInfoList->Add(AdapterInfo);
+
+				pAdapter = pAdapter->Next;
+			}
+		}
+	}
+	__finally {
+		if (pAdapterInfo) {
+			free(pAdapterInfo);
+		}
+	}
+
+	if (Registry) {
+		Registry->RootKey = HKEY_LOCAL_MACHINE;
+
+		String Name;
+		String S = "SYSTEM\\CurrentControlSet\\Control\\Network";
+
+		if (Registry->OpenKeyReadOnly(S)) {
+			TStringList * Keys = new TStringList();
+
+			Registry->GetKeyNames(Keys);
+
+			Registry->CloseKey();
+
+			for (int i = 0; i < AdapterInfoList->Count; i++) {
+				for (int k = 0; k < Keys->Count; k++) {
+					if (Registry->OpenKeyReadOnly(S + "\\" + Keys->Strings[k] +
+						"\\" + ((TAdapterInfo*) AdapterInfoList->Items[i])
+						->FGUID + "\\Connection")) {
+						Name = Registry->ReadString("Name");
+
+						if (Name != "") {
+							((TAdapterInfo*) AdapterInfoList->Items[i])
+								->FName = Name;
+						}
+
+						Registry->CloseKey();
+					}
+				}
+			}
+
+			Keys->Free();
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
+void TSystemInfo::GetSystemBoard() {
+	FSystemBoard->FSystemManufacturer = "";
+	FSystemBoard->FSystemProductName = "";
+	FSystemBoard->FBaseBoardManufacturer = "";
+	FSystemBoard->FBaseBoardProduct = "";
 
 	if (Registry) {
 		Registry->RootKey = HKEY_LOCAL_MACHINE;
 		if (Registry->OpenKeyReadOnly("HARDWARE\\DESCRIPTION\\System\\BIOS")) {
-			SystemManufacturer = Registry->ReadString("SystemManufacturer");
-			SystemProductName = Registry->ReadString("SystemProductName");
-			BaseBoardManufacturer =
+			FSystemBoard->FSystemManufacturer =
+				Registry->ReadString("SystemManufacturer");
+			FSystemBoard->FSystemProductName =
+				Registry->ReadString("SystemProductName");
+			FSystemBoard->FBaseBoardManufacturer =
 				Registry->ReadString("BaseBoardManufacturer");
-			BaseBoardProduct = Registry->ReadString("BaseBoardProduct");
+			FSystemBoard->FBaseBoardProduct =
+				Registry->ReadString("BaseBoardProduct");
 
 			Registry->CloseKey();
 		}
@@ -168,7 +274,7 @@ void TSystemInfo::GetSystemBoard(String &SystemManufacturer,
 }
 
 // ---------------------------------------------------------------------------
-String TSystemInfo::GetProcessorName() {
+void TSystemInfo::GetProcessorName() {
 	String S = "";
 
 	if (Registry) {
@@ -182,69 +288,50 @@ String TSystemInfo::GetProcessorName() {
 		}
 	}
 
-	return S;
+	FProcessorName = S;
 }
 
 // ---------------------------------------------------------------------------
-DWORDLONG TSystemInfo::GetPhysMemory() {
+void TSystemInfo::GetPhysMemory() {
 	TMemoryStatusEx MS;
 
 	MS.dwLength = sizeof(TMemoryStatusEx);
 	GlobalMemoryStatusEx(&MS);
 
-	return MS.ullTotalPhys;
+	FPhysMemory = MS.ullTotalPhys;
 }
 
 // ---------------------------------------------------------------------------
-String TSystemInfo::GetPrinterName() {
+void TSystemInfo::GetPrinterName() {
+	FPrinterName = NULL;
+
 	wchar_t Device[100], Driver[MAX_PATH], Port[MAX_PATH];
 
 	unsigned int DeviceMode;
 
 	if (Printer()->Printers->Count < 1) {
-		return NULL;
+		return;
 	}
 
 	try {
 		Printer()->GetPrinter(Device, Driver, Port, DeviceMode);
 	}
 	catch (...) {
-		return NULL;
+		return;
 	}
 
-	return Device;
+	FPrinterName = Device;
 }
 
 // ---------------------------------------------------------------------------
-__fastcall TLogicalDrive::TLogicalDrive(char ALetter, String ALabel,
-	unsigned __int64 AAvailable, unsigned __int64 ATotal,
-	unsigned __int64 AFree, int APhysicalDriveNum) {
-	FLetter = ALetter;
-	FLabel = ALabel;
+__fastcall TPhysicalDrive::TPhysicalDrive() {
+	FPath = NULL;
+	FVendor = NULL;
+	FProduct = NULL;
+	FProductRevision = NULL;
+	FSerialNumber = NULL;
 
-	FAvailable = AAvailable;
-	FTotal = ATotal;
-	FFree = AFree;
-
-	FPhysicalDriveNum = APhysicalDriveNum;
-}
-
-// ---------------------------------------------------------------------------
-__fastcall TPhysicalDrive::TPhysicalDrive(String APath, String AVendor,
-	String AProduct, String AProductRevision, String ASerialNumber, float ASize)
-{
-	FPath = APath;
-	FVendor = AVendor;
-	FProduct = AProduct;
-	FProductRevision = AProductRevision;
-	FSerialNumber = ASerialNumber;
-
-	FSize = ASize;
-}
-
-// ---------------------------------------------------------------------------
-__fastcall TPhysicalDrive::TPhysicalDrive(String APath, String AVendor) {
-	::TPhysicalDrive(APath, AVendor, NULL, NULL, NULL, -1);
+	FSize = -1;
 }
 
 // ---------------------------------------------------------------------------
@@ -315,168 +402,140 @@ int GetPhysicalDriveNumByLetter(char Letter) {
 }
 
 // ---------------------------------------------------------------------------
-void TSystemInfo::GetLogicalDrives(TLogicalDrives *LogicalDrives) {
+void TSystemInfo::GetLogicalDrives() {
 	LogicalDrives->Clear();
 
-	char Letter;
 	String Path;
-	String Label;
 
 	UINT DriveType;
 	int PhysicalDriveNum;
 
 	DWORD Drives = ::GetLogicalDrives();
 
-	unsigned __int64 Available;
-	unsigned __int64 Total;
-	unsigned __int64 Free;
-
 	for (int i = 2; i < 26; i++) {
 		if ((Drives >> i) & 1) {
-			Letter = AnsiString(char(65 + i))[1];
+			TLogicalDrive * LogicalDrive = new TLogicalDrive();
 
-			Path = String(Letter) + ":\\";
+			LogicalDrive->FLetter = AnsiString(char(65 + i))[1];
+
+			Path = String(LogicalDrive->FLetter) + ":\\";
 
 			DriveType = GetDriveType(Path.w_str());
 
 			if (DriveType == DRIVE_FIXED || DriveType == DRIVE_REMOVABLE) {
-				Label = GetVolumeLabel(Path);
+				LogicalDrive->FLabel = GetVolumeLabel(Path);
 
 				if (IsDriveReady(Path)) {
-					GetDiskSpace(Path, Available, Total, Free);
-				}
-				else {
-					Available = 0;
-					Total = 0;
-					Free = 0;
+					GetDiskSpace(Path, LogicalDrive->FAvailable,
+						LogicalDrive->FTotal, LogicalDrive->FFree);
 				}
 
-				PhysicalDriveNum = GetPhysicalDriveNumByLetter(Letter);
+				LogicalDrive->FPhysicalDriveNum =
+					GetPhysicalDriveNumByLetter(LogicalDrive->FLetter);
 
-				LogicalDrives->Add(new TLogicalDrive(Letter, Label, Available,
-					Total, Free, PhysicalDriveNum));
+				LogicalDrives->Add(LogicalDrive);
 			}
 		}
 	}
 }
 
 // ---------------------------------------------------------------------------
-TPhysicalDrive* GetPhysicalDriveInfo(int DriveNum) {
-	String DrivePath = Format("\\\\.\\PhysicalDrive%d",
-		ARRAYOFCONST((DriveNum)));
+void TSystemInfo::GetPhysicalDrives() {
+	PhysicalDrives->Clear();
 
-	HANDLE hDevice = CreateFile(DrivePath.c_str(), 0,
-		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+	int DriveNum = 0;
 
-	if (hDevice == NULL || hDevice == INVALID_HANDLE_VALUE) {
-		return NULL;
-	}
+	do {
+		String DrivePath = Format("\\\\.\\PhysicalDrive%d",
+			ARRAYOFCONST((DriveNum)));
 
-	STORAGE_PROPERTY_QUERY storagePropertyQuery;
-	ZeroMemory(&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY));
+		HANDLE hDevice = CreateFile(DrivePath.c_str(), 0,
+			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
-	storagePropertyQuery.PropertyId = StorageDeviceProperty;
-	storagePropertyQuery.QueryType = PropertyStandardQuery;
+		if (hDevice == NULL || hDevice == INVALID_HANDLE_VALUE) {
+			break;
+		}
 
-	TPhysicalDrive *PhysicalDrive;
+		STORAGE_PROPERTY_QUERY storagePropertyQuery;
+		ZeroMemory(&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY));
 
-	DWORD dwRet;
-	STORAGE_DESCRIPTOR_HEADER storageDescriptorHeader = {0};
-	DWORD dwBytesReturned = 0;
+		storagePropertyQuery.PropertyId = StorageDeviceProperty;
+		storagePropertyQuery.QueryType = PropertyStandardQuery;
 
-	if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
-		&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
-		&storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER),
-		&dwBytesReturned, NULL)) {
-		dwRet = GetLastError();
+		STORAGE_DESCRIPTOR_HEADER storageDescriptorHeader = {0};
+		DWORD dwBytesReturned = 0;
 
-		CloseHandle(hDevice);
+		if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
+			&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY),
+			&storageDescriptorHeader, sizeof(STORAGE_DESCRIPTOR_HEADER),
+			&dwBytesReturned, NULL)) {
+			CloseHandle(hDevice);
 
-		return new TPhysicalDrive(DrivePath,
-			"Exception: " + IntToStr((int)dwRet), NULL, NULL, NULL, 0);
-	}
+			continue;
+		}
 
-	const DWORD dwOutBufferSize = storageDescriptorHeader.Size;
-	BYTE* pOutBuffer = new BYTE[dwOutBufferSize];
-	ZeroMemory(pOutBuffer, dwOutBufferSize);
+		const DWORD dwOutBufferSize = storageDescriptorHeader.Size;
+		BYTE * pOutBuffer = new BYTE[dwOutBufferSize];
+		ZeroMemory(pOutBuffer, dwOutBufferSize);
 
-	if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
-		&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY), pOutBuffer,
-		dwOutBufferSize, &dwBytesReturned, NULL)) {
-		dwRet = GetLastError();
+		if (!DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY,
+			&storagePropertyQuery, sizeof(STORAGE_PROPERTY_QUERY), pOutBuffer,
+			dwOutBufferSize, &dwBytesReturned, NULL)) {
+			delete[]pOutBuffer;
+
+			CloseHandle(hDevice);
+
+			continue;
+		}
+
+		DISK_GEOMETRY geometry;
+
+		if (!DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0,
+			&geometry, sizeof(geometry), &dwBytesReturned, NULL)) {
+			delete[]pOutBuffer;
+
+			CloseHandle(hDevice);
+
+			continue;
+		}
 
 		delete[]pOutBuffer;
 
 		CloseHandle(hDevice);
 
-		return new TPhysicalDrive(DrivePath,
-			"Exception: " + IntToStr((int)dwRet));
+		STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor =
+			(STORAGE_DEVICE_DESCRIPTOR*)pOutBuffer;
+
+		TPhysicalDrive * PhysicalDrive = new TPhysicalDrive();
+
+		PhysicalDrive->FPath = DrivePath;
+
+		PhysicalDrive->FVendor = (pDeviceDescriptor->VendorIdOffset != 0 ?
+			String((char*)((char*)pDeviceDescriptor +
+			pDeviceDescriptor->VendorIdOffset)) : String(""));
+		PhysicalDrive->FProduct = pDeviceDescriptor->ProductIdOffset != 0 ?
+			String((char*)((char*)pDeviceDescriptor +
+			pDeviceDescriptor->ProductIdOffset)) : String("");
+		PhysicalDrive->FProductRevision =
+			pDeviceDescriptor->ProductRevisionOffset != 0 ?
+			String((char*)((char*)pDeviceDescriptor +
+			pDeviceDescriptor->ProductRevisionOffset)) : String("");
+		PhysicalDrive->FSerialNumber =
+			pDeviceDescriptor->SerialNumberOffset != 0 ?
+			Trim(String((char*)((char*)pDeviceDescriptor +
+			pDeviceDescriptor->SerialNumberOffset))) : String("");
+
+		PhysicalDrive->FSize =
+			(double)geometry.BytesPerSector * geometry.Cylinders.QuadPart *
+			geometry.SectorsPerTrack * geometry.TracksPerCylinder;
+
+		PhysicalDrives->Add(PhysicalDrive);
 	}
-
-	DISK_GEOMETRY geometry;
-
-	if (!DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0,
-		&geometry, sizeof(geometry), &dwBytesReturned, NULL)) {
-		dwRet = GetLastError();
-
-		CloseHandle(hDevice);
-
-		return new TPhysicalDrive(DrivePath,
-			"Exception: " + IntToStr((int)dwRet));
-	}
-
-	CloseHandle(hDevice);
-
-	STORAGE_DEVICE_DESCRIPTOR* pDeviceDescriptor =
-		(STORAGE_DEVICE_DESCRIPTOR*)pOutBuffer;
-
-	String Vendor = (pDeviceDescriptor->VendorIdOffset != 0 ?
-		String((char*)((char*)pDeviceDescriptor +
-		pDeviceDescriptor->VendorIdOffset)) : String(""));
-	String Product = pDeviceDescriptor->ProductIdOffset != 0 ?
-		String((char*)((char*)pDeviceDescriptor +
-		pDeviceDescriptor->ProductIdOffset)) : String("");
-	String ProductRevision = pDeviceDescriptor->ProductRevisionOffset != 0 ?
-		String((char*)((char*)pDeviceDescriptor +
-		pDeviceDescriptor->ProductRevisionOffset)) : String("");
-	String SerialNumber = pDeviceDescriptor->SerialNumberOffset != 0 ?
-		Trim(String((char*)((char*)pDeviceDescriptor +
-		pDeviceDescriptor->SerialNumberOffset))) : String("");
-
-	delete[]pOutBuffer;
-
-	double Size =
-		(double)geometry.BytesPerSector * geometry.Cylinders.QuadPart *
-		geometry.SectorsPerTrack * geometry.TracksPerCylinder;
-
-	PhysicalDrive = new TPhysicalDrive(DrivePath, Vendor, Product,
-		ProductRevision, SerialNumber, Size);
-
-	return PhysicalDrive;
+	while (++DriveNum) /* exit by break */ ;
 }
 
 // ---------------------------------------------------------------------------
-void TSystemInfo::GetPhysicalDrives(TPhysicalDrives * PhysicalDrives) {
-	PhysicalDrives->Clear();
-
-	int DriveNum = 0;
-
-	TPhysicalDrive * PhysicalDrive;
-
-	do {
-		PhysicalDrive = GetPhysicalDriveInfo(DriveNum);
-
-		if (PhysicalDrive != NULL) {
-			PhysicalDrives->Add(PhysicalDrive);
-		}
-
-		DriveNum++;
-	}
-	while (PhysicalDrive != NULL);
-}
-
-// ---------------------------------------------------------------------------
-void TSystemInfo::GetMonitors(TStringList * MonitorList) {
+void TSystemInfo::GetMonitors() {
 	MonitorList->Clear();
 
 	DISPLAY_DEVICE DD;
@@ -577,7 +636,7 @@ const char* LocateStringA(const char* str, UINT i) {
 	if (0 == i || 0 == *str)
 		return strNull;
 
-	while (--i) {  // i-- ошибка
+	while (--i) { // i-- ошибка
 		str += strlen((char*)str) + 1;
 	}
 
@@ -617,8 +676,10 @@ unsigned int ProcMemoryDevice(void* p) {
 }
 
 // ---------------------------------------------------------------------------
-void TSystemInfo::GetSMBIOS(String &ProcessorSocket,
-	unsigned int &PhysMemoryType, int &PhysMemoryCount) {
+void TSystemInfo::GetSMBIOS() {
+	FProcessorSocket = "";
+	FPhysMemoryType = 0;
+	FPhysMemoryCount = 0;
 
 	if (Win32MajorVersion < 6) {
 		return;
@@ -648,13 +709,13 @@ void TSystemInfo::GetSMBIOS(String &ProcessorSocket,
 
 				switch (pHeader->Type) {
 				case 4:
-					ProcessorSocket = ProcProcessorInfo((void*)pHeader);
+					FProcessorSocket = ProcProcessorInfo((void*)pHeader);
 					break;
 				case 17:
 					MemoryType = ProcMemoryDevice((void*)pHeader);
 					if (MemoryType > 0) {
-						PhysMemoryType = MemoryType;
-						PhysMemoryCount++;
+						FPhysMemoryType = MemoryType;
+						FPhysMemoryCount++;
 					}
 
 					break;
@@ -688,28 +749,28 @@ void TSystemInfo::Update() {
 
 	try {
 		try {
-			FComputerName = GetComputerName();
+			GetComputerName();
 
-			GetIPAddress(FIPAddressList);
+			GetWindowsVersion();
 
-			FWindowsVersion->Update();
+			GetIPAddress();
+			GetAdapterInfoList();
 
-			GetSystemBoard(FSystemManufacturer, FSystemProductName,
-				FBaseBoardManufacturer, FBaseBoardProduct);
+			GetSystemBoard();
 
-			FProcessorName = GetProcessorName();
+			GetProcessorName();
 
-			FPhysMemory = GetPhysMemory();
+			GetPhysMemory();
 
-			GetSMBIOS(FProcessorSocket, FPhysMemoryType, FPhysMemoryCount);
+			GetSMBIOS();
 
-			FPrinterName = GetPrinterName();
+			GetPrinterName();
 
-			GetLogicalDrives(FLogicalDrives);
+			GetLogicalDrives();
 
-			GetPhysicalDrives(FPhysicalDrives);
+			GetPhysicalDrives();
 
-			GetMonitors(FMonitorList);
+			GetMonitors();
 		}
 		catch (Exception * E) {
 			FComputerName = "Unknown Error: " + E->Message;
@@ -792,5 +853,25 @@ String P3tr0viCh::FormatMemoryType(unsigned int Type) {
 		return "LPDDR4";
 	default:
 		return Type;
+	}
+}
+
+// ---------------------------------------------------------------------------
+String P3tr0viCh::FormatAdapterType(unsigned int Type) {
+	switch (Type) {
+	case MIB_IF_TYPE_ETHERNET:
+		return "Ethernet";
+	case IF_TYPE_ISO88025_TOKENRING:
+		return "MIB_IF_TYPE_TOKENRING";
+	case MIB_IF_TYPE_PPP:
+		return "PPP network";
+	case MIB_IF_TYPE_LOOPBACK:
+		return "A software loopback network interface";
+	case MIB_IF_TYPE_SLIP:
+		return "An ATM network interface";
+	case IF_TYPE_IEEE80211:
+		return "WiFi";
+	default:
+		return "Type " + IntToStr((int) Type);
 	}
 }

@@ -11,10 +11,17 @@
 
 #include "Registry.hpp"
 
+#pragma comment(lib,"iphlpapi.lib")
+#include <iphlpapi.h>
+
 namespace P3tr0viCh {
+
+	class TSystemInfo;
 
 	// ---------------------------------------------------------------------------
 	class PACKAGE TWindowsVersion : public TObject {
+		friend class TSystemInfo;
+
 	private:
 		String FProductName;
 		String FReleaseId;
@@ -24,9 +31,6 @@ namespace P3tr0viCh {
 		String FCSDBuildNumber;
 		String FCSDVersion;
 		bool F64Bit;
-
-	public:
-		void Update();
 
 	__published:
 		__property String ProductName = {read = FProductName};
@@ -40,7 +44,48 @@ namespace P3tr0viCh {
 	};
 
 	// ---------------------------------------------------------------------------
+	class PACKAGE TAdapterInfo : public TObject {
+		friend class TSystemInfo;
+
+	private:
+		String FName;
+		String FGUID;
+		String FDescription;
+		String FMACAddress;
+		String FIPAddress;
+		unsigned int FType;
+
+	__published:
+		__property String Name = {read = FName};
+		__property String GUID = {read = FGUID};
+		__property String Description = {read = FDescription};
+		__property String MACAddress = {read = FMACAddress};
+		__property String IPAddress = {read = FIPAddress};
+		__property unsigned int Type = {read = FType};
+	};
+
+	// ---------------------------------------------------------------------------
+	class PACKAGE TSystemBoard : public TObject {
+		friend class TSystemInfo;
+
+	private:
+		String FBaseBoardManufacturer;
+		String FBaseBoardProduct;
+		String FSystemManufacturer;
+		String FSystemProductName;
+
+	__published:
+		__property String BaseBoardManufacturer = {read = FBaseBoardManufacturer
+		};
+		__property String BaseBoardProduct = {read = FBaseBoardProduct};
+		__property String SystemManufacturer = {read = FSystemManufacturer};
+		__property String SystemProductName = {read = FSystemProductName};
+	};
+
+	// ---------------------------------------------------------------------------
 	class PACKAGE TLogicalDrive : public TObject {
+		friend class TSystemInfo;
+
 	private:
 		char FLetter;
 		String FLabel;
@@ -50,11 +95,6 @@ namespace P3tr0viCh {
 		unsigned __int64 FFree;
 
 		int FPhysicalDriveNum;
-
-	public:
-		__fastcall TLogicalDrive(char ALetter, String ALabel,
-			unsigned __int64 AAvailable, unsigned __int64 ATotal,
-			unsigned __int64 AFree, int APhysicalDriveNum);
 
 	__published:
 		__property char Letter = {read = FLetter};
@@ -69,6 +109,8 @@ namespace P3tr0viCh {
 
 	// ---------------------------------------------------------------------------
 	class PACKAGE TPhysicalDrive : public TObject {
+		friend class TSystemInfo;
+
 	private:
 		String FPath;
 
@@ -80,9 +122,7 @@ namespace P3tr0viCh {
 		float FSize;
 
 	public:
-		__fastcall TPhysicalDrive(String APath, String AVendor, String AProduct,
-			String AProductRevision, String ASerialNumber, float ASize);
-		__fastcall TPhysicalDrive(String APath, String AVendor);
+		__fastcall TPhysicalDrive();
 
 	__published:
 		__property String Path = {read = FPath};
@@ -104,6 +144,10 @@ namespace P3tr0viCh {
 	};
 
 	// ---------------------------------------------------------------------------
+	class PACKAGE TAdapterInfoList : public TObjectList {
+	};
+
+	// ---------------------------------------------------------------------------
 	class PACKAGE TSystemInfo : public TObject {
 	private:
 		TRegistry * Registry;
@@ -113,16 +157,14 @@ namespace P3tr0viCh {
 		TWindowsVersion * FWindowsVersion;
 
 		TStringList * FIPAddressList;
+		TAdapterInfoList * FAdapterInfoList;
 
-		String FBaseBoardManufacturer;
-		String FBaseBoardProduct;
-		String FSystemManufacturer;
-		String FSystemProductName;
+		TSystemBoard * FSystemBoard;
 
 		String FProcessorName;
 		String FProcessorSocket;
 
-		DWORDLONG FPhysMemory;
+		unsigned __int64 FPhysMemory;
 		unsigned int FPhysMemoryType;
 		int FPhysMemoryCount;
 
@@ -134,28 +176,28 @@ namespace P3tr0viCh {
 
 		TStringList * FMonitorList;
 
-		String GetComputerName();
+		void GetComputerName();
 
-		void GetIPAddress(TStringList * IPAddressList);
+		void GetWindowsVersion();
 
-		void GetSystemBoard(String &SystemManufacturer,
-			String &SystemProductName, String &BaseBoardManufacturer,
-			String &BaseBoardProduct);
+		void GetIPAddress();
+		void GetAdapterInfoList();
 
-		String GetProcessorName();
+		void GetSystemBoard();
 
-		DWORDLONG GetPhysMemory();
+		void GetProcessorName();
 
-		String GetPrinterName();
+		void GetPhysMemory();
 
-		void GetLogicalDrives(TLogicalDrives * LogicalDrives);
+		void GetPrinterName();
 
-		void GetPhysicalDrives(TPhysicalDrives * PhysicalDrives);
+		void GetLogicalDrives();
 
-		void GetMonitors(TStringList * MonitorList);
+		void GetPhysicalDrives();
 
-		void GetSMBIOS(String &ProcessorSocket, unsigned int &PhysMemoryType,
-			int &PhysMemoryCount);
+		void GetMonitors();
+
+		void GetSMBIOS();
 
 	public:
 		__fastcall TSystemInfo();
@@ -169,17 +211,15 @@ namespace P3tr0viCh {
 		__property TWindowsVersion * WindowsVersion = {read = FWindowsVersion};
 
 		__property TStringList * IPAddressList = {read = FIPAddressList};
-
-		__property String BaseBoardManufacturer = {read = FBaseBoardManufacturer
+		__property TAdapterInfoList * AdapterInfoList = {read = FAdapterInfoList
 		};
-		__property String BaseBoardProduct = {read = FBaseBoardProduct};
-		__property String SystemManufacturer = {read = FSystemManufacturer};
-		__property String SystemProductName = {read = FSystemProductName};
+
+		__property TSystemBoard * SystemBoard = {read = FSystemBoard};
 
 		__property String ProcessorName = {read = FProcessorName};
 		__property String ProcessorSocket = {read = FProcessorSocket};
 
-		__property DWORDLONG PhysMemory = {read = FPhysMemory};
+		__property unsigned __int64 PhysMemory = {read = FPhysMemory};
 		__property unsigned int PhysMemoryType = {read = FPhysMemoryType};
 		__property int PhysMemoryCount = {read = FPhysMemoryCount};
 
@@ -195,6 +235,7 @@ namespace P3tr0viCh {
 	// ---------------------------------------------------------------------------
 	String FormatProcessorSocket(String Socket);
 	String FormatMemoryType(unsigned int Type);
+	String FormatAdapterType(unsigned int Type);
 }
 
 #endif

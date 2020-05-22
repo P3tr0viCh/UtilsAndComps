@@ -260,9 +260,21 @@ String ConcatStrings(const String S1, const String S2, const String Separator) {
 }
 
 String RemoveLineBreaks(const String S) {
-	return StringReplace(StringReplace(S, "\r\n", " ",
-		TReplaceFlags() << rfReplaceAll), "\n", " ",
+	return StringReplace(StringReplace(S, "\r\n", SPACE,
+		TReplaceFlags() << rfReplaceAll), "\n", SPACE,
 		TReplaceFlags() << rfReplaceAll);
+}
+
+String RemoveExtraSpaces(const String S) {
+	String Result = S;
+
+	for (int i = Result.Length(); i >= 2; i--) {
+		if (Result[i] == SPACE && Result[i - 1] == SPACE) {
+			Result.Delete(i, 1);
+		}
+	}
+
+    return Result;
 }
 
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High)

@@ -32,6 +32,7 @@ String FormatHerzs(SIZE_T Herzs);
 bool IsEmpty(const String S);
 String ConcatStrings(const String S1, const String S2, const String Separator);
 String RemoveLineBreaks(const String S);
+String RemoveExtraSpaces(const String S);
 
 String Format(const NativeUInt Ident, TVarRec const * Args,
 	const int Args_High);
