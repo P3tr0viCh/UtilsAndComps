@@ -745,7 +745,7 @@ void TSystemInfo::GetSMBIOS() {
 
 // ---------------------------------------------------------------------------
 void TSystemInfo::Update() {
-	Registry = new TRegistry();
+	Registry = new TRegistry(KEY_READ | KEY_WOW64_64KEY);
 
 	try {
 		try {
