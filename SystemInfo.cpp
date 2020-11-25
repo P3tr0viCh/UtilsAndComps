@@ -109,6 +109,12 @@ void TSystemInfo::GetWindowsVersion() {
 }
 
 // ---------------------------------------------------------------------------
+void TSystemInfo::GetWindowsUptime() {
+	FWindowsUptime = GetTickCount64();
+	FWindowsBootDateTime = IncMilliSecond(Now(), -FWindowsUptime);
+}
+
+// ---------------------------------------------------------------------------
 void TSystemInfo::GetIPAddress() {
 	IPAddressList->Clear();
 
@@ -752,6 +758,8 @@ void TSystemInfo::Update() {
 			GetComputerName();
 
 			GetWindowsVersion();
+
+			GetWindowsUptime();
 
 			GetIPAddress();
 			GetAdapterInfoList();

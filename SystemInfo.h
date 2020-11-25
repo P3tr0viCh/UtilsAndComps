@@ -6,6 +6,7 @@
 #include <System.SysUtils.hpp>
 #include <System.StrUtils.hpp>
 #include <System.Classes.hpp>
+#include <System.DateUtils.hpp>
 
 #include <Vcl.Printers.hpp>
 
@@ -156,6 +157,9 @@ namespace P3tr0viCh {
 
 		TWindowsVersion * FWindowsVersion;
 
+		unsigned __int64 FWindowsUptime;
+		TDateTime FWindowsBootDateTime;
+
 		TStringList * FIPAddressList;
 		TAdapterInfoList * FAdapterInfoList;
 
@@ -179,6 +183,8 @@ namespace P3tr0viCh {
 		void GetComputerName();
 
 		void GetWindowsVersion();
+
+		void GetWindowsUptime();
 
 		void GetIPAddress();
 		void GetAdapterInfoList();
@@ -209,6 +215,10 @@ namespace P3tr0viCh {
 		__property String ComputerName = {read = FComputerName};
 
 		__property TWindowsVersion * WindowsVersion = {read = FWindowsVersion};
+
+		__property unsigned __int64 WindowsUptime = {read = FWindowsUptime};
+		__property TDateTime WindowsBootDateTime = {read = FWindowsBootDateTime
+		};
 
 		__property TStringList * IPAddressList = {read = FIPAddressList};
 		__property TAdapterInfoList * AdapterInfoList = {read = FAdapterInfoList
