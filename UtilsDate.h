@@ -7,8 +7,12 @@
 #include <System.Classes.hpp>
 
 // ---------------------------------------------------------------------------
-TSystemTime ExtractHMSFromMS(DWORD MilliSeconds);
-String MyFormatTime(TSystemTime SystemTime, bool WithMSec = false);
+void DecodeMilliseconds(ULONGLONG Value, DWORD &Day, BYTE &Hour, BYTE &Minute,
+	BYTE &Second, WORD &Milliseconds);
+String DHMSMSToString(DWORD Day, BYTE Hour, BYTE Minute, BYTE Second,
+	WORD Milliseconds, bool ShowMilliseconds = true);
+String MillisecondsToDateTimeString(ULONGLONG Value,
+	bool ShowMilliseconds = true);
 
 String FormatDate(String Format, TSystemTime SystemTime);
 String FormatTime(String Format, TSystemTime SystemTime);

@@ -9,41 +9,49 @@
 #include "UtilsStr.h"
 
 // ---------------------------------------------------------------------------
-TSystemTime ExtractHMSFromMS(DWORD MilliSeconds) {
-	const MSInSec = 1000;
-	const MSInMin = 60 * MSInSec;
-	const MSInHour = 60 * MSInMin;
-	const MSInDay = 24 * MSInHour;
+void DecodeMilliseconds(ULONGLONG Value, DWORD &Day, BYTE &Hour, BYTE &Minute,
+	BYTE &Second, WORD &Milliseconds) {
+	const ULONGLONG MSInSec = 1000;
+	const ULONGLONG MSInMin = 60 * MSInSec;
+	const ULONGLONG MSInHour = 60 * MSInMin;
+	const ULONGLONG MSInDay = 24 * MSInHour;
 
-	DWORD MS = MilliSeconds;
-	TSystemTime Result;
+	Day = Value / MSInDay;
+	Value = Value - (Day * MSInDay);
+	Hour = Value / MSInHour;
+	Value = Value - (Hour * MSInHour);
+	Minute = Value / MSInMin;
+	Value = Value - (Minute * MSInMin);
+	Second = Value / MSInSec;
+	Milliseconds = Value - (Second * MSInSec);
+}
 
-	Result.wDay = MS / MSInDay;
-	MS = MS - (Result.wDay * MSInDay);
-	Result.wHour = MS / MSInHour;
-	MS = MS - (Result.wHour * MSInHour);
-	Result.wMinute = MS / MSInMin;
-	MS = MS - (Result.wMinute * MSInMin);
-	Result.wSecond = MS / MSInSec;
-	Result.wMilliseconds = MS - (Result.wSecond * MSInSec);
+// ---------------------------------------------------------------------------
+String DHMSMSToString(DWORD Day, BYTE Hour, BYTE Minute, BYTE Second,
+	WORD Milliseconds, bool ShowMilliseconds) {
+	String Result = "";
+
+	if (Day != 0) {
+		Result = IToS_0(Day) + "d ";
+	}
+	Result = Result + IToS_0(Hour) + ":" + IToS_0(Minute) + ":" +
+		IToS_0(Second);
+	if (ShowMilliseconds) {
+		Result = Result + "." + IToS_0(Milliseconds, 3);
+	}
 
 	return Result;
 }
 
 // ---------------------------------------------------------------------------
-String MyFormatTime(TSystemTime SystemTime, bool WithMSec) {
-	String Result = "";
+String MillisecondsToDateTimeString(ULONGLONG Value, bool ShowMilliseconds) {
+	DWORD Day;
+	BYTE Hour, Minute, Second;
+	WORD Milliseconds;
 
-	if (SystemTime.wDay != 0) {
-		Result = IToS_0(SystemTime.wDay) + "d ";
-	}
-	Result = Result + IToS_0(SystemTime.wHour) + ":" +
-		IToS_0(SystemTime.wMinute) + ":" + IToS_0(SystemTime.wSecond);
-	if (WithMSec) {
-		Result = Result + "." + IToS_0(SystemTime.wMilliseconds, 3);
-	}
-
-	return Result;
+	DecodeMilliseconds(Value, Day, Hour, Minute, Second, Milliseconds);
+	return DHMSMSToString(Day, Hour, Minute, Second, Milliseconds,
+		ShowMilliseconds);
 }
 
 // ---------------------------------------------------------------------------

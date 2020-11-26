@@ -281,14 +281,14 @@ double Round(double Number) {
 }
 
 // ---------------------------------------------------------------------------
-DWORD StartTimer() {
-	return GetTickCount();
+ULONGLONG StartTimer() {
+	return GetTickCount64();
 }
 
 // ---------------------------------------------------------------------------
-String StopTimer(DWORD FirstTick, bool FormatMSec) {
-	DWORD ElapsedTime = GetTickCount() - FirstTick;
-	return FormatMSec ? MyFormatTime(ExtractHMSFromMS(ElapsedTime), true) :
+String StopTimer(ULONGLONG FirstTick, bool FormatMSec) {
+	ULONGLONG ElapsedTime = GetTickCount64() - FirstTick;
+	return FormatMSec ? MillisecondsToDateTimeString(ElapsedTime) :
 		FormatFloat("0,# msec.", ElapsedTime);
 }
 

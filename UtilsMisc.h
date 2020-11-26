@@ -54,8 +54,8 @@ void ShowErrorBox(DWORD Error = 0, String AddStr = NULL, HWND hHWND = NULL);
 double Round(double Number);
 
 // ---------------------------------------------------------------------------
-DWORD StartTimer();
-String StopTimer(DWORD FirstTick, bool FormatMSec = true);
+ULONGLONG StartTimer();
+String StopTimer(ULONGLONG FirstTick, bool FormatMSec = true);
 
 // ---------------------------------------------------------------------------
 bool IsWinNT();

@@ -274,7 +274,7 @@ String RemoveExtraSpaces(const String S) {
 		}
 	}
 
-    return Result;
+	return Result;
 }
 
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High)
@@ -294,10 +294,12 @@ String Format(const NativeUInt Ident, const int I) {
 	return Format(Ident, ARRAYOFCONST((I)));
 }
 
+// ---------------------------------------------------------------------------
 String IToS(int Value) {
 	return IntToStr(Value);
 }
 
+// ---------------------------------------------------------------------------
 String IToS_0(int Value, int MinLength) {
 	String Result = IToS(Value);
 	while (Result.Length() < MinLength)
