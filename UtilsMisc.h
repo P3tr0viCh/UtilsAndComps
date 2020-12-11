@@ -19,11 +19,13 @@ bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo = true,
 
 // ---------------------------------------------------------------------------
 void ProcMess();
+bool CheckExit();
 
 // ---------------------------------------------------------------------------
 void ShowWaitCursor();
 void RestoreCursor();
-void SetCurPosToCenter(TControl *Control);
+void SetCurPosToCenter(TControl * Control);
+void TrayIconLoadFromResourceName(TTrayIcon * TrayIcon, String ResName);
 
 // ---------------------------------------------------------------------------
 bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,

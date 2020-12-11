@@ -6,8 +6,10 @@
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+// add to Library path "..\CryptoPP"
 #pragma link "CryptoPP.lib"
 
+// add to Include path "..\CryptoPP\cryptopp700"
 #include "default.h"
 #include "hex.h"
 #include "aes.h"

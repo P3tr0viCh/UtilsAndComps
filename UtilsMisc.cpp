@@ -77,6 +77,11 @@ void ProcMess() {
 }
 
 // ---------------------------------------------------------------------------
+bool CheckExit() {
+	return Application->Terminated;
+}
+
+// ---------------------------------------------------------------------------
 void ShowWaitCursor() {
 	Screen->Cursor = crHourGlass;
 	ProcMess();
@@ -100,6 +105,14 @@ void SetCurPosToCenter(TControl *Control) {
 	}
 
 	SetCursorPos(EndPoint.x, EndPoint.y);
+}
+
+// ---------------------------------------------------------------------------
+void TrayIconLoadFromResourceName(TTrayIcon * TrayIcon, String ResName) {
+	TIcon * TempIcon = new TIcon();
+	TempIcon->LoadFromResourceName((int)HInstance, ResName);
+	TrayIcon->Icon = TempIcon;
+	TempIcon->Free();
 }
 
 // ---------------------------------------------------------------------------
