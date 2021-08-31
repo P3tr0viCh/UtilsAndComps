@@ -14,6 +14,7 @@ HINSTANCE ShellExecEx(const String FileName, const String Params);
 String FileInAppDir(String FileName);
 String FileWithoutExt(String FileName);
 String OnlyFileName(String FileName);
+String SlashSep(String Path, String S);
 
 String GetSpecialFolderPath(int Csidl);
 // ---------------------------------------------------------------------------

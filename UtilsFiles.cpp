@@ -155,6 +155,10 @@ String OnlyFileName(String FileName) {
 	return FileWithoutExt(ExtractFileName(FileName));
 }
 
+String SlashSep(String Path, String S) {
+	return IncludeTrailingPathDelimiter(Path) + S;
+}
+
 String GetSpecialFolderPath(int Csidl) {
 	TCHAR pszPath[MAX_PATH];
 
