@@ -33,6 +33,7 @@ bool GetFileVerInfo(String FileName, TVSFixedFileInfo &FileVersionInfo,
 	String &InternalName, String &LegalCopyright, String &OriginalFilename,
 	String &ProductName, String &ProductVersion);
 String GetFileVer(String FileName, bool SmallFormat = true);
+String GetFileVer();
 String SmallFileVersion(String FileVersion);
 String GetFileVerDate();
 

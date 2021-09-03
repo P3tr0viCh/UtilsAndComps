@@ -226,11 +226,16 @@ String GetFileVer(String FileName, bool SmallFormat) {
 			Result = SmallFileVersion(Result);
 		}
 		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
-			Result = Result + " (Debug build)";
+			Result = Result + " (debug build)";
 		}
 	}
 
 	return Result;
+}
+
+// ---------------------------------------------------------------------------
+String GetFileVer() {
+	return GetFileVer(Application->ExeName);
 }
 
 // ---------------------------------------------------------------------------
