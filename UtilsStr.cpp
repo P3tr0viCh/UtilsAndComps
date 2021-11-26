@@ -31,6 +31,7 @@ int PosPlace(String Substr, String S, int Place) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 void SplitStr(String S, const String SplitString, const int SplitPlace,
 	String &FirstHalf, String &SecondHalf) {
 	int P;
@@ -49,6 +50,7 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 	}
 }
 
+// ---------------------------------------------------------------------------
 TRect StrToRect(String S) {
 	String FirstHalf, SecondHalf;
 
@@ -74,11 +76,13 @@ TRect StrToRect(String S) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String RectToStr(TRect R) {
 	return IntToStr((int) R.Left) + COMMA + IntToStr((int) R.Top) + COMMA +
 		IntToStr((int) R.Right) + COMMA + IntToStr((int) R.Bottom);
 }
 
+// ---------------------------------------------------------------------------
 TPoint StrToPoint(String S) {
 	String FirstHalf, SecondHalf;
 
@@ -100,10 +104,12 @@ TPoint StrToPoint(String S) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String PointToStr(TPoint P) {
 	return IToS(P.x) + COMMA + IToS(P.y);
 }
 
+// ---------------------------------------------------------------------------
 void StrToFont(String S, TFont * Font) {
 	// Byte intFontStyle;
 	// TFontStyles FontStyle;
@@ -131,6 +137,7 @@ void StrToFont(String S, TFont * Font) {
 	}
 }
 
+// ---------------------------------------------------------------------------
 String FontToStr(TFont * Font) {
 	// TODO
 	// Byte intFontStyle  = Font->Style.ToInt();
@@ -142,6 +149,7 @@ String FontToStr(TFont * Font) {
 	// + COMMA + IToS(intFontStyle);
 }
 
+// ---------------------------------------------------------------------------
 String FormatBytes(Extended Bytes, TStrings *ByteNames) {
 	const Kb = 1024, Mb = 1048576;
 	const __int64 Gb = 1073741824LL;
@@ -195,6 +203,7 @@ String FormatBytes(Extended Bytes, TStrings *ByteNames) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String FormatHerzs(SIZE_T Herzs) {
 	const kHz = 1000, MHz = 1000000;
 	const __int64 GHz = 1000000000LL;
@@ -244,10 +253,12 @@ String FormatHerzs(SIZE_T Herzs) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 bool IsEmpty(const String S) {
 	return S == NULL || S.IsEmpty();
 }
 
+// ---------------------------------------------------------------------------
 String ConcatStrings(const String S1, const String S2, const String Separator) {
 	if (IsEmpty(S1) && IsEmpty(S2))
 		return "";
@@ -259,12 +270,14 @@ String ConcatStrings(const String S1, const String S2, const String Separator) {
 		return S1 + Separator + S2;
 }
 
+// ---------------------------------------------------------------------------
 String RemoveLineBreaks(const String S) {
 	return StringReplace(StringReplace(S, "\r\n", SPACE,
 		TReplaceFlags() << rfReplaceAll), "\n", SPACE,
 		TReplaceFlags() << rfReplaceAll);
 }
 
+// ---------------------------------------------------------------------------
 String RemoveExtraSpaces(const String S) {
 	String Result = S;
 
@@ -277,19 +290,23 @@ String RemoveExtraSpaces(const String S) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String Format(const NativeUInt Ident, TVarRec const *Args, const int Args_High)
 {
 	return Format(LoadStr(Ident), Args, Args_High);
 }
 
+// ---------------------------------------------------------------------------
 String Format(const String F, const String S) {
 	return Format(F, ARRAYOFCONST((S)));
 }
 
+// ---------------------------------------------------------------------------
 String Format(const NativeUInt Ident, const String S) {
 	return Format(LoadStr(Ident), S);
 }
 
+// ---------------------------------------------------------------------------
 String Format(const NativeUInt Ident, const int I) {
 	return Format(Ident, ARRAYOFCONST((I)));
 }
@@ -307,6 +324,7 @@ String IToS_0(int Value, int MinLength) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 String WinShortCutToText(TShortCut ShortCut, bool HasWinKey) {
 	String Result = ShortCutToText(ShortCut);
 	if ((!IsEmpty(Result) && HasWinKey)) {
@@ -315,6 +333,7 @@ String WinShortCutToText(TShortCut ShortCut, bool HasWinKey) {
 	return Result;
 }
 
+// ---------------------------------------------------------------------------
 TShortCut TextToWinShortCut(String Text, bool &HasWinKey) {
 	HasWinKey = Text.Pos("Win+") == 1;
 	if (HasWinKey) {
@@ -322,3 +341,16 @@ TShortCut TextToWinShortCut(String Text, bool &HasWinKey) {
 	}
 	return TextToShortCut(Text);
 }
+
+// ---------------------------------------------------------------------------
+void SAdd(TStrings * S, String Text) {
+	S->Add(Text);
+}
+
+// ---------------------------------------------------------------------------
+void SAdd(TStrings * S, NativeUInt Ident) {
+	S->Add(LoadStr(Ident));
+
+}
+
+// ---------------------------------------------------------------------------

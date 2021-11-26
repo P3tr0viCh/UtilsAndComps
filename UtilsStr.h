@@ -46,5 +46,8 @@ String IToS_0(int Value, int MinLength = 2);
 String WinShortCutToText(TShortCut ShortCut, bool HasWinKey);
 TShortCut TextToWinShortCut(String Text, bool &HasWinKey);
 
+void SAdd(TStrings * S, String Text);
+void SAdd(TStrings * S, NativeUInt Ident);
+
 // ---------------------------------------------------------------------------
 #endif
