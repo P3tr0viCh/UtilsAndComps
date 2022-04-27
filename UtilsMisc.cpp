@@ -206,7 +206,7 @@ String SmallFileVersion(String FileVersion) {
 		}
 	}
 
-	return S1 + S2 + S3;
+	return ConcatStrings(S1, ConcatStrings(S2, S3, DOT), DOT);
 }
 
 // ---------------------------------------------------------------------------
