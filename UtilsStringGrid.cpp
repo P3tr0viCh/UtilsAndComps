@@ -80,7 +80,7 @@ void StringGridSetHeader(TStringGrid * Grid, int ACol, NativeUInt ColNameIdent,
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
-	bool DrawFocusedOnInactive, bool ReadOnlyRow) {
+	bool DrawFocusedOnInactive, bool ReadOnlyRow, bool DrawChanged, TColor ChangedColor) {
 	Grid->Canvas->Font = Grid->Font;
 
 	if (State.Contains(gdFixed)) {
@@ -114,6 +114,21 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	Grid->Canvas->FillRect(Rect);
 
 	if (State.Contains(gdFixed)) {
+		if (DrawChanged && ACol == 0 && ARow > 0) {
+			TRect ChangedRect = Rect;
+
+			ChangedRect.Top = ChangedRect.Top + 2;
+			ChangedRect.Bottom = ChangedRect.Bottom - 2;
+			ChangedRect.Right = ChangedRect.Right - 2;
+			ChangedRect.Left = ChangedRect.Right - 4;
+
+			Grid->Canvas->Brush->Color = ChangedColor;
+
+			Grid->Canvas->FillRect(ChangedRect);
+
+			Grid->Canvas->Brush->Color = Grid->FixedColor;
+		}
+
 		InflateRect(Rect, -2, 0);
 		OffsetRect(Rect, -1, 0);
 

@@ -65,10 +65,8 @@ public:
 
 		S = "TObjList";
 		S += "{";
-
 		for (int i = 0; i < Count; i++) {
-			S += sLineBreak;
-			S += "Item" + IntToStr(i) + "='" + Items[i]->ToString() + "'";
+			S += "Item" + IntToStr(i) + "='" + Items[i]->ToString() + "',";
 		}
 		S += "}";
 
