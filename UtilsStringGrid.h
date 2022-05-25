@@ -25,7 +25,8 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
 	bool DrawFocusedOnInactive, bool ReadOnlyRow, bool DrawChanged,
-	TColor ChangedColor);
+	TColor ChangedColor, bool DrawSelectedRow, TColor SelectedRowColor);
+void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow);
 
 void StringGridMouseToCell(TStringGrid * Grid, int &ACol, int &ARow);
 void StringGridSelectRowAfterFixedCellClick(TStringGrid * Grid, int ARow);

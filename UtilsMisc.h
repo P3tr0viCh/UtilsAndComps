@@ -72,4 +72,11 @@ int Percent(int Number, int Max);
 bool Odd(int I);
 
 // ---------------------------------------------------------------------------
+HWND FindWindowByClass(String ClassName);
+String GetClassName(HWND hWnd);
+String GetControlText(HWND hWnd);
+HWND GetWindowChildByIndex(HWND hWnd, int Index);
+void DebugEnumWindowControls(HWND hWnd, TStringList * Result, int Level = -1);
+
+// ---------------------------------------------------------------------------
 #endif

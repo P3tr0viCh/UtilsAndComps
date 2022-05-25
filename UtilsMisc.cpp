@@ -339,3 +339,78 @@ bool Odd(int I) {
 }
 
 // ---------------------------------------------------------------------------
+HWND FindWindowByClass(String ClassName) {
+	return FindWindow(ClassName.w_str(), NULL);
+}
+
+// ---------------------------------------------------------------------------
+String GetClassName(HWND hWnd) {
+	wchar_t buf[256];
+	String Result;
+	if (GetClassName(hWnd, buf, sizeof(buf))) {
+		Result = String(buf);
+	}
+	return Result;
+}
+
+// ---------------------------------------------------------------------------
+String GetControlText(HWND hWnd) {
+	wchar_t buf[256];
+	SendMessage(hWnd, WM_GETTEXT, sizeof(buf), (LPARAM)(LPCTSTR)buf);
+	return String(buf);
+}
+
+// ---------------------------------------------------------------------------
+HWND GetWindowChildByIndex(HWND hWnd, int Index) {
+	int ChildIndex = 0;
+
+	HWND Result = 0;
+
+	HWND hChild = GetWindow(hWnd, GW_CHILD);
+
+	while (hChild) {
+		if (ChildIndex == Index) {
+			return hChild;
+		}
+
+		hChild = GetWindow(hChild, GW_HWNDNEXT);
+
+		ChildIndex++;
+	}
+
+	return Result;
+}
+
+// ---------------------------------------------------------------------------
+void DebugEnumWindowControls(HWND hWnd, TStringList * Result, int Level) {
+	int Index = 0;
+
+	HWND hChild = GetWindow(hWnd, GW_CHILD);
+
+	String LevelStr;
+	String ClassName;
+	String ControlText;
+
+	Level++;
+
+	for (int i = 0; i < Level; i++) {
+		LevelStr = LevelStr + "-";
+	}
+
+	while (hChild) {
+		ClassName = GetClassName(hChild);
+
+		ControlText = GetControlText(hChild);
+
+		Result->Add(LevelStr + "|" + IntToStr(Index) + ":" + ClassName + ":" +
+			ControlText + ":" + BoolToStr(IsWindowEnabled(hChild), true));
+
+		DebugEnumWindowControls(hChild, Result, Level);
+
+		hChild = GetWindow(hChild, GW_HWNDNEXT);
+
+		Index++;
+	}
+}
+
+// ---------------------------------------------------------------------------
