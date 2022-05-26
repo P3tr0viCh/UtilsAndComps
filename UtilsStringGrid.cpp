@@ -77,6 +77,22 @@ void StringGridSetHeader(TStringGrid * Grid, int ACol, NativeUInt ColNameIdent,
 }
 
 // ---------------------------------------------------------------------------
+void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
+	bool ShowZero) {
+	if (ShowZero) {
+		Grid->Cells[ACol][ARow] = IntToStr(Value);
+	}
+	else {
+		if (Value != 0) {
+			Grid->Cells[ACol][ARow] = IntToStr(Value);
+		}
+		else {
+			Grid->Cells[ACol][ARow] = "";
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,

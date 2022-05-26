@@ -20,6 +20,8 @@ void StringGridSetHeader(TStringGrid * Grid, int ACol, String ColName,
 	int ColWidth);
 void StringGridSetHeader(TStringGrid * Grid, int ACol, NativeUInt ColNameIdent,
 	int ColWidth);
+void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
+	bool ShowZero = false);
 
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
