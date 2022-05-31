@@ -24,6 +24,7 @@ private:
 public:
 	__fastcall TIntegerPair();
 	__fastcall TIntegerPair(int Value1, int Value2);
+	__fastcall TIntegerPair(TIntegerPair * Value);
 	__fastcall ~TIntegerPair();
 
 	bool __fastcall Equals(TObject * Obj);

@@ -25,6 +25,13 @@ __fastcall TIntegerPair::TIntegerPair(int Value1, int Value2) {
 }
 
 // ---------------------------------------------------------------------------
+__fastcall TIntegerPair::TIntegerPair(TIntegerPair * Value) {
+	Init();
+
+	Assign(Value);
+}
+
+// ---------------------------------------------------------------------------
 void TIntegerPair::Init() {
 	FInt1 = new TInteger();
 	FInt2 = new TInteger();
