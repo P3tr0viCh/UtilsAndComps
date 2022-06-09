@@ -10,8 +10,34 @@
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
+void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns,
+	int DefaultRowHeight) {
+	Grid->DefaultRowHeight = DefaultRowHeight;
+
+	Grid->ColCount = Columns->Count;
+
+	StringGridSetHeader(Grid, TStringGridBaseColumns::SERVICE, 0, 16);
+
+	Columns->SetStringGridHeader(Grid);
+}
+
+// ---------------------------------------------------------------------------
 bool StringGridIsEmpty(TStringGrid * Grid) {
-	return IsEmpty(Grid->Cells[0][1]);
+	return Grid->Objects[TStringGridBaseColumns::SERVICE][1] == NULL;
+}
+
+// ---------------------------------------------------------------------------
+int StringGridAddRow(TStringGrid * Grid) {
+	if (!StringGridIsEmpty(Grid)) {
+		Grid->RowCount++;
+	}
+
+	int Index = Grid->RowCount - 1;
+
+	Grid->Objects[TStringGridBaseColumns::SERVICE][Index] =
+		new TStringGridService();
+
+	return Index;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,6 +90,40 @@ void StringGridDeleteRow(TStringGrid * Grid, int ARow, int AColCount) {
 }
 
 // ---------------------------------------------------------------------------
+TStringGridService * StringGridRowGetService(TStringGrid * Grid, int Index) {
+	return ((TStringGridService*)Grid->Objects[TStringGridBaseColumns::SERVICE]
+		[Index]);
+}
+
+// ---------------------------------------------------------------------------
+void StringGridRowSetChanged(TStringGrid * Grid, int Index, bool Changed) {
+	TStringGridService * Service = StringGridRowGetService(Grid, Index);
+
+	if (Service == NULL) {
+		return;
+	}
+
+	if (Service->Changed == Changed) {
+		return;
+	}
+
+	Service->Changed = Changed;
+
+	StringGridInvalidateCell(Grid, TStringGridBaseColumns::SERVICE, Index);
+}
+
+// ---------------------------------------------------------------------------
+bool StringGridRowIsChanged(TStringGrid * Grid, int Index) {
+	TStringGridService * Service = StringGridRowGetService(Grid, Index);
+
+	if (Service == NULL) {
+		return false;
+	}
+
+	return Service->Changed;
+}
+
+// ---------------------------------------------------------------------------
 void StringGridSetHeader(TStringGrid * Grid, int ACol, String ColName,
 	int ColWidth) {
 	Grid->Cells[ACol][0] = ColName;
@@ -96,8 +156,8 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
-	bool DrawFocusedOnInactive, bool ReadOnlyRow, bool DrawChanged,
-	TColor ChangedColor, bool DrawSelectedRow, TColor SelectedRowColor) {
+	bool DrawFocusedOnInactive, bool ReadOnlyRow, TColor ChangedColor,
+	bool DrawSelectedRow, TColor SelectedRowColor) {
 
 	Grid->Canvas->Font = Grid->Font;
 
@@ -132,7 +192,8 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	Grid->Canvas->FillRect(Rect);
 
 	if (State.Contains(gdFixed)) {
-		if (DrawChanged && ACol == 0 && ARow > 0) {
+		if (ARow > 0 && ACol == TStringGridBaseColumns::SERVICE &&
+			StringGridRowIsChanged(Grid, ARow)) {
 			TRect ChangedRect = Rect;
 
 			ChangedRect.Top = ChangedRect.Top + 2;
@@ -224,7 +285,7 @@ void StringGridColWidthsWriteToIni(TStringGrid * Grid, TFileIni * FileIni,
 	const String Section, const String Ident) {
 	String S;
 
-	for (int i = 0; i < Grid->ColCount; i++) {
+	for (int i = 1; i < Grid->ColCount; i++) {
 		S = ConcatStrings(S, IntToStr(Grid->ColWidths[i]), COMMA);
 	}
 
@@ -243,7 +304,7 @@ void StringGridColWidthsReadFromIni(TStringGrid * Grid, TFileIni * FileIni,
 	}
 
 	try {
-		for (int i = 0; i < Grid->ColCount; i++) {
+		for (int i = 1; i < Grid->ColCount; i++) {
 			SplitStr(S, COMMA, 0, Value, S);
 
 			Grid->ColWidths[i] = StrToInt(Value);
