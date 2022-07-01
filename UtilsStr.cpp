@@ -259,6 +259,21 @@ bool IsEmpty(const String S) {
 }
 
 // ---------------------------------------------------------------------------
+bool IsInt(const String S) {
+	if (IsEmpty(S)) {
+		return false;
+	}
+
+	for (int i = 1; i < S.Length(); i++) {
+		if (S[i] < '0' || S[i] > '9') {
+			return false;
+		}
+	}
+
+    return true;
+}
+
+// ---------------------------------------------------------------------------
 String ConcatStrings(const String S1, const String S2, const String Separator) {
 	if (IsEmpty(S1) && IsEmpty(S2))
 		return "";

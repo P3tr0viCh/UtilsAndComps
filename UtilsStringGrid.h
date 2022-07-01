@@ -73,8 +73,9 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
 	bool DrawFocusedOnInactive, bool ReadOnlyRow, TColor ChangedColor,
-	bool DrawSelectedRow, TColor SelectedRowColor);
+	TColor SelectedRowColor = clMax);
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow);
+void StringGridInvalidateSelected(TStringGrid * Grid);
 
 // ---------------------------------------------------------------------------
 void StringGridMouseToCell(TStringGrid * Grid, int &ACol, int &ARow);

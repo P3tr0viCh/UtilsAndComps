@@ -30,6 +30,7 @@ String FormatBytes(Extended Bytes, TStrings * ByteNames = NULL);
 String FormatHerzs(SIZE_T Herzs);
 
 bool IsEmpty(const String S);
+bool IsInt(const String S);
 String ConcatStrings(const String S1, const String S2, const String Separator);
 String RemoveLineBreaks(const String S);
 String RemoveExtraSpaces(const String S);

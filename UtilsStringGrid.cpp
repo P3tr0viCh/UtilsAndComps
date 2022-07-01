@@ -157,7 +157,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
 	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
 	bool DrawFocusedOnInactive, bool ReadOnlyRow, TColor ChangedColor,
-	bool DrawSelectedRow, TColor SelectedRowColor) {
+	TColor SelectedRowColor) {
 
 	Grid->Canvas->Font = Grid->Font;
 
@@ -208,7 +208,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 			Grid->Canvas->Brush->Color = Grid->FixedColor;
 		}
 
-		if (DrawSelectedRow && ARow == Grid->Row) {
+		if (SelectedRowColor != clMax && ARow == Grid->Row) {
 			TRect ChangedRect = Rect;
 
 			ChangedRect.Top = ChangedRect.Top + 2;
@@ -258,6 +258,13 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow) {
 	TRect Rect = Grid->CellRect(ACol, ARow);
 	InvalidateRect(Grid->Handle, &Rect, false);
+}
+
+// ---------------------------------------------------------------------------
+void StringGridInvalidateSelected(TStringGrid * Grid) {
+	for (int i = 1; i < Grid->RowCount; i++) {
+		StringGridInvalidateCell(Grid, TStringGridBaseColumns::SERVICE, i);
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -313,5 +320,4 @@ void StringGridColWidthsReadFromIni(TStringGrid * Grid, TFileIni * FileIni,
 	catch (...) {
 	}
 }
-
 // ---------------------------------------------------------------------------
