@@ -55,9 +55,9 @@ void StringGridSelectCell(TStringGrid * Grid, int ACol, int ARow) {
 }
 
 // ---------------------------------------------------------------------------
-void StringGridUpdateOrderNum(TStringGrid * Grid, int StartValue) {
+void StringGridUpdateOrderNum(TStringGrid * Grid, int ACol, int StartValue) {
 	for (int ARow = 1, Count = Grid->RowCount; ARow < Count; ARow++) {
-		Grid->Cells[0][ARow] = IntToStr(StartValue);
+		Grid->Cells[ACol][ARow] = IntToStr(StartValue);
 		StartValue++;
 	}
 }

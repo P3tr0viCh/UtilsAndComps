@@ -50,7 +50,7 @@ bool StringGridIsEmpty(TStringGrid * Grid);
 int StringGridAddRow(TStringGrid * Grid);
 void StringGridClear(TStringGrid * Grid);
 void StringGridSelectCell(TStringGrid * Grid, int ACol, int ARow);
-void StringGridUpdateOrderNum(TStringGrid * Grid, int StartValue = 1);
+void StringGridUpdateOrderNum(TStringGrid * Grid, int ACol, int StartValue = 1);
 void StringGridDeleteRow(TStringGrid * Grid, int ARow, int AColCount = -1);
 
 // ---------------------------------------------------------------------------
