@@ -17,7 +17,7 @@
 // ---------------------------------------------------------------------------
 int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
 	WORD wLanguage) {
-	if (IsEmpty(sCaption)) {
+	if (sCaption.IsEmpty()) {
 		sCaption = Application->Title;
 	}
 

@@ -306,7 +306,7 @@ void StringGridColWidthsReadFromIni(TStringGrid * Grid, TFileIni * FileIni,
 
 	String S = FileIni->ReadString(Section, Ident, "");
 
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return;
 	}
 

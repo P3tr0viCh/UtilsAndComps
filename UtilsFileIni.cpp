@@ -17,11 +17,11 @@ __fastcall TFileIni::TFileIni(const System::UnicodeString FileName)
 }
 
 TFileIni* TFileIni::GetNewInstance(System::UnicodeString FileName) {
-	if (IsEmpty(FileName)) {
+	if (FileName.IsEmpty()) {
 		FileName = ChangeFileExt(Application->ExeName, ".ini");
 	}
 	else {
-		if (IsEmpty(ExtractFileExt(FileName))) {
+		if (ExtractFileExt(FileName).IsEmpty()) {
 			FileName = FileName + ".ini";
 		}
 	}
@@ -50,7 +50,7 @@ TRect TFileIni::ReadRect(const String Section, const String Ident,
 	TRect Default) {
 	String RectStr = ReadString(Section, Ident, NULL);
 
-	if (IsEmpty(RectStr)) {
+	if (RectStr.IsEmpty()) {
 		return Default;
 	}
 	else {
@@ -72,7 +72,7 @@ TPoint TFileIni::ReadPoint(const String Section, const String Ident,
 	TPoint Default) {
 	String PointStr = ReadString(Section, Ident, NULL);
 
-	if (IsEmpty(PointStr)) {
+	if (PointStr.IsEmpty()) {
 		return Default;
 	}
 	else {
@@ -129,7 +129,7 @@ void TFileIni::WritePosition(const TControl * Control, const String Section,
 }
 
 void TFileIni::ReadFormBounds(TForm * Form, String Section) {
-	if (IsEmpty(Section)) {
+	if (Section.IsEmpty()) {
 		Section = Form->Name;
 	}
 
@@ -145,7 +145,7 @@ void TFileIni::ReadFormBounds(TForm * Form, String Section) {
 }
 
 void TFileIni::WriteFormBounds(const TForm * Form, String Section) {
-	if (IsEmpty(Section)) {
+	if (Section.IsEmpty()) {
 		Section = Form->Name;
 	}
 
@@ -159,7 +159,7 @@ void TFileIni::WriteFormBounds(const TForm * Form, String Section) {
 }
 
 void TFileIni::ReadFormPosition(TForm * Form, String Section) {
-	if (IsEmpty(Section)) {
+	if (Section.IsEmpty()) {
 		Section = Form->Name;
 	}
 
@@ -172,7 +172,7 @@ void TFileIni::ReadFormPosition(TForm * Form, String Section) {
 }
 
 void TFileIni::WriteFormPosition(const TForm * Form, String Section) {
-	if (IsEmpty(Section)) {
+	if (Section.IsEmpty()) {
 		Section = Form->Name;
 	}
 

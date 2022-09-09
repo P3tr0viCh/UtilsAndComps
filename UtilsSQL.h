@@ -10,6 +10,7 @@
 #include <Data.Win.ADODB.hpp>
 
 // ---------------------------------------------------------------------------
+String SQLLoad(NativeUInt Ident);
 String SQLMake(String S1, String S2);
 String SQLMake(String S1, NativeUInt Ident);
 TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType);

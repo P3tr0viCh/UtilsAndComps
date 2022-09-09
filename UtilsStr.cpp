@@ -39,7 +39,7 @@ void SplitStr(String S, const String SplitString, const int SplitPlace,
 	FirstHalf = S;
 	SecondHalf = "";
 
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return;
 	}
 
@@ -56,7 +56,7 @@ TRect StrToRect(String S) {
 
 	TRect Result = TRect(0, 0, 0, 0);
 
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return Result;
 	}
 
@@ -88,7 +88,7 @@ TPoint StrToPoint(String S) {
 
 	TPoint Result = TPoint(0, 0);
 
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return Result;
 	}
 
@@ -115,7 +115,7 @@ void StrToFont(String S, TFont * Font) {
 	// TFontStyles FontStyle;
 	String FirstHalf, SecondHalf;
 
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return;
 	}
 
@@ -165,15 +165,15 @@ String FormatBytes(Extended Bytes, TStrings *ByteNames) {
 		Names->Add("");
 	}
 
-	if (IsEmpty(Names->Strings[0]))
+	if (Names->Strings[0].IsEmpty())
 		Names->Strings[0] = "·";
-	if (IsEmpty(Names->Strings[1]))
+	if (Names->Strings[1].IsEmpty())
 		Names->Strings[1] = " ·";
-	if (IsEmpty(Names->Strings[2]))
+	if (Names->Strings[2].IsEmpty())
 		Names->Strings[2] = "Ã·";
-	if (IsEmpty(Names->Strings[3]))
+	if (Names->Strings[3].IsEmpty())
 		Names->Strings[3] = "√·";
-	if (IsEmpty(Names->Strings[4]))
+	if (Names->Strings[4].IsEmpty())
 		Names->Strings[4] = "“·";
 
 	Extended EBytes[5] = {0, Kb, Mb, Gb, Tb};
@@ -254,13 +254,8 @@ String FormatHerzs(SIZE_T Herzs) {
 }
 
 // ---------------------------------------------------------------------------
-bool IsEmpty(const String S) {
-	return S == NULL || S.IsEmpty();
-}
-
-// ---------------------------------------------------------------------------
 bool IsInt(const String S) {
-	if (IsEmpty(S)) {
+	if (S.IsEmpty()) {
 		return false;
 	}
 
@@ -270,16 +265,16 @@ bool IsInt(const String S) {
 		}
 	}
 
-    return true;
+	return true;
 }
 
 // ---------------------------------------------------------------------------
 String ConcatStrings(const String S1, const String S2, const String Separator) {
-	if (IsEmpty(S1) && IsEmpty(S2))
+	if (S1.IsEmpty() && S2.IsEmpty())
 		return "";
-	else if (IsEmpty(S1))
+	else if (S1.IsEmpty())
 		return S2;
-	else if (IsEmpty(S2))
+	else if (S2.IsEmpty())
 		return S1;
 	else
 		return S1 + Separator + S2;
@@ -342,7 +337,7 @@ String IToS_0(int Value, int MinLength) {
 // ---------------------------------------------------------------------------
 String WinShortCutToText(TShortCut ShortCut, bool HasWinKey) {
 	String Result = ShortCutToText(ShortCut);
-	if ((!IsEmpty(Result) && HasWinKey)) {
+	if ((!Result.IsEmpty() && HasWinKey)) {
 		Result = "Win+" + Result;
 	}
 	return Result;

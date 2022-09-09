@@ -12,7 +12,7 @@ class TFileIni : public TIniFile {
 public:
 	__fastcall TFileIni(const System::UnicodeString FileName);
 
-	static TFileIni* GetNewInstance(System::UnicodeString FileName = NULL);
+	static TFileIni* GetNewInstance(System::UnicodeString FileName = "");
 
 	void __fastcall UpdateFile(void);
 	void __fastcall WriteString(const System::UnicodeString Section,
@@ -37,11 +37,11 @@ public:
 	void WritePosition(const TControl * Control, const String Section,
 		const String Ident);
 
-	void ReadFormBounds(TForm * Form, String Section = NULL);
-	void WriteFormBounds(const TForm * Form, String Section = NULL);
+	void ReadFormBounds(TForm * Form, String Section = "");
+	void WriteFormBounds(const TForm * Form, String Section = "");
 
-	void ReadFormPosition(TForm * Form, String Section = NULL);
-	void WriteFormPosition(const TForm * Form, String Section = NULL);
+	void ReadFormPosition(TForm * Form, String Section = "");
+	void WriteFormPosition(const TForm * Form, String Section = "");
 };
 
 // ---------------------------------------------------------------------------
