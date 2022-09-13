@@ -41,7 +41,7 @@ int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
 }
 
 // ---------------------------------------------------------------------------
-int MsgBox(NativeUInt Ident, UINT iType, UnicodeString sCaption, HWND hHWND,
+int MsgBox(NativeUInt Ident, UINT iType, String sCaption, HWND hHWND,
 	WORD wLanguage) {
 	return MsgBox(LoadStr(Ident), iType, sCaption, hHWND, wLanguage);
 }
@@ -63,7 +63,7 @@ bool MsgBoxYesNo(String sMessage, bool DefaultNo, HWND hHWND) {
 		uType = uType | MB_DEFBUTTON2;
 	}
 
-	return MsgBox(sMessage, uType, NULL, hHWND) == ID_YES;
+	return MsgBox(sMessage, uType, "", hHWND) == ID_YES;
 }
 
 // ---------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
 		Error = GetLastError();
 	}
 
-	if (AddStr == NULL) {
+	if (AddStr.IsEmpty()) {
 		AddStr = SysErrorMessage(Error);
 	}
 	else {

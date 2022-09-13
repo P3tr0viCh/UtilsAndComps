@@ -7,15 +7,14 @@
 
 // ---------------------------------------------------------------------------
 int MsgBox(String sMessage = "TODO", UINT iType = MB_OK | MB_ICONINFORMATION,
-	String sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
+	String sCaption = "", HWND hHWND = NULL, WORD wLanguage = 0x00400);
 int MsgBox(NativeUInt Ident, UINT iType = MB_OK | MB_ICONINFORMATION,
-	UnicodeString sCaption = NULL, HWND hHWND = NULL, WORD wLanguage = 0x00400);
+	String sCaption = "", HWND hHWND = NULL, WORD wLanguage = 0x00400);
 void MsgBoxErr(String sMessage = "ERROR", HWND hHWND = NULL);
 void MsgBoxErr(NativeUInt Ident, HWND hHWND = NULL);
 bool MsgBoxYesNo(String sMessage = "To be or not to be?", bool DefaultNo = true,
 	HWND hHWND = NULL);
-bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo = true,
-	HWND hHWND = NULL);
+bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo = true, HWND hHWND = NULL);
 
 // ---------------------------------------------------------------------------
 void ProcMess();
