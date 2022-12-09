@@ -21,7 +21,7 @@ String SQLLoad(NativeUInt Ident) {
 	try {
 		Strings->LoadFromStream(Stream);
 
-		Result = Strings->Text;
+		Result = SQLRemoveExtra(Strings->Text);
 	}
 	__finally {
 		Stream->Free();
@@ -51,6 +51,24 @@ TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType) {
 // ---------------------------------------------------------------------------
 String DateTimeToSQLStr(TDateTime ADateTime) {
 	return FormatDateTime("yyyy-MM-dd hh:nn:ss", ADateTime);
+}
+
+// ---------------------------------------------------------------------------
+String SQLRemoveExtra(const String S) {
+	String Result = S;
+
+	for (int i = Result.Length(); i > 1; i--) {
+		if (Result[i] == '\t' || Result[i] == '\r') {
+			Result.Delete(i, 1);
+		}
+		else {
+			if (Result[i] == '\n') {
+				Result[i] = ' ';
+			}
+		}
+	}
+
+	return Result;
 }
 
 // ---------------------------------------------------------------------------

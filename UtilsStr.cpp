@@ -282,9 +282,20 @@ String ConcatStrings(const String S1, const String S2, const String Separator) {
 
 // ---------------------------------------------------------------------------
 String RemoveLineBreaks(const String S) {
-	return StringReplace(StringReplace(S, "\r\n", SPACE,
-		TReplaceFlags() << rfReplaceAll), "\n", SPACE,
-		TReplaceFlags() << rfReplaceAll);
+	String Result = S;
+
+	for (int i = Result.Length(); i > 1; i--) {
+		if (Result[i] == '\r') {
+			Result.Delete(i, 1);
+		}
+		else {
+			if (Result[i] == '\n') {
+				Result[i] = SPACE;
+			}
+		}
+	}
+
+	return Result;
 }
 
 // ---------------------------------------------------------------------------
@@ -360,7 +371,6 @@ void SAdd(TStrings * S, String Text) {
 // ---------------------------------------------------------------------------
 void SAdd(TStrings * S, NativeUInt Ident) {
 	S->Add(LoadStr(Ident));
-
 }
 
 // ---------------------------------------------------------------------------
