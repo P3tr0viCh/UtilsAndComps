@@ -3,8 +3,6 @@
 #ifndef ConnectionServerH
 #define ConnectionServerH
 
-#include <System.Classes.hpp>
-
 #include "ConnectionInfo.h"
 
 // ---------------------------------------------------------------------------
