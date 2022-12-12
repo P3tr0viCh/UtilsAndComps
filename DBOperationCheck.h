@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------
 
-#ifndef DBCheckH
-#define DBCheckH
+#ifndef DBOperationCheckH
+#define DBOperationCheckH
 
 #include "DBOperation.h"
 
 // ---------------------------------------------------------------------------
-class TDBCheck : public TDBOperation {
+class TDBOperationCheck : public TDBOperation {
 private:
 	String FDBVersion;
 
@@ -19,7 +19,7 @@ protected:
 	virtual TField * GetFieldVersion() = 0;
 
 public:
-	__fastcall TDBCheck(TConnectionInfo * ConnectionInfo,
+	__fastcall TDBOperationCheck(TDBConnection * DBConnection,
 		IDBOperationEvent * DBOperationEvent);
 
 	void Operation();

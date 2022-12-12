@@ -2,25 +2,25 @@
 
 #pragma hdrstop
 
-#include "ConnectionOracle.h"
+#include "DBConnectionOracle.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TConnectionOracle::TConnectionOracle() : TConnectionServer() {
+__fastcall TDBConnectionOracle::TDBConnectionOracle() : TDBConnectionServer() {
 	Port = 1521;
 	FService = "";
 }
 
 // ---------------------------------------------------------------------------
-bool __fastcall TConnectionOracle::Equals(TObject * Obj) {
+bool __fastcall TDBConnectionOracle::Equals(TObject * Obj) {
 	if (this == Obj)
 		return true;
 	if (Obj == NULL || ClassType() != Obj->ClassType())
 		return false;
 
-	TConnectionOracle * Connection = (TConnectionOracle*) Obj;
+	TDBConnectionOracle * Connection = (TDBConnectionOracle*) Obj;
 
 	if (Driver != Connection->Driver || Host != Connection->Host ||
 		Port != Connection->Port || Service != Connection->Service ||
@@ -31,8 +31,8 @@ bool __fastcall TConnectionOracle::Equals(TObject * Obj) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TConnectionOracle::Assign(TConnectionInfo * Source) {
-	TConnectionOracle * Connection = (TConnectionOracle*) Source;
+void __fastcall TDBConnectionOracle::Assign(TDBConnection * Source) {
+	TDBConnectionOracle * Connection = (TDBConnectionOracle*) Source;
 
 	Driver = Connection->Driver;
 	Host = Connection->Host;
@@ -43,10 +43,10 @@ void __fastcall TConnectionOracle::Assign(TConnectionInfo * Source) {
 }
 
 // ---------------------------------------------------------------------------
-String __fastcall TConnectionOracle::ToString() {
+String __fastcall TDBConnectionOracle::ToString() {
 	String S;
 
-	S = "TConnectionOracle{";
+	S = "TDBConnectionOracle{";
 	S += "Driver='" + Driver + "'";
 	S += ", ";
 	S += "Host='" + Host + "'";
@@ -64,7 +64,7 @@ String __fastcall TConnectionOracle::ToString() {
 }
 
 // ---------------------------------------------------------------------------
-String TConnectionOracle::GetConnectionString() {
+String TDBConnectionOracle::GetConnectionString() {
 	return Format("DRIVER={%s};DBQ=%s:%s/%s;UID=%s;PWD=%s;",
 		ARRAYOFCONST((Driver, Host, Port, Service, User, Password)));
 }

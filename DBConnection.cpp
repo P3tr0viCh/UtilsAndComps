@@ -2,16 +2,16 @@
 
 #pragma hdrstop
 
-#include "ConnectionServer.h"
+#include "DBConnection.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TConnectionServer::TConnectionServer() : TConnectionInfo() {
-	FDriver = "";
-	FHost = "localhost";
-	FPort = "";
+__fastcall TDBConnection::TDBConnection() {
+	FUser = "root";
+	FPassword = "";
+	FDatabase = "";
 }
 
 // ---------------------------------------------------------------------------

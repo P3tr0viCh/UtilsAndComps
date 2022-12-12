@@ -2,20 +2,20 @@
 
 #pragma hdrstop
 
-#include "DBCheckMySQL.h"
+#include "DBOperationCheckMySQL.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TDBCheckMySQL::TDBCheckMySQL(TConnectionInfo * Connection,
-	IDBOperationEvent * DBOperationEvent)
-	: TDBCheck(Connection, DBOperationEvent) {
+__fastcall TDBOperationCheckMySQL::TDBOperationCheckMySQL
+	(TDBConnectionMySQL * Connection, IDBOperationEvent * DBOperationEvent)
+	: TDBOperationCheck(Connection, DBOperationEvent) {
 	FQuery = "SELECT @@version;";
 }
 
 // ---------------------------------------------------------------------------
-TField * TDBCheckMySQL::GetFieldVersion() {
+TField * TDBOperationCheckMySQL::GetFieldVersion() {
 	return DataSet->Fields->Fields[0];
 }
 

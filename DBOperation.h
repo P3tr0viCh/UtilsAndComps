@@ -6,16 +6,16 @@
 #include <System.Classes.hpp>
 #include <Data.Win.ADODB.hpp>
 
-#include "ConnectionInfo.h"
+#include "DBConnection.h"
 
 #include "DBOperationEvent.h"
 
-// ---------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 class TDBOperation : public TObject {
 private:
 	TADOConnection * FConnection;
 
-	TConnectionInfo * FConnectionInfo;
+	TDBConnection * FDBConnection;
 
 	IDBOperationEvent * FDBOperationEvent;
 
@@ -25,7 +25,7 @@ private:
 	__fastcall TDBOperation();
 
 public:
-	__fastcall TDBOperation(TConnectionInfo * ConnectionInfo,
+	__fastcall TDBOperation(TDBConnection * DBConnection,
 		IDBOperationEvent * DBOperationEvent);
 	__fastcall ~TDBOperation();
 
@@ -36,7 +36,7 @@ public:
 	// -----------------------------------------------------------------------
 	__property TADOConnection * Connection = {read = FConnection};
 
-	__property TConnectionInfo * ConnectionInfo = {read = FConnectionInfo};
+	__property TDBConnection * DBConnection = {read = FDBConnection};
 
 	__property String ErrorMessage = {read = FErrorMessage};
 };

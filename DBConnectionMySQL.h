@@ -1,28 +1,23 @@
 // ---------------------------------------------------------------------------
 
-#ifndef ConnectionOracleH
-#define ConnectionOracleH
+#ifndef DBConnectionMySQLH
+#define DBConnectionMySQLH
 
 #include <System.Classes.hpp>
 
-#include "ConnectionServer.h"
+#include "DBConnectionServer.h"
 
 // ---------------------------------------------------------------------------
-class TConnectionOracle : public TConnectionServer {
+class TDBConnectionMySQL : public TDBConnectionServer {
 private:
-	String FService;
-
 	String GetConnectionString();
 
 public:
-	__fastcall TConnectionOracle();
+	__fastcall TDBConnectionMySQL();
 
 	bool __fastcall Equals(TObject * Obj);
-	void __fastcall Assign(TConnectionInfo * Source);
+	void __fastcall Assign(TDBConnection * Source);
 	String __fastcall ToString();
-
-	// -----------------------------------------------------------------------
-	__property String Service = {read = FService, write = FService};
 };
 
 // ---------------------------------------------------------------------------

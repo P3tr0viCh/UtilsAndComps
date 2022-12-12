@@ -2,25 +2,24 @@
 
 #pragma hdrstop
 
-#include "ConnectionMySQL.h"
+#include "DBConnectionMySQL.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TConnectionMySQL::TConnectionMySQL() : TConnectionServer() {
+__fastcall TDBConnectionMySQL::TDBConnectionMySQL() : TDBConnectionServer() {
 	Port = 3306;
-	FDatabase = "";
 }
 
 // ---------------------------------------------------------------------------
-bool __fastcall TConnectionMySQL::Equals(TObject * Obj) {
+bool __fastcall TDBConnectionMySQL::Equals(TObject * Obj) {
 	if (this == Obj)
 		return true;
 	if (Obj == NULL || ClassType() != Obj->ClassType())
 		return false;
 
-	TConnectionMySQL * Connection = (TConnectionMySQL*) Obj;
+	TDBConnectionMySQL * Connection = (TDBConnectionMySQL*) Obj;
 
 	if (Driver != Connection->Driver || Host != Connection->Host ||
 		Port != Connection->Port || Database != Connection->Database ||
@@ -31,8 +30,8 @@ bool __fastcall TConnectionMySQL::Equals(TObject * Obj) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TConnectionMySQL::Assign(TConnectionInfo * Source) {
-	TConnectionMySQL * Connection = (TConnectionMySQL*) Source;
+void __fastcall TDBConnectionMySQL::Assign(TDBConnection * Source) {
+	TDBConnectionMySQL * Connection = (TDBConnectionMySQL*) Source;
 
 	Driver = Connection->Driver;
 	Host = Connection->Host;
@@ -43,10 +42,10 @@ void __fastcall TConnectionMySQL::Assign(TConnectionInfo * Source) {
 }
 
 // ---------------------------------------------------------------------------
-String __fastcall TConnectionMySQL::ToString() {
+String __fastcall TDBConnectionMySQL::ToString() {
 	String S;
 
-	S = "TConnectionMySQL{";
+	S = "TDBConnectionMySQL{";
 	S += "Driver='" + Driver + "'";
 	S += ", ";
 	S += "Host='" + Host + "'";
@@ -64,7 +63,7 @@ String __fastcall TConnectionMySQL::ToString() {
 }
 
 // ---------------------------------------------------------------------------
-String TConnectionMySQL::GetConnectionString() {
+String TDBConnectionMySQL::GetConnectionString() {
 	return Format
 		("DRIVER={%s};SERVER=%s;PORT=%s;DATABASE=%s;USER=%s;PASSWORD=%s;OPTION=3;",
 		ARRAYOFCONST((Driver, Host, Port, Database, User, Password)));

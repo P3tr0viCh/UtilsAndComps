@@ -1,30 +1,28 @@
 // ---------------------------------------------------------------------------
 
-#ifndef ConnectionFirebirdH
-#define ConnectionFirebirdH
+#ifndef DBConnectionFirebirdH
+#define DBConnectionFirebirdH
 
 #include <System.Classes.hpp>
 
-#include "ConnectionInfo.h"
+#include "DBConnection.h"
 
 // ---------------------------------------------------------------------------
-class TConnectionFirebird : public TConnectionInfo {
+class TDBConnectionFirebird : public TDBConnection {
 private:
-	String FDatabase;
 	String FClient;
 
 	// -----------------------------------------------------------------------
 	String GetConnectionString();
 
 public:
-	__fastcall TConnectionFirebird();
+	__fastcall TDBConnectionFirebird();
 
 	bool __fastcall Equals(TObject * Obj);
-	void __fastcall Assign(TConnectionInfo * Source);
+	void __fastcall Assign(TDBConnection * Source);
 	String __fastcall ToString();
 
 	// -----------------------------------------------------------------------
-	__property String Database = {read = FDatabase, write = FDatabase};
 	__property String Client = {read = FClient, write = FClient};
 };
 

@@ -8,11 +8,11 @@
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TDBOperation::TDBOperation(TConnectionInfo * ConnectionInfo,
+__fastcall TDBOperation::TDBOperation(TDBConnection * DBConnection,
 	IDBOperationEvent * DBOperationEvent) {
 	FConnection = new TADOConnection(NULL);
 
-	FConnectionInfo = ConnectionInfo;
+	FDBConnection = DBConnection;
 
 	FDBOperationEvent = DBOperationEvent;
 }
@@ -28,7 +28,7 @@ bool TDBOperation::Execute() {
 
 	FDBOperationEvent->DBOperationEventStart(this);
 
-	FConnection->ConnectionString = FConnectionInfo->ConnectionString;
+	FConnection->ConnectionString = FDBConnection->ConnectionString;
 
 	try {
 		Operation();

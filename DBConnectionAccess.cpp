@@ -2,48 +2,47 @@
 
 #pragma hdrstop
 
-#include "ConnectionAccess.h"
+#include "DBConnectionAccess.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TConnectionAccess::TConnectionAccess() : TConnectionInfo() {
-	FDatabaseFileName = "";
+__fastcall TDBConnectionAccess::TDBConnectionAccess() : TDBConnection() {
 	User = "Admin";
 }
 
 // ---------------------------------------------------------------------------
-bool __fastcall TConnectionAccess::Equals(TObject * Obj) {
+bool __fastcall TDBConnectionAccess::Equals(TObject * Obj) {
 	if (this == Obj)
 		return true;
 	if (Obj == NULL || ClassType() != Obj->ClassType())
 		return false;
 
-	TConnectionAccess * Connection = (TConnectionAccess*) Obj;
+	TDBConnectionAccess * Connection = (TDBConnectionAccess*) Obj;
 
-	if (DatabaseFileName != Connection->DatabaseFileName ||
-		User != Connection->User || Password != Connection->Password)
+	if (Database != Connection->Database || User != Connection->User ||
+		Password != Connection->Password)
 		return false;
 
 	return true;
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TConnectionAccess::Assign(TConnectionInfo * Source) {
-	TConnectionAccess * Connection = (TConnectionAccess*) Source;
+void __fastcall TDBConnectionAccess::Assign(TDBConnection * Source) {
+	TDBConnectionAccess * Connection = (TDBConnectionAccess*) Source;
 
-	DatabaseFileName = Connection->DatabaseFileName;
+	Database = Connection->Database;
 	User = Connection->User;
 	Password = Connection->Password;
 }
 
 // ---------------------------------------------------------------------------
-String __fastcall TConnectionAccess::ToString() {
+String __fastcall TDBConnectionAccess::ToString() {
 	String S;
 
-	S = "TConnectionAccess{";
-	S += "DatabaseFileName='" + DatabaseFileName + "'";
+	S = "TDBConnectionAccess{";
+	S += "Database='" + Database + "'";
 	S += ", ";
 	S += "User='" + User + "'";
 	S += ", ";
@@ -54,10 +53,10 @@ String __fastcall TConnectionAccess::ToString() {
 }
 
 // ---------------------------------------------------------------------------
-String TConnectionAccess::GetConnectionString() {
+String TDBConnectionAccess::GetConnectionString() {
 	return Format
 		("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Persist Security Info=False;User ID=%s;Jet OLEDB:Database Password=%s;",
-		ARRAYOFCONST((DatabaseFileName, User, Password)));
+		ARRAYOFCONST((Database, User, Password)));
 }
 
 // ---------------------------------------------------------------------------

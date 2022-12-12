@@ -2,19 +2,19 @@
 
 #pragma hdrstop
 
-#include "DBCheck.h"
+#include "DBOperationCheck.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TDBCheck::TDBCheck(TConnectionInfo * ConnectionInfo,
+__fastcall TDBOperationCheck::TDBOperationCheck(TDBConnection * DBConnection,
 	IDBOperationEvent * DBOperationEvent)
-	: TDBOperation(ConnectionInfo, DBOperationEvent) {
+	: TDBOperation(DBConnection, DBOperationEvent) {
 }
 
 // ---------------------------------------------------------------------------
-void TDBCheck::Operation() {
+void TDBOperationCheck::Operation() {
 	Connection->Open();
 
 	try {

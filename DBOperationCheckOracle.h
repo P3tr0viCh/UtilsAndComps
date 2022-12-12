@@ -1,16 +1,16 @@
 // ---------------------------------------------------------------------------
 
-#ifndef DBCheckMySQLH
-#define DBCheckMySQLH
+#ifndef DBOperationCheckOracleH
+#define DBOperationCheckOracleH
 
-//#include "ConnectionMySQL.h"
+#include "DBConnectionOracle.h"
 
-#include "DBCheck.h"
+#include "DBOperationCheck.h"
 
 // ---------------------------------------------------------------------------
-class TDBCheckMySQL : public TDBCheck {
+class TDBOperationCheckOracle : public TDBOperationCheck {
 public:
-	__fastcall TDBCheckMySQL(TConnectionInfo * Connection,
+	__fastcall TDBOperationCheckOracle(TDBConnectionOracle * Connection,
 		IDBOperationEvent * DBOperationEvent);
 
 	TField * GetFieldVersion();

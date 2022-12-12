@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------
 
-#ifndef ConnectionServerH
-#define ConnectionServerH
+#ifndef DBConnectionServerH
+#define DBConnectionServerH
 
-#include "ConnectionInfo.h"
+#include "DBConnection.h"
 
 // ---------------------------------------------------------------------------
-class TConnectionServer : public TConnectionInfo {
+class TDBConnectionServer : public TDBConnection {
 private:
 	String FDriver;
 
@@ -14,7 +14,7 @@ private:
 	String FPort;
 
 public:
-	__fastcall TConnectionServer();
+	__fastcall TDBConnectionServer();
 
 	// -----------------------------------------------------------------------
 	__property String Driver = {read = FDriver, write = FDriver};

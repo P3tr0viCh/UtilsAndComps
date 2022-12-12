@@ -2,27 +2,26 @@
 
 #pragma hdrstop
 
-#include "ConnectionFirebird.h"
+#include "DBConnectionFirebird.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-__fastcall TConnectionFirebird::TConnectionFirebird() : TConnectionInfo() {
-	FDatabase = "";
+__fastcall TDBConnectionFirebird::TDBConnectionFirebird() : TDBConnection() {
 	User = "SYSDBA";
-	Password = "MASTERKEY";
-	FClient = "fblient.dll";
+	Password = "masterkey";
+	FClient = "fbclient.dll";
 }
 
 // ---------------------------------------------------------------------------
-bool __fastcall TConnectionFirebird::Equals(TObject * Obj) {
+bool __fastcall TDBConnectionFirebird::Equals(TObject * Obj) {
 	if (this == Obj)
 		return true;
 	if (Obj == NULL || ClassType() != Obj->ClassType())
 		return false;
 
-	TConnectionFirebird * Connection = (TConnectionFirebird*) Obj;
+	TDBConnectionFirebird * Connection = (TDBConnectionFirebird*) Obj;
 
 	if (Database != Connection->Database || User != Connection->User ||
 		Password != Connection->Password || Client != Connection->Client)
@@ -32,8 +31,8 @@ bool __fastcall TConnectionFirebird::Equals(TObject * Obj) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TConnectionFirebird::Assign(TConnectionInfo * Source) {
-	TConnectionFirebird * Connection = (TConnectionFirebird*) Source;
+void __fastcall TDBConnectionFirebird::Assign(TDBConnection * Source) {
+	TDBConnectionFirebird * Connection = (TDBConnectionFirebird*) Source;
 
 	Database = Connection->Database;
 	User = Connection->User;
@@ -42,10 +41,10 @@ void __fastcall TConnectionFirebird::Assign(TConnectionInfo * Source) {
 }
 
 // ---------------------------------------------------------------------------
-String __fastcall TConnectionFirebird::ToString() {
+String __fastcall TDBConnectionFirebird::ToString() {
 	String S;
 
-	S = "TConnectionFirebird{";
+	S = "TDBConnectionFirebird{";
 	S += "Database='" + Database + "'";
 	S += ", ";
 	S += "User='" + User + "'";
@@ -59,9 +58,9 @@ String __fastcall TConnectionFirebird::ToString() {
 }
 
 // ---------------------------------------------------------------------------
-String TConnectionFirebird::GetConnectionString() {
+String TDBConnectionFirebird::GetConnectionString() {
 	return Format
-		("DRIVER={Firebird/InterBase(r) driver};DBNAME=%s;UID=%s;PWD=%s;CLIENT=%s",
+		("DRIVER={Firebird/InterBase(r) driver};DBNAME=%s;UID=%s;PWD=%s;CLIENT=%s;",
 		ARRAYOFCONST((Database, User, Password, Client)));
 }
 
