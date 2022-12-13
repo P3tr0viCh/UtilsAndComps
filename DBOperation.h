@@ -21,6 +21,8 @@ private:
 
 	String FErrorMessage;
 
+	NativeInt FTag;
+
 	// -----------------------------------------------------------------------
 	__fastcall TDBOperation();
 
@@ -39,6 +41,8 @@ public:
 	__property TDBConnection * DBConnection = {read = FDBConnection};
 
 	__property String ErrorMessage = {read = FErrorMessage};
+
+	__property NativeInt Tag = {read=FTag, write=FTag, default=0};
 };
 
 // ---------------------------------------------------------------------------
