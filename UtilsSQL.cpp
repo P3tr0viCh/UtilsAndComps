@@ -42,10 +42,37 @@ String SQLMake(String S1, NativeUInt Ident) {
 }
 
 // ---------------------------------------------------------------------------
+String SQLSetText(TADOQuery * Query, NativeUInt Ident) {
+	Query->SQL->Text = SQLLoad(Ident);
+}
+
+// ---------------------------------------------------------------------------
+void SQLReplace(TADOQuery * Query, String OldPattern, String NewPattern) {
+	Query->SQL->Text = StringReplace(Query->SQL->Text, OldPattern, NewPattern,
+		TReplaceFlags());
+}
+
+// ---------------------------------------------------------------------------
+void SQLReplace(TADOQuery * Query, NativeUInt OldPattern, NativeUInt NewPattern)
+{
+	SQLReplace(Query, LoadStr(OldPattern), LoadStr(NewPattern));
+}
+
+// ---------------------------------------------------------------------------
 TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType) {
 	TParameter * Parameter = Query->Parameters->ParamByName(Name);
 	Parameter->DataType = DataType;
 	return Parameter;
+}
+
+// ---------------------------------------------------------------------------
+String SQLParamsToStr(TADOQuery * Query) {
+	String Result = "";
+	for (int i = 0; i < Query->Parameters->Count; i++) {
+		Result = Result + Query->Parameters->Items[i]->Name + "=" +
+			VarToStr(Query->Parameters->Items[i]->Value) + ", ";
+	}
+	return Result;
 }
 
 // ---------------------------------------------------------------------------
