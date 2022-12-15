@@ -42,7 +42,7 @@ String SQLMake(String S1, NativeUInt Ident) {
 }
 
 // ---------------------------------------------------------------------------
-String SQLSetText(TADOQuery * Query, NativeUInt Ident) {
+void SQLSetText(TADOQuery * Query, NativeUInt Ident) {
 	Query->SQL->Text = SQLLoad(Ident);
 }
 
