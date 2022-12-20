@@ -42,8 +42,50 @@ public:
 };
 
 // ---------------------------------------------------------------------------
-void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns,
-	int DefaultRowHeight);
+class TStringGridOptions : public TObject {
+	TStringGrid * FGrid;
+
+	TColor FColorChanged;
+	TColor FColorReadOnly;
+	TColor FColorSelected;
+
+	bool FColSizing;
+
+	int FDefaultRowHeight;
+
+	bool FDrawFocusedOnInactive;
+
+	// -----------------------------------------------------------------------
+	void Init();
+
+	void SetColSizing(bool Value);
+	void SetDefaultRowHeight(int Value);
+
+public:
+	__fastcall TStringGridOptions();
+	__fastcall TStringGridOptions(TStringGrid * Grid);
+
+	// -----------------------------------------------------------------------
+	__property TStringGrid * Grid = {read = FGrid, write = FGrid};
+
+	__property TColor ColorChanged = {
+		read = FColorChanged, write = FColorChanged};
+	__property TColor ColorReadOnly = {
+		read = FColorReadOnly, write = FColorReadOnly};
+	__property TColor ColorSelected = {
+		read = FColorSelected, write = FColorSelected};
+
+	__property bool ColSizing = {read = FColSizing, write = SetColSizing};
+
+	__property int DefaultRowHeight = {
+		read = FDefaultRowHeight, write = SetDefaultRowHeight};
+
+	__property bool DrawFocusedOnInactive = {
+		read = FDrawFocusedOnInactive, write = FDrawFocusedOnInactive};
+};
+
+// ---------------------------------------------------------------------------
+void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns);
 
 // ---------------------------------------------------------------------------
 bool StringGridIsEmpty(TStringGrid * Grid);
@@ -70,10 +112,8 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 
 // ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
-	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
-	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
-	bool DrawFocusedOnInactive, bool ReadOnlyRow, TColor ChangedColor,
-	TColor SelectedRowColor = clMax);
+	TGridDrawState State, TStringGridBaseColumns * Columns,
+	TStringGridOptions * Options, bool ReadOnlyRow);
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow);
 void StringGridInvalidateSelected(TStringGrid * Grid);
 

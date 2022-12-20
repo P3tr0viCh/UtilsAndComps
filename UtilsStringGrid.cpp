@@ -10,10 +10,60 @@
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns,
-	int DefaultRowHeight) {
-	Grid->DefaultRowHeight = DefaultRowHeight;
+void TStringGridOptions::Init() {
+	FColorChanged = clMax;
+	FColorReadOnly = clMax;
+	FColorSelected = clMax;
 
+	FColSizing = false;
+	FDefaultRowHeight = -1;
+	FDrawFocusedOnInactive = true;
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TStringGridOptions::TStringGridOptions() {
+	Init();
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TStringGridOptions::TStringGridOptions(TStringGrid * Grid) {
+	Init();
+
+	FGrid = Grid;
+
+	FDefaultRowHeight = FGrid->DefaultRowHeight;
+	FColSizing = FGrid->Options.Contains(goColSizing);
+}
+
+// ---------------------------------------------------------------------------
+void TStringGridOptions::SetColSizing(bool Value) {
+	if (FColSizing == Value) {
+		return;
+	}
+
+	FColSizing = Value;
+
+	if (ColSizing) {
+		Grid->Options = Grid->Options << goColSizing;
+	}
+	else {
+		Grid->Options = Grid->Options >> goColSizing;
+	}
+}
+
+// ---------------------------------------------------------------------------
+void TStringGridOptions::SetDefaultRowHeight(int Value) {
+	if (FDefaultRowHeight == Value) {
+		return;
+	}
+
+	FDefaultRowHeight = Value;
+
+	Grid->DefaultRowHeight = DefaultRowHeight;
+}
+
+// ---------------------------------------------------------------------------
+void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns) {
 	Grid->ColCount = Columns->Count;
 
 	StringGridSetHeader(Grid, TStringGridBaseColumns::SERVICE, 0, 16);
@@ -154,10 +204,8 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 
 // ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
-	TGridDrawState State, TIntegerSet ColsReadOnly, TIntegerSet ColsLeftAlign,
-	TIntegerSet ColsCustomColor, TColor ReadOnlyColor, TColor CustomColor,
-	bool DrawFocusedOnInactive, bool ReadOnlyRow, TColor ChangedColor,
-	TColor SelectedRowColor) {
+	TGridDrawState State, TStringGridBaseColumns * Columns,
+	TStringGridOptions * Options, bool ReadOnlyRow) {
 
 	Grid->Canvas->Font = Grid->Font;
 
@@ -170,21 +218,16 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 				Grid->Canvas->Brush->Color = clMedGray;
 			}
 			else {
-				Grid->Canvas->Brush->Color = DrawFocusedOnInactive ? clSilver :
-					clWindow;
+				Grid->Canvas->Brush->Color = Options->DrawFocusedOnInactive ?
+					clSilver : clWindow;
 			}
 		}
 		else {
-			if (ColsCustomColor.Contains(ACol)) {
-				Grid->Canvas->Brush->Color = CustomColor;
+			if (Columns->ReadOnly.Contains(ACol) || ReadOnlyRow) {
+				Grid->Canvas->Brush->Color = Options->ColorReadOnly;
 			}
 			else {
-				if (ColsReadOnly.Contains(ACol) || ReadOnlyRow) {
-					Grid->Canvas->Brush->Color = ReadOnlyColor;
-				}
-				else {
-					Grid->Canvas->Brush->Color = Grid->Color;
-				}
+				Grid->Canvas->Brush->Color = Grid->Color;
 			}
 		}
 	}
@@ -201,14 +244,14 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 			ChangedRect.Right = ChangedRect.Right - 2;
 			ChangedRect.Left = ChangedRect.Right - 4;
 
-			Grid->Canvas->Brush->Color = ChangedColor;
+			Grid->Canvas->Brush->Color = Options->ColorChanged;
 
 			Grid->Canvas->FillRect(ChangedRect);
 
 			Grid->Canvas->Brush->Color = Grid->FixedColor;
 		}
 
-		if (SelectedRowColor != clMax && ARow == Grid->Row) {
+		if (Options->ColorSelected != clMax && ARow == Grid->Row) {
 			TRect ChangedRect = Rect;
 
 			ChangedRect.Top = ChangedRect.Top + 2;
@@ -216,7 +259,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 			ChangedRect.Left = ChangedRect.Left + 2;
 			ChangedRect.Right = ChangedRect.Left + 4;
 
-			Grid->Canvas->Brush->Color = SelectedRowColor;
+			Grid->Canvas->Brush->Color = Options->ColorSelected;
 
 			Grid->Canvas->FillRect(ChangedRect);
 
@@ -233,15 +276,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	else {
 		InflateRect(Rect, -2, 0);
 
-		if (!State.Contains(gdSelected)) {
-			if (ColsCustomColor.Contains(ACol)) {
-				// TODO
-				// Grid->Canvas->Font->Color =
-				// GetColorByBack(Grid->Canvas->Brush->Color);
-			}
-		}
-
-		if (ColsLeftAlign.Contains(ACol)) {
+		if (Columns->LeftAlign.Contains(ACol)) {
 			DrawText(Grid->Canvas->Handle, Grid->Cells[ACol][ARow].c_str(),
 				Grid->Cells[ACol][ARow].Length(), (RECT*)&Rect,
 				DT_SINGLELINE | DT_END_ELLIPSIS | DT_VCENTER);
