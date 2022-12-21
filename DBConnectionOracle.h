@@ -10,8 +10,6 @@
 // ---------------------------------------------------------------------------
 class TDBConnectionOracle : public TDBConnectionServer {
 private:
-	String FService;
-
 	String GetConnectionString();
 
 	__property String Database = {};

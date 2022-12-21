@@ -113,7 +113,7 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 // ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	TGridDrawState State, TStringGridBaseColumns * Columns,
-	TStringGridOptions * Options, bool ReadOnlyRow);
+	TStringGridOptions * Options, bool ReadOnlyRow = false);
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow);
 void StringGridInvalidateSelected(TStringGrid * Grid);
 
