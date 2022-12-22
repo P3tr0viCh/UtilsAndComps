@@ -58,27 +58,18 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 	TAboutObject * AboutObject = new TAboutObject();
 
 	if (IsShift() && IsCtrl()) {
-		sAppName = "Дураев";
-		sAppName += sLineBreak;
-		sAppName += "Константин Петрович";
-		sCopyright = "";
+		sAppName = "Дураев Константин Петрович";
+		bLineBreak = 0;
+		sCopyright = "Рандом говорит нам:";
 		sCaption = "Автор";
 		sDate = "";
 		sVersion = "29.03.1981";
 		iFontSize = 14;
 		sAddComp = NULL;
 		pPicture = NULL;
-		sText = "";
-		Randomize;
-		String SeedString = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-		for (int i = 1; i < 280; i++) {
-			if (i % 40 == 0) {
-				sText = sText + sLineBreak;
-			}
-			else {
-				sText = sText + SeedString[Random(33) + 1];
-				// sText = sText + L"Я";
-			}
+		sText = RandomStr("", 40);
+		for (int i = 0; i < 9; i++) {
+			sText = sText + sLineBreak + RandomStr("", 40);
 		}
 	}
 	else {
@@ -117,17 +108,26 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 		}
 
 		if (sText == NULL) {
-			sText = LoadStr(IDS_ABOUT_EULA1) + sLineBreak +
-				LoadStr(IDS_ABOUT_EULA2) + sLineBreak + LoadStr(IDS_ABOUT_EULA3)
-				+ sLineBreak + LoadStr(IDS_ABOUT_EULA4);
+			sText = LoadStr(IDS_ABOUT_EULA_1_1) + sLineBreak +
+				LoadStr(IDS_ABOUT_EULA_2) + sLineBreak +
+				LoadStr(IDS_ABOUT_EULA_3) + sLineBreak +
+				LoadStr(IDS_ABOUT_EULA_4);
 		}
+		else {
+			if (SameStr(sText, "LIC_#2")) {
+				sText = LoadStr(IDS_ABOUT_EULA_1_2) + sLineBreak +
+					LoadStr(IDS_ABOUT_EULA_2) + sLineBreak +
+					LoadStr(IDS_ABOUT_EULA_3) + sLineBreak +
+					LoadStr(IDS_ABOUT_EULA_4);
+			}
+		}
+	}
 
-		if (bLineBreak != MAXBYTE) {
-			I = PosPlace(SPACE, sAppName, bLineBreak);
-			sAppName = sAppName.SubString(1, I - 1) + sLineBreak +
-				sAppName.SubString(I + 1, MAXINT);
-		}
-	} // IsShift && IsCtrl
+	if (bLineBreak != MAXBYTE) {
+		I = PosPlace(SPACE, sAppName, bLineBreak);
+		sAppName = sAppName.SubString(1, I - 1) + sLineBreak +
+			sAppName.SubString(I + 1, MAXINT);
+	}
 
 	if (hIcon == NULL) {
 		hIcon = LoadIcon(HInstance, L"MAINICON");
@@ -265,7 +265,8 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 		lblAppName->Transparent = true;
 		lblAppName->Layout = tlCenter;
 		lblAppName->WordWrap = true;
-		lblAppName->SetBounds(4, 4, pnlName->ClientWidth - 4, pnlName->ClientHeight - 4);
+		lblAppName->SetBounds(4, 4, pnlName->ClientWidth - 4,
+			pnlName->ClientHeight - 4);
 
 		TLabel * lblAppName2 = new TLabel(Form); // Application Name (2)
 		lblAppName2->Parent = pnlName;
@@ -284,7 +285,8 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 		lblAppName2->Transparent = true;
 		lblAppName2->Layout = tlCenter;
 		lblAppName2->WordWrap = true;
-		lblAppName2->SetBounds(0, 0, pnlName->ClientWidth, pnlName->ClientHeight);
+		lblAppName2->SetBounds(0, 0, pnlName->ClientWidth,
+			pnlName->ClientHeight);
 	} // pPicture == NULL
 	else {
 		TImage * imgPicture = new TImage(Form);

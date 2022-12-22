@@ -49,5 +49,7 @@ TShortCut TextToWinShortCut(String Text, bool &HasWinKey);
 void SAdd(TStrings * S, String Text);
 void SAdd(TStrings * S, NativeUInt Ident);
 
+String RandomStr(String SeedString, int Length);
+
 // ---------------------------------------------------------------------------
 #endif

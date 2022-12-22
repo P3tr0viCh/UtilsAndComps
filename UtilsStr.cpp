@@ -374,3 +374,20 @@ void SAdd(TStrings * S, NativeUInt Ident) {
 }
 
 // ---------------------------------------------------------------------------
+String RandomStr(String SeedString, int Length) {
+	if (SeedString.IsEmpty()) {
+		SeedString = "юабцде╗фгхийклмнопярстужвьызшэщчъ";
+	}
+
+	String Result;
+
+	Randomize;
+
+	for (int i = 0; i < Length; i++) {
+		Result = Result + SeedString[Random(SeedString.Length()) + 1];
+	}
+
+	return Result;
+}
+
+// ---------------------------------------------------------------------------

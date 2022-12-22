@@ -2,9 +2,7 @@
 
 #pragma hdrstop
 
-#include "UtilsCryptoPP.h"
-// ---------------------------------------------------------------------------
-#pragma package(smart_init)
+#include <Sysutils.hpp>
 
 // add to Library path "..\CryptoPP"
 #pragma link "CryptoPP.lib"
@@ -14,6 +12,11 @@
 #include "hex.h"
 #include "aes.h"
 #include "sha.h"
+
+#include "UtilsCryptoPP.h"
+
+// ---------------------------------------------------------------------------
+#pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
 String EncryptAES(String Text, String Key) {
@@ -53,6 +56,59 @@ String HashSHA256(String Text) {
 		new CryptoPP::HexEncoder(new CryptoPP::StringSink(Result))));
 
 	return String(Result.c_str());
+}
+
+// ---------------------------------------------------------------------------
+String CRC(String Text) {
+	try {
+		return HashSHA256(Text);
+	}
+	catch (...) {
+		return "";
+	}
+}
+
+// ---------------------------------------------------------------------------
+String Encrypt(String Text, String Key) {
+	if (Text.IsEmpty()) {
+		return "";
+	}
+
+	try {
+		return EncryptAES(Text, Key);
+	}
+	catch (...) {
+		return "";
+	}
+}
+
+// ---------------------------------------------------------------------------
+String Decrypt(String Text, String Key) {
+	if (Text.IsEmpty()) {
+		return "";
+	}
+
+	try {
+		return DecryptAES(Text, Key);
+	}
+	catch (...) {
+		throw EEncodingError("decrypt");
+	}
+}
+
+// ---------------------------------------------------------------------------
+void CheckCRC(String CheckedStr, String EncryptedCRC, String Key) {
+	if (EncryptedCRC.IsEmpty()) {
+		throw EEncodingError("CRC empty");
+	}
+
+	String DecryptedCRC = Decrypt(EncryptedCRC, Key);
+
+	String CheckedStrCRC = CRC(CheckedStr);
+
+	if (!SameStr(CheckedStrCRC, DecryptedCRC)) {
+		throw EEncodingError("CRC wrong");
+	}
 }
 
 // ---------------------------------------------------------------------------
