@@ -51,5 +51,8 @@ void SAdd(TStrings * S, NativeUInt Ident);
 
 String RandomStr(String SeedString, int Length);
 
+String CreateGUID();
+String CreateUUID();
+
 // ---------------------------------------------------------------------------
 #endif

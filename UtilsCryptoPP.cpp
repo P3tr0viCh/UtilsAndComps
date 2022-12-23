@@ -78,7 +78,7 @@ String Encrypt(String Text, String Key) {
 		return EncryptAES(Text, Key);
 	}
 	catch (...) {
-		return "";
+		throw EEncodingError("encrypt");
 	}
 }
 

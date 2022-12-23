@@ -391,3 +391,22 @@ String RandomStr(String SeedString, int Length) {
 }
 
 // ---------------------------------------------------------------------------
+String CreateGUID() {
+	GUID Guid;
+
+	HRESULT HResult = CreateGUID(Guid);
+
+	if (HResult == S_OK) {
+		return GUIDToString(Guid);
+	}
+	else {
+		throw Exception("generate guid failed");
+	}
+}
+
+// ---------------------------------------------------------------------------
+String CreateUUID() {
+	return CreateGUID().SubString(2, 36);
+}
+
+// ---------------------------------------------------------------------------
