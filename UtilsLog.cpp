@@ -65,7 +65,8 @@ void WriteToLog(String S) {
 
 		if (LogFile != INVALID_HANDLE_VALUE) {
 			SS = AnsiString(FormatDateTime(LoadStr(IDS_DATETIME_FORMAT_LOG),
-				DateTime) + "; " + RemoveLineBreaks(S) + sLineBreak);
+				DateTime) + "; " + RemoveExtraSpaces(ReplaceLineBreaks(S)) +
+				sLineBreak);
 
 			if (SetFilePointer(LogFile, 0, NULL,
 				FILE_END) != INVALID_SET_FILE_POINTER) {

@@ -281,7 +281,7 @@ String ConcatStrings(const String S1, const String S2, const String Separator) {
 }
 
 // ---------------------------------------------------------------------------
-String RemoveLineBreaks(const String S) {
+String ReplaceLineBreaks(const String S, const char C) {
 	String Result = S;
 
 	for (int i = Result.Length(); i > 1; i--) {
@@ -290,7 +290,7 @@ String RemoveLineBreaks(const String S) {
 		}
 		else {
 			if (Result[i] == '\n') {
-				Result[i] = SPACE;
+				Result[i] = C;
 			}
 		}
 	}
