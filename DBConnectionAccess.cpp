@@ -55,7 +55,7 @@ String __fastcall TDBConnectionAccess::ToString() {
 // ---------------------------------------------------------------------------
 String TDBConnectionAccess::GetConnectionString() {
 	return Format
-		("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=%s;Persist Security Info=False;User ID=%s;Jet OLEDB:Database Password=%s;",
+		("DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=%s;UID=%s;PWD=%s;",
 		ARRAYOFCONST((Database, User, Password)));
 }
 

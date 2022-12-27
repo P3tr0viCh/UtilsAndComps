@@ -64,11 +64,14 @@ TShortCut TextToWinShortCut(String Text, bool &HasWinKey);
 // ---------------------------------------------------------------------------
 void SAdd(TStrings * S, String Text);
 void SAdd(TStrings * S, NativeUInt Ident);
+bool SContains(TStrings * S, String Text);
 
 // ---------------------------------------------------------------------------
 String RandomStr(String SeedString, int Length);
 
 // ---------------------------------------------------------------------------
+String GUIDToUUID(String Value);
+String UUIDToGUID(String Value);
 String CreateGUID();
 String CreateUUID();
 

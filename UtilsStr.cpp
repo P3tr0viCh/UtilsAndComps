@@ -374,6 +374,11 @@ void SAdd(TStrings * S, NativeUInt Ident) {
 }
 
 // ---------------------------------------------------------------------------
+bool SContains(TStrings * S, String Text) {
+	return S->IndexOf(Text) != -1;
+}
+
+// ---------------------------------------------------------------------------
 String RandomStr(String SeedString, int Length) {
 	if (SeedString.IsEmpty()) {
 		SeedString = "¿¡¬√ƒ≈®∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ";
@@ -388,6 +393,16 @@ String RandomStr(String SeedString, int Length) {
 	}
 
 	return Result;
+}
+
+// ---------------------------------------------------------------------------
+String GUIDToUUID(String Value) {
+	return Value.SubString(2, 36);
+}
+
+// ---------------------------------------------------------------------------
+String UUIDToGUID(String Value) {
+	return "{" + Value + "}";
 }
 
 // ---------------------------------------------------------------------------
@@ -406,7 +421,7 @@ String CreateGUID() {
 
 // ---------------------------------------------------------------------------
 String CreateUUID() {
-	return CreateGUID().SubString(2, 36);
+	return GUIDToUUID(CreateGUID());
 }
 
 // ---------------------------------------------------------------------------
