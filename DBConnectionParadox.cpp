@@ -41,11 +41,11 @@ String __fastcall TDBConnectionParadox::ToString() {
 	String S;
 
 	S = "TDBConnectionParadox{";
-	S += "Database='" + Database + "'";
+	S += "Database=" + Database;
 	S += ", ";
-	S += "User='" + User + "'";
+	S += "User=" + User;
 	S += ", ";
-	S += "Password='" + Password + "'";
+	S += "Password=" + Password;
 	S += "}";
 
 	return S;

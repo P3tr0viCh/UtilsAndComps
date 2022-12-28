@@ -42,11 +42,11 @@ String __fastcall TDBConnectionAccess::ToString() {
 	String S;
 
 	S = "TDBConnectionAccess{";
-	S += "Database='" + Database + "'";
+	S += "Database=" + Database;
 	S += ", ";
-	S += "User='" + User + "'";
+	S += "User=" + User;
 	S += ", ";
-	S += "Password='" + Password + "'";
+	S += "Password=" + Password;
 	S += "}";
 
 	return S;

@@ -45,13 +45,13 @@ String __fastcall TDBConnectionFirebird::ToString() {
 	String S;
 
 	S = "TDBConnectionFirebird{";
-	S += "Database='" + Database + "'";
+	S += "Database=" + Database;
 	S += ", ";
-	S += "User='" + User + "'";
+	S += "User=" + User;
 	S += ", ";
-	S += "Password='" + Password + "'";
+	S += "Password=" + Password;
 	S += ", ";
-	S += "Client='" + Client + "'";
+	S += "Client=" + Client;
 	S += "}";
 
 	return S;

@@ -46,17 +46,17 @@ String __fastcall TDBConnectionOracle::ToString() {
 	String S;
 
 	S = "TDBConnectionOracle{";
-	S += "Driver='" + Driver + "'";
+	S += "Driver=" + Driver;
 	S += ", ";
-	S += "Host='" + Host + "'";
+	S += "Host=" + Host;
 	S += ", ";
-	S += "Port='" + Port + "'";
+	S += "Port=" + Port;
 	S += ", ";
-	S += "Service='" + Service + "'";
+	S += "Service=" + Service;
 	S += ", ";
-	S += "User='" + User + "'";
+	S += "User=" + User;
 	S += ", ";
-	S += "Password='" + Password + "'";
+	S += "Password=" + Password;
 	S += "}";
 
 	return S;
