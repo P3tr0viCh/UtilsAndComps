@@ -57,7 +57,7 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 
 	TAboutObject * AboutObject = new TAboutObject();
 
-	if (IsShift() && IsCtrl()) {
+	if (IsShift() && IsCtrl() && IsAlt()) {
 		sAppName = "Дураев Константин Петрович";
 		bLineBreak = 0;
 		sCopyright = "Рандом говорит нам:";
