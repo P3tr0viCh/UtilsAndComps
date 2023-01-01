@@ -23,6 +23,8 @@ private:
 
 	NativeInt FTag;
 
+	bool FSQLToLog;
+
 	// -----------------------------------------------------------------------
 	__fastcall TDBOperation();
 
@@ -42,7 +44,10 @@ public:
 
 	__property String ErrorMessage = {read = FErrorMessage};
 
-	__property NativeInt Tag = {read=FTag, write=FTag, default=0};
+	__property NativeInt Tag = {read = FTag, write = FTag, default = 0};
+
+	__property bool SQLToLog = {
+		read = FSQLToLog, write = FSQLToLog, default = false};
 };
 
 // ---------------------------------------------------------------------------

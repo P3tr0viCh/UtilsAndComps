@@ -11,7 +11,7 @@
 __fastcall TDBOperationCheckFirebird::TDBOperationCheckFirebird
 	(TDBConnectionFirebird * Connection, IDBOperationEvent * DBOperationEvent)
 	: TDBOperationCheck(Connection, DBOperationEvent) {
-	FQuery = "SELECT rdb$get_context('SYSTEM', 'ENGINE_VERSION') FROM rdb$database;";
+	Query = "SELECT rdb$get_context('SYSTEM', 'ENGINE_VERSION') FROM rdb$database;";
 }
 
 // ---------------------------------------------------------------------------

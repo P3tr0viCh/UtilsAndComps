@@ -2,6 +2,8 @@
 
 #pragma hdrstop
 
+#include "UtilsLog.h"
+
 #include "DBOperationCheck.h"
 
 // ---------------------------------------------------------------------------
@@ -20,7 +22,11 @@ void TDBOperationCheck::Operation() {
 	try {
 		DataSet = new TADODataSet(NULL);
 		try {
-			DataSet->Recordset = Connection->Execute(FQuery);
+			if (SQLToLog) {
+				WriteToLog(Query);
+			}
+
+			DataSet->Recordset = Connection->Execute(Query);
 
 			FDBVersion = GetFieldVersion()->AsString;
 		}

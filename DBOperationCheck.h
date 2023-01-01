@@ -13,7 +13,7 @@ private:
 protected:
 	TADODataSet * DataSet;
 
-	String FQuery;
+	String Query;
 
 	// -----------------------------------------------------------------------
 	virtual TField * GetFieldVersion() = 0;

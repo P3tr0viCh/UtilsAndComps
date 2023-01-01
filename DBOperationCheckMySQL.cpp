@@ -11,7 +11,7 @@
 __fastcall TDBOperationCheckMySQL::TDBOperationCheckMySQL
 	(TDBConnectionMySQL * Connection, IDBOperationEvent * DBOperationEvent)
 	: TDBOperationCheck(Connection, DBOperationEvent) {
-	FQuery = "SELECT @@version;";
+	Query = "SELECT @@version;";
 }
 
 // ---------------------------------------------------------------------------

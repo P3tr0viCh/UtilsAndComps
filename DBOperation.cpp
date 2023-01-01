@@ -15,6 +15,10 @@ __fastcall TDBOperation::TDBOperation(TDBConnection * DBConnection,
 	FDBConnection = DBConnection;
 
 	FDBOperationEvent = DBOperationEvent;
+
+	FTag = 0;
+
+	FSQLToLog = false;
 }
 
 // ---------------------------------------------------------------------------

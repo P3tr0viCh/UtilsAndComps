@@ -11,7 +11,7 @@
 __fastcall TDBOperationCheckAccess::TDBOperationCheckAccess
 	(TDBConnectionAccess * Connection, IDBOperationEvent * DBOperationEvent,
 	String TableName) : TDBOperationCheck(Connection, DBOperationEvent) {
-	FQuery = "SELECT COUNT(*) FROM " + TableName + ";";
+	Query = "SELECT COUNT(*) FROM " + TableName + ";";
 }
 
 // ---------------------------------------------------------------------------

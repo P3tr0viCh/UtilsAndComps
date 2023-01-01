@@ -11,7 +11,7 @@
 __fastcall TDBOperationCheckOracle::TDBOperationCheckOracle
 	(TDBConnectionOracle * Connection, IDBOperationEvent * DBOperationEvent)
 	: TDBOperationCheck(Connection, DBOperationEvent) {
-	FQuery = "SELECT * FROM v$version;";
+	Query = "SELECT * FROM v$version;";
 }
 
 // ---------------------------------------------------------------------------
