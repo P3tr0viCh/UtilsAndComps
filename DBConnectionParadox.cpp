@@ -54,8 +54,8 @@ String __fastcall TDBConnectionParadox::ToString() {
 // ---------------------------------------------------------------------------
 String TDBConnectionParadox::GetConnectionString() {
 	return Format
-		("Provider=MSDASQL;DRIVER={Microsoft Paradox Driver (*.db )};Persist Security Info=True;PWD=%s;Extended Properties=FIL=Paradox 7.x;DBQ=%1:s;DefaultDir=%1:s;Initial Catalog=%1:s;",
-		ARRAYOFCONST((Password, Database)));
+		("DRIVER={Microsoft Paradox Driver (*.db )};DBQ=%0:s;Persist Security Info=True;PWD=%1:s;Mode=Read;Extended Properties='FIL=Paradox 7.x;DefaultDir=%0:s;';Initial Catalog=%0:s;",
+		ARRAYOFCONST((Database, Password)));
 }
 
 // ---------------------------------------------------------------------------

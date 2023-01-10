@@ -49,6 +49,7 @@ class TStringGridOptions : public TObject {
 	TColor FColorReadOnly;
 	TColor FColorSelected;
 
+	bool FEditing;
 	bool FColSizing;
 
 	int FDefaultRowHeight;
@@ -58,6 +59,7 @@ class TStringGridOptions : public TObject {
 	// -----------------------------------------------------------------------
 	void Init();
 
+	void SetEditing(bool Value);
 	void SetColSizing(bool Value);
 	void SetDefaultRowHeight(int Value);
 
@@ -75,6 +77,7 @@ public:
 	__property TColor ColorSelected = {
 		read = FColorSelected, write = FColorSelected};
 
+	__property bool Editing = {read = FEditing, write = SetEditing};
 	__property bool ColSizing = {read = FColSizing, write = SetColSizing};
 
 	__property int DefaultRowHeight = {

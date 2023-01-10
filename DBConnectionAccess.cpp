@@ -55,7 +55,7 @@ String __fastcall TDBConnectionAccess::ToString() {
 // ---------------------------------------------------------------------------
 String TDBConnectionAccess::GetConnectionString() {
 	return Format
-		("DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=%s;UID=%s;PWD=%s;",
+		("DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=%s;UID=%s;Persist Security Info=True;PWD=%s;",
 		ARRAYOFCONST((Database, User, Password)));
 }
 

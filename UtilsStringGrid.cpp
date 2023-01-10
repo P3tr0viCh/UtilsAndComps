@@ -15,6 +15,7 @@ void TStringGridOptions::Init() {
 	FColorReadOnly = clMax;
 	FColorSelected = clMax;
 
+	FEditing = false;
 	FColSizing = false;
 	FDefaultRowHeight = -1;
 	FDrawFocusedOnInactive = true;
@@ -32,6 +33,7 @@ __fastcall TStringGridOptions::TStringGridOptions(TStringGrid * Grid) {
 	FGrid = Grid;
 
 	FDefaultRowHeight = FGrid->DefaultRowHeight;
+	FEditing = FGrid->Options.Contains(goEditing);
 	FColSizing = FGrid->Options.Contains(goColSizing);
 }
 
@@ -48,6 +50,22 @@ void TStringGridOptions::SetColSizing(bool Value) {
 	}
 	else {
 		Grid->Options = Grid->Options >> goColSizing;
+	}
+}
+
+// ---------------------------------------------------------------------------
+void TStringGridOptions::SetEditing(bool Value) {
+	if (FEditing == Value) {
+		return;
+	}
+
+	FEditing = Value;
+
+	if (Editing) {
+		Grid->Options = Grid->Options << goEditing;
+	}
+	else {
+		Grid->Options = Grid->Options >> goEditing;
 	}
 }
 
