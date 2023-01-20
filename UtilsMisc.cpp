@@ -23,12 +23,25 @@ int MsgBox(String sMessage, UINT iType, String sCaption, HWND hHWND,
 
 	if (hHWND == NULL) {
 		if (Screen->ActiveForm) {
-			if ((Screen->ActiveForm == Application->MainForm) ||
-				(Screen->ActiveForm->FormState.Contains(fsModal))) {
+			if (Screen->ActiveForm == Application->MainForm) {
 				hHWND = Screen->ActiveForm->Handle;
+
+				for (int i = 0; i < Screen->FormCount; i++) {
+					if (Screen->Forms[i]->FormStyle == fsStayOnTop) {
+						if (Screen->Forms[i]->Visible) {
+							hHWND = Application->Handle;
+							break;
+						}
+					}
+				}
 			}
 			else {
-				hHWND = Application->Handle;
+				if (Screen->ActiveForm->FormState.Contains(fsModal)) {
+					hHWND = Screen->ActiveForm->Handle;
+				}
+				else {
+					hHWND = Application->Handle;
+				}
 			}
 		}
 		else {

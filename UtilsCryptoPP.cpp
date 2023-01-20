@@ -97,16 +97,14 @@ String Decrypt(String Text, String Key) {
 }
 
 // ---------------------------------------------------------------------------
-void CheckCRC(String CheckedStr, String EncryptedCRC, String Key) {
+void CheckCRC(String CheckedCRC, String EncryptedCRC, String Key) {
 	if (EncryptedCRC.IsEmpty()) {
 		throw EEncodingError("CRC empty");
 	}
 
 	String DecryptedCRC = Decrypt(EncryptedCRC, Key);
 
-	String CheckedStrCRC = CRC(CheckedStr);
-
-	if (!SameStr(CheckedStrCRC, DecryptedCRC)) {
+	if (!SameStr(CheckedCRC, DecryptedCRC)) {
 		throw EEncodingError("CRC wrong");
 	}
 }
