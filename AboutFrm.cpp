@@ -428,15 +428,16 @@ void __fastcall TAboutObject::Click(TObject * Sender) {
 
 	switch (((TControl*) Sender)->Tag) {
 	case 1:
-		if (MailAddress != NULL)
-			ShellExecEx("mailto:" + MailAddress + "?subject=" +
-			MailSubject, "");
-		else
+		if (MailAddress.IsEmpty()) {
 			MsgBox(((TControl*) Sender)->Hint);
+		}
+		else {
+			OKExec("mailto:" + MailAddress + "?subject=" + MailSubject, "");
+		}
 		break;
 
 	case 2:
-		ShellExec(FileInAppDir(LoadStr(IDS_ABOUT_LICENSES)));
+		OKExec(FileInAppDir(LoadStr(IDS_ABOUT_LICENSES)));
 	}
 
 	RestoreCursor();

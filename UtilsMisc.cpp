@@ -85,6 +85,27 @@ bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo, HWND hHWND) {
 }
 
 // ---------------------------------------------------------------------------
+void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
+	if (Error == 0) {
+		Error = GetLastError();
+	}
+
+	if (AddStr.IsEmpty()) {
+		AddStr = SysErrorMessage(Error);
+	}
+	else {
+		if (Pos("%s", AddStr) == 0) {
+			AddStr = AddStr + SysErrorMessage(Error);
+		}
+		else {
+			AddStr = Format(AddStr, ARRAYOFCONST((SysErrorMessage(Error))));
+		}
+	}
+
+	MsgBoxErr(AddStr, hHWND);
+}
+
+// ---------------------------------------------------------------------------
 void ProcMess() {
 	Application->ProcessMessages();
 }
@@ -283,27 +304,6 @@ void Delay(DWORD mSecs) {
 		ProcMess();
 	}
 	while ((GetTickCount() - FirstTick) < mSecs);
-}
-
-// ---------------------------------------------------------------------------
-void ShowErrorBox(DWORD Error, String AddStr, HWND hHWND) {
-	if (Error == 0) {
-		Error = GetLastError();
-	}
-
-	if (AddStr.IsEmpty()) {
-		AddStr = SysErrorMessage(Error);
-	}
-	else {
-		if (Pos("%s", AddStr) == 0) {
-			AddStr = AddStr + SysErrorMessage(Error);
-		}
-		else {
-			AddStr = Format(AddStr, ARRAYOFCONST((SysErrorMessage(Error))));
-		}
-	}
-
-	MsgBoxErr(AddStr, hHWND);
 }
 
 // ---------------------------------------------------------------------------

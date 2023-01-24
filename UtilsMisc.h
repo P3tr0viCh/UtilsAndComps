@@ -15,6 +15,7 @@ void MsgBoxErr(NativeUInt Ident, HWND hHWND = NULL);
 bool MsgBoxYesNo(String sMessage = "To be or not to be?", bool DefaultNo = true,
 	HWND hHWND = NULL);
 bool MsgBoxYesNo(NativeUInt Ident, bool DefaultNo = true, HWND hHWND = NULL);
+void ShowErrorBox(DWORD Error = 0, String AddStr = NULL, HWND hHWND = NULL);
 
 // ---------------------------------------------------------------------------
 void ProcMess();
@@ -48,9 +49,6 @@ void CopyToClipBoard(String S);
 
 // ---------------------------------------------------------------------------
 void Delay(DWORD mSecs);
-
-// ---------------------------------------------------------------------------
-void ShowErrorBox(DWORD Error = 0, String AddStr = NULL, HWND hHWND = NULL);
 
 // ---------------------------------------------------------------------------
 double Round(double Number);

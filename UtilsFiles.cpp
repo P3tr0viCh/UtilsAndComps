@@ -7,39 +7,37 @@
 #include <System.Classes.hpp>
 
 #include "UtilsMisc.h"
+
 #include "UtilsFiles.h"
 
-#include "UtilsFilesStr.h"
-
 // ---------------------------------------------------------------------------
-bool OKExec(const int Inst, String FileName) {
-	bool Result = Inst > 32;
+bool OKExec(const String FileName, const String Params) {
+	HINSTANCE hInstance = ShellExecute(Application->Handle, NULL,
+		FileName.w_str(), Params.w_str(), NULL, SW_SHOWNORMAL);
 
-	if (!Result) {
-		if (Inst == ERROR_ACCESS_DENIED)
-			return Result;
-
-		SetForegroundWindow(Application->Handle);
-
-		if ((Inst == ERROR_FILE_NOT_FOUND) && (FileName != NULL))
-			MsgBoxErr(Format(LoadStr(IDS_ERROR_FILE_NOT_FOUND),
-			ARRAYOFCONST((FileName))));
-		else
-			ShowErrorBox(GetLastError());
+	if ((INT_PTR)hInstance > 32) {
+		return true;
 	}
 
-	return Result;
+	ShowErrorBox(GetLastError());
+
+	return false;
 }
 
 // ---------------------------------------------------------------------------
-bool ShellExec(const String FileName) {
-	return OKExec((int) ShellExecEx(FileName, ""), FileName);
-}
+void ShellExec(const String FileName, const String Params) {
+	HINSTANCE hInstance = ShellExecute(Application->Handle, NULL,
+		FileName.w_str(), Params.w_str(), NULL, SW_SHOWNORMAL);
 
-// ---------------------------------------------------------------------------
-HINSTANCE ShellExecEx(const String FileName, const String Params) {
-	return ShellExecute(Application->Handle, NULL, FileName.w_str(),
-		Params.w_str(), NULL, SW_SHOWNORMAL);
+	if ((INT_PTR) hInstance > 32) {
+		return;
+	}
+
+	if ((INT_PTR) hInstance == ERROR_FILE_NOT_FOUND) {
+		throw EFileNotFoundException("file not found");
+	}
+
+	throw Exception("shell exec error:" + IntToStr((int)GetLastError()));
 }
 
 // ---------------------------------------------------------------------------

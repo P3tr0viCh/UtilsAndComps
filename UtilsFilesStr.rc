@@ -1,7 +1,0 @@
-#include "UtilsFilesStr.h"
-
-STRINGTABLE
-BEGIN
-IDS_ERROR_FILE_NOT_FOUND,
-        "Файл ""%s"" не существует или не доступен в данный момент"
-END

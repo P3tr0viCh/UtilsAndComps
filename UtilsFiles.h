@@ -6,9 +6,8 @@
 #include <System.Types.hpp>
 
 // ---------------------------------------------------------------------------
-bool OKExec(const int Inst, String FileName = NULL);
-bool ShellExec(const String FileName);
-HINSTANCE ShellExecEx(const String FileName, const String Params);
+bool OKExec(const String FileName, const String Params = NULL);
+void ShellExec(const String FileName, const String Params = NULL);
 
 // ---------------------------------------------------------------------------
 String FileInAppDir(String FileName);
