@@ -26,6 +26,10 @@ bool OKExec(const String FileName, const String Params) {
 
 // ---------------------------------------------------------------------------
 void ShellExec(const String FileName, const String Params) {
+	if (FileName.IsEmpty()) {
+		throw EFileNotFoundException("filename empty");
+	}
+
 	HINSTANCE hInstance = ShellExecute(Application->Handle, NULL,
 		FileName.w_str(), Params.w_str(), NULL, SW_SHOWNORMAL);
 
