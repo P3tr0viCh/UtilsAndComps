@@ -10,12 +10,53 @@
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
+__fastcall TStringGridRowService::TStringGridRowService(TStringGrid * Grid,
+	int Row) {
+	FGrid = Grid;
+
+	FRow = Row;
+
+	FChanged = false;
+	FReadOnly = false;
+}
+
+// ---------------------------------------------------------------------------
+void TStringGridRowService::SetChanged(bool Value) {
+	if (FChanged == Value) {
+		return;
+	}
+
+	FChanged = Value;
+
+	StringGridInvalidateCell(Grid, TStringGridBaseColumns::SERVICE, Row);
+}
+
+// ---------------------------------------------------------------------------
+void TStringGridRowService::SetReadOnly(bool Value) {
+	if (FReadOnly == Value) {
+		return;
+	}
+
+	FReadOnly = Value;
+
+	StringGridInvalidateRow(Grid, Row);
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TStringGridColService::TStringGridColService(TStringGrid * Grid) {
+	FGrid = Grid;
+
+	FReadOnly = false;
+	FAlignment = taCenter;
+	FEditorType = etText;
+}
+
+// ---------------------------------------------------------------------------
 void TStringGridOptions::Init() {
 	FColorChanged = clMax;
 	FColorReadOnly = clMax;
 	FColorSelected = clMax;
 
-	FDefaultRowHeight = -1;
 	FDrawFocusedOnInactive = true;
 }
 
@@ -29,8 +70,6 @@ __fastcall TStringGridOptions::TStringGridOptions(TStringGrid * Grid) {
 	Init();
 
 	FGrid = Grid;
-
-	FDefaultRowHeight = FGrid->DefaultRowHeight;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,19 +103,16 @@ void TStringGridOptions::SetColSizing(bool Value) {
 }
 
 // ---------------------------------------------------------------------------
-void TStringGridOptions::SetDefaultRowHeight(int Value) {
-	if (FDefaultRowHeight == Value) {
-		return;
-	}
-
-	FDefaultRowHeight = Value;
-
-	Grid->DefaultRowHeight = DefaultRowHeight;
-}
-
-// ---------------------------------------------------------------------------
 void StringGridInit(TStringGrid * Grid, TStringGridBaseColumns * Columns) {
 	Grid->ColCount = Columns->Count;
+
+	Grid->Canvas->Font->Assign(Grid->Font);
+	Grid->DefaultRowHeight = Grid->Canvas->TextHeight("ComboBox") + 8;
+
+	for (int ACol = TStringGridBaseColumns::SERVICE; ACol < Grid->ColCount;
+	ACol++) {
+		Grid->Objects[ACol][0] = new TStringGridColService(Grid);
+	}
 
 	StringGridSetHeader(Grid, TStringGridBaseColumns::SERVICE, 0, 16);
 
@@ -94,12 +130,12 @@ int StringGridAddRow(TStringGrid * Grid) {
 		Grid->RowCount++;
 	}
 
-	int Index = Grid->RowCount - 1;
+	int Row = Grid->RowCount - 1;
 
-	Grid->Objects[TStringGridBaseColumns::SERVICE][Index] =
-		new TStringGridService();
+	Grid->Objects[TStringGridBaseColumns::SERVICE][Row] =
+		new TStringGridRowService(Grid, Row);
 
-	return Index;
+	return Row;
 }
 
 // ---------------------------------------------------------------------------
@@ -152,37 +188,14 @@ void StringGridDeleteRow(TStringGrid * Grid, int ARow, int AColCount) {
 }
 
 // ---------------------------------------------------------------------------
-TStringGridService * StringGridRowGetService(TStringGrid * Grid, int Index) {
-	return ((TStringGridService*)Grid->Objects[TStringGridBaseColumns::SERVICE]
-		[Index]);
+TStringGridRowService * StringGridGetRowService(TStringGrid * Grid, int ARow) {
+	return ((TStringGridRowService*)Grid->Objects
+		[TStringGridBaseColumns::SERVICE][ARow]);
 }
 
 // ---------------------------------------------------------------------------
-void StringGridRowSetChanged(TStringGrid * Grid, int Index, bool Changed) {
-	TStringGridService * Service = StringGridRowGetService(Grid, Index);
-
-	if (Service == NULL) {
-		return;
-	}
-
-	if (Service->Changed == Changed) {
-		return;
-	}
-
-	Service->Changed = Changed;
-
-	StringGridInvalidateCell(Grid, TStringGridBaseColumns::SERVICE, Index);
-}
-
-// ---------------------------------------------------------------------------
-bool StringGridRowIsChanged(TStringGrid * Grid, int Index) {
-	TStringGridService * Service = StringGridRowGetService(Grid, Index);
-
-	if (Service == NULL) {
-		return false;
-	}
-
-	return Service->Changed;
+TStringGridColService * StringGridGetColService(TStringGrid * Grid, int ACol) {
+	return ((TStringGridColService*)Grid->Objects[ACol][0]);
 }
 
 // ---------------------------------------------------------------------------
@@ -215,11 +228,24 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 }
 
 // ---------------------------------------------------------------------------
+void StringGridSetCellChecked(TStringGrid * Grid, int ACol, int ARow,
+	bool Value) {
+	Grid->Cells[ACol][ARow] = Value ? "X" : "";
+}
+
+// ---------------------------------------------------------------------------
+bool StringGridGetCellChecked(TStringGrid * Grid, int ACol, int ARow) {
+	return !Grid->Cells[ACol][ARow].IsEmpty();
+}
+
+// ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
-	TGridDrawState State, TStringGridBaseColumns * Columns,
-	TStringGridOptions * Options, bool ReadOnlyRow) {
+	TGridDrawState State, TStringGridOptions * Options) {
 
 	Grid->Canvas->Font = Grid->Font;
+
+	TStringGridRowService * RowService = StringGridGetRowService(Grid, ARow);
+	TStringGridColService * ColService = StringGridGetColService(Grid, ACol);
 
 	if (State.Contains(gdFixed)) {
 		Grid->Canvas->Brush->Color = Grid->FixedColor;
@@ -235,7 +261,8 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 			}
 		}
 		else {
-			if (Columns->ReadOnly.Contains(ACol) || ReadOnlyRow) {
+			if ((ColService != NULL && ColService->ReadOnly) ||
+				(RowService != NULL && RowService->ReadOnly)) {
 				Grid->Canvas->Brush->Color = Options->ColorReadOnly;
 			}
 			else {
@@ -247,8 +274,8 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	Grid->Canvas->FillRect(Rect);
 
 	if (State.Contains(gdFixed)) {
-		if (ARow > 0 && ACol == TStringGridBaseColumns::SERVICE &&
-			StringGridRowIsChanged(Grid, ARow)) {
+		if (ARow > 0 && ACol == TStringGridBaseColumns::SERVICE && RowService !=
+			NULL && RowService->Changed) {
 			TRect ChangedRect = Rect;
 
 			ChangedRect.Top = ChangedRect.Top + 2;
@@ -288,16 +315,22 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	else {
 		InflateRect(Rect, -2, 0);
 
-		if (Columns->LeftAlign.Contains(ACol)) {
-			DrawText(Grid->Canvas->Handle, Grid->Cells[ACol][ARow].c_str(),
-				Grid->Cells[ACol][ARow].Length(), (RECT*)&Rect,
-				DT_SINGLELINE | DT_END_ELLIPSIS | DT_VCENTER);
+		UINT Alignment = DT_CENTER;
+
+		if (ColService != NULL) {
+			switch (ColService->Alignment) {
+			case taLeftJustify:
+				Alignment = DT_LEFT;
+				break;
+			case taRightJustify:
+				Alignment = DT_RIGHT;
+				break;
+			}
 		}
-		else {
-			DrawText(Grid->Canvas->Handle, Grid->Cells[ACol][ARow].c_str(),
-				Grid->Cells[ACol][ARow].Length(), (RECT*)&Rect,
-				DT_SINGLELINE | DT_END_ELLIPSIS | DT_CENTER | DT_VCENTER);
-		}
+
+		DrawText(Grid->Canvas->Handle, Grid->Cells[ACol][ARow].c_str(),
+			Grid->Cells[ACol][ARow].Length(), (RECT*)&Rect,
+			DT_SINGLELINE | DT_END_ELLIPSIS | DT_VCENTER | Alignment);
 	}
 }
 
@@ -305,6 +338,13 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow) {
 	TRect Rect = Grid->CellRect(ACol, ARow);
 	InvalidateRect(Grid->Handle, &Rect, false);
+}
+
+// ---------------------------------------------------------------------------
+void StringGridInvalidateRow(TStringGrid * Grid, int ARow) {
+	for (int ACol = 1; ACol < Grid->ColCount; ACol++) {
+		StringGridInvalidateCell(Grid, ACol, ARow);
+	}
 }
 
 // ---------------------------------------------------------------------------

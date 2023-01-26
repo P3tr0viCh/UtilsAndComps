@@ -21,12 +21,6 @@ protected:
 	};
 
 public:
-	TIntegerSet ReadOnly;
-
-	TIntegerSet ComboBox;
-
-	TIntegerSet LeftAlign;
-
 	virtual void SetStringGridHeader(TStringGrid * Grid) = 0;
 
 	// -----------------------------------------------------------------------
@@ -34,11 +28,53 @@ public:
 };
 
 // ---------------------------------------------------------------------------
-class TStringGridService : public TObject {
+class TStringGridRowService : public TObject {
+	TStringGrid * FGrid;
+
+	int FRow;
+
 	bool FChanged;
+	bool FReadOnly;
+
+	// -----------------------------------------------------------------------
+	void SetChanged(bool Value);
+	void SetReadOnly(bool Value);
 
 public:
-	__property bool Changed = {read = FChanged, write = FChanged};
+	__fastcall TStringGridRowService(TStringGrid * Grid, int Row);
+
+	// -----------------------------------------------------------------------
+	__property TStringGrid * Grid = {read = FGrid};
+
+	__property int Row = {read = FRow};
+
+	__property bool Changed = {read = FChanged, write = SetChanged};
+	__property bool ReadOnly = {read = FReadOnly, write = SetReadOnly};
+};
+
+// ---------------------------------------------------------------------------
+enum TEditorType {
+	etText, etComboBox
+};
+
+// ---------------------------------------------------------------------------
+class TStringGridColService : public TObject {
+	TStringGrid * FGrid;
+
+	bool FReadOnly;
+	TAlignment FAlignment;
+	TEditorType FEditorType;
+
+public:
+	__fastcall TStringGridColService(TStringGrid * Grid);
+
+	// -----------------------------------------------------------------------
+	__property TStringGrid * Grid = {read = FGrid, write = FGrid};
+
+	__property bool ReadOnly = {read = FReadOnly, write = FReadOnly};
+	__property TAlignment Alignment = {read = FAlignment, write = FAlignment};
+	__property TEditorType EditorType = {read = FEditorType, write = FEditorType
+	};
 };
 
 // ---------------------------------------------------------------------------
@@ -48,8 +84,6 @@ class TStringGridOptions : public TObject {
 	TColor FColorChanged;
 	TColor FColorReadOnly;
 	TColor FColorSelected;
-
-	int FDefaultRowHeight;
 
 	bool FDrawFocusedOnInactive;
 
@@ -80,9 +114,6 @@ public:
 	__property bool Editing = {read = GetEditing, write = SetEditing};
 	__property bool ColSizing = {read = GetColSizing, write = SetColSizing};
 
-	__property int DefaultRowHeight = {
-		read = FDefaultRowHeight, write = SetDefaultRowHeight};
-
 	__property bool DrawFocusedOnInactive = {
 		read = FDrawFocusedOnInactive, write = FDrawFocusedOnInactive};
 };
@@ -99,11 +130,8 @@ void StringGridUpdateOrderNum(TStringGrid * Grid, int ACol, int StartValue = 1);
 void StringGridDeleteRow(TStringGrid * Grid, int ARow, int AColCount = -1);
 
 // ---------------------------------------------------------------------------
-TStringGridService * StringGridRowGetService(TStringGrid * Grid, int Index);
-
-// ---------------------------------------------------------------------------
-void StringGridRowSetChanged(TStringGrid * Grid, int Index, bool Changed);
-bool StringGridRowIsChanged(TStringGrid * Grid, int Index);
+TStringGridRowService * StringGridGetRowService(TStringGrid * Grid, int ARow);
+TStringGridColService * StringGridGetColService(TStringGrid * Grid, int ACol);
 
 // ---------------------------------------------------------------------------
 void StringGridSetHeader(TStringGrid * Grid, int ACol, String ColName,
@@ -114,10 +142,15 @@ void StringGridSetCellInt(TStringGrid * Grid, int ACol, int ARow, int Value,
 	bool ShowZero = false);
 
 // ---------------------------------------------------------------------------
+void StringGridSetCellChecked(TStringGrid * Grid, int ACol, int ARow,
+	bool Value);
+bool StringGridGetCellChecked(TStringGrid * Grid, int ACol, int ARow);
+
+// ---------------------------------------------------------------------------
 void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
-	TGridDrawState State, TStringGridBaseColumns * Columns,
-	TStringGridOptions * Options, bool ReadOnlyRow = false);
+	TGridDrawState State, TStringGridOptions * Options);
 void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow);
+void StringGridInvalidateRow(TStringGrid * Grid, int ARow);
 void StringGridInvalidateSelected(TStringGrid * Grid);
 
 // ---------------------------------------------------------------------------
