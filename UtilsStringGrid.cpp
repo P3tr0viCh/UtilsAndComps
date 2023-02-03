@@ -56,8 +56,10 @@ void TStringGridOptions::Init() {
 	FColorChanged = clMax;
 	FColorReadOnly = clMax;
 	FColorSelected = clMax;
+	FColorSelectedRow = clMax;
 
 	FDrawFocusedOnInactive = true;
+	FDrawSelectedRow = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -251,22 +253,71 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 		Grid->Canvas->Brush->Color = Grid->FixedColor;
 	}
 	else {
-		if (State.Contains(gdSelected)) {
-			if (State.Contains(gdFocused)) {
-				Grid->Canvas->Brush->Color = clMedGray;
-			}
-			else {
-				Grid->Canvas->Brush->Color = Options->DrawFocusedOnInactive ?
-					clSilver : clWindow;
-			}
+		if (StringGridIsEmpty(Grid)) {
+			Grid->Canvas->Brush->Color = Grid->Color;
 		}
 		else {
-			if ((ColService != NULL && ColService->ReadOnly) ||
-				(RowService != NULL && RowService->ReadOnly)) {
-				Grid->Canvas->Brush->Color = Options->ColorReadOnly;
+			if (State.Contains(gdSelected)) {
+				if (Grid->Focused()) {
+					if (State.Contains(gdFocused)) {
+						Grid->Canvas->Brush->Color = clMedGray;
+					}
+					else {
+						Grid->Canvas->Brush->Color = clSilver;
+					}
+				}
+				else {
+					if (Options->DrawFocusedOnInactive) {
+						if (State.Contains(gdFocused)) {
+							Grid->Canvas->Brush->Color = clMedGray;
+						}
+						else {
+							Grid->Canvas->Brush->Color = clSilver;
+						}
+					}
+					else {
+						if ((ColService != NULL && ColService->ReadOnly) ||
+							(RowService != NULL && RowService->ReadOnly)) {
+							Grid->Canvas->Brush->Color = Options->ColorReadOnly;
+						}
+						else {
+							Grid->Canvas->Brush->Color = Grid->Color;
+						}
+					}
+				}
 			}
 			else {
-				Grid->Canvas->Brush->Color = Grid->Color;
+				if (Options->DrawSelectedRow && ARow == Grid->Row &&
+					Options->ColorSelectedRow != clMax) {
+					if (Grid->Focused()) {
+						Grid->Canvas->Brush->Color = Options->ColorSelectedRow;
+					}
+					else {
+						if (Options->DrawFocusedOnInactive) {
+							Grid->Canvas->Brush->Color =
+								Options->ColorSelectedRow;
+						}
+						else {
+							if ((ColService != NULL && ColService->ReadOnly) ||
+								(RowService != NULL && RowService->ReadOnly)) {
+								Grid->Canvas->Brush->Color =
+									Options->ColorReadOnly;
+							}
+							else {
+								Grid->Canvas->Brush->Color = Grid->Color;
+							}
+						}
+					}
+				}
+				else {
+					if ((ColService != NULL && ColService->ReadOnly) ||
+						(RowService != NULL && RowService->ReadOnly)) {
+						Grid->Canvas->Brush->Color = Options->ColorReadOnly;
+					}
+					else {
+						Grid->Canvas->Brush->Color = Grid->Color;
+					}
+				}
 			}
 		}
 	}
@@ -274,35 +325,37 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 	Grid->Canvas->FillRect(Rect);
 
 	if (State.Contains(gdFixed)) {
-		if (ARow > 0 && ACol == TStringGridBaseColumns::SERVICE && RowService !=
-			NULL && RowService->Changed) {
-			TRect ChangedRect = Rect;
+		if (!StringGridIsEmpty(Grid)) {
+			if (ARow > 0 && ACol == TStringGridBaseColumns::SERVICE &&
+				RowService != NULL && RowService->Changed) {
+				TRect ChangedRect = Rect;
 
-			ChangedRect.Top = ChangedRect.Top + 2;
-			ChangedRect.Bottom = ChangedRect.Bottom - 2;
-			ChangedRect.Right = ChangedRect.Right - 2;
-			ChangedRect.Left = ChangedRect.Right - 4;
+				ChangedRect.Top = ChangedRect.Top + 2;
+				ChangedRect.Bottom = ChangedRect.Bottom - 2;
+				ChangedRect.Right = ChangedRect.Right - 2;
+				ChangedRect.Left = ChangedRect.Right - 4;
 
-			Grid->Canvas->Brush->Color = Options->ColorChanged;
+				Grid->Canvas->Brush->Color = Options->ColorChanged;
 
-			Grid->Canvas->FillRect(ChangedRect);
+				Grid->Canvas->FillRect(ChangedRect);
 
-			Grid->Canvas->Brush->Color = Grid->FixedColor;
-		}
+				Grid->Canvas->Brush->Color = Grid->FixedColor;
+			}
 
-		if (Options->ColorSelected != clMax && ARow == Grid->Row) {
-			TRect ChangedRect = Rect;
+			if (Options->ColorSelected != clMax && ARow == Grid->Row) {
+				TRect ChangedRect = Rect;
 
-			ChangedRect.Top = ChangedRect.Top + 2;
-			ChangedRect.Bottom = ChangedRect.Bottom - 2;
-			ChangedRect.Left = ChangedRect.Left + 2;
-			ChangedRect.Right = ChangedRect.Left + 4;
+				ChangedRect.Top = ChangedRect.Top + 2;
+				ChangedRect.Bottom = ChangedRect.Bottom - 2;
+				ChangedRect.Left = ChangedRect.Left + 2;
+				ChangedRect.Right = ChangedRect.Left + 4;
 
-			Grid->Canvas->Brush->Color = Options->ColorSelected;
+				Grid->Canvas->Brush->Color = Options->ColorSelected;
 
-			Grid->Canvas->FillRect(ChangedRect);
+				Grid->Canvas->FillRect(ChangedRect);
 
-			Grid->Canvas->Brush->Color = Grid->FixedColor;
+				Grid->Canvas->Brush->Color = Grid->FixedColor;
+			}
 		}
 
 		InflateRect(Rect, -2, 0);
@@ -342,7 +395,7 @@ void StringGridInvalidateCell(TStringGrid * Grid, int ACol, int ARow) {
 
 // ---------------------------------------------------------------------------
 void StringGridInvalidateRow(TStringGrid * Grid, int ARow) {
-	for (int ACol = 1; ACol < Grid->ColCount; ACol++) {
+	for (int ACol = 0; ACol < Grid->ColCount; ACol++) {
 		StringGridInvalidateCell(Grid, ACol, ARow);
 	}
 }
@@ -372,6 +425,21 @@ void StringGridSelectRowAfterFixedCellClick(TStringGrid * Grid, int ARow) {
 	}
 
 	Grid->Row = ARow;
+}
+
+// ---------------------------------------------------------------------------
+void StringGridSelectAll(TStringGrid * Grid) {
+	TGridRect Selection;
+
+	Selection.Left = Grid->ColCount - 1;
+	Selection.Right = 1;
+
+	Selection.Top = Grid->RowCount - 1;
+	Selection.Bottom = 1;
+
+	Grid->Selection = Selection;
+
+	Grid->Repaint();
 }
 
 // ---------------------------------------------------------------------------

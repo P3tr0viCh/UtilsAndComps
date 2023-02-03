@@ -84,8 +84,10 @@ class TStringGridOptions : public TObject {
 	TColor FColorChanged;
 	TColor FColorReadOnly;
 	TColor FColorSelected;
+	TColor FColorSelectedRow;
 
 	bool FDrawFocusedOnInactive;
+	bool FDrawSelectedRow;
 
 	// -----------------------------------------------------------------------
 	void Init();
@@ -110,12 +112,16 @@ public:
 		read = FColorReadOnly, write = FColorReadOnly};
 	__property TColor ColorSelected = {
 		read = FColorSelected, write = FColorSelected};
+	__property TColor ColorSelectedRow = {
+		read = FColorSelectedRow, write = FColorSelectedRow};
 
 	__property bool Editing = {read = GetEditing, write = SetEditing};
 	__property bool ColSizing = {read = GetColSizing, write = SetColSizing};
 
 	__property bool DrawFocusedOnInactive = {
 		read = FDrawFocusedOnInactive, write = FDrawFocusedOnInactive};
+	__property bool DrawSelectedRow = {
+		read = FDrawSelectedRow, write = FDrawSelectedRow};
 };
 
 // ---------------------------------------------------------------------------
@@ -156,6 +162,7 @@ void StringGridInvalidateSelected(TStringGrid * Grid);
 // ---------------------------------------------------------------------------
 void StringGridMouseToCell(TStringGrid * Grid, int &ACol, int &ARow);
 void StringGridSelectRowAfterFixedCellClick(TStringGrid * Grid, int ARow);
+void StringGridSelectAll(TStringGrid * Grid);
 
 // ---------------------------------------------------------------------------
 void StringGridColWidthsWriteToIni(TStringGrid * Grid, TFileIni * FileIni,

@@ -45,7 +45,8 @@ String GetCPUSpeed();
 String GetTotalPhys();
 
 // ---------------------------------------------------------------------------
-void CopyToClipBoard(String S);
+void ClipboardSetText(String S);
+String ClipboardGetText();
 
 // ---------------------------------------------------------------------------
 void Delay(DWORD mSecs);

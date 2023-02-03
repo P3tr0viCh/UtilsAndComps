@@ -293,8 +293,13 @@ String GetTotalPhys() {
 }
 
 // ---------------------------------------------------------------------------
-void CopyToClipBoard(String S) {
+void ClipboardSetText(String S) {
 	Clipboard()->AsText = S;
+}
+
+// ---------------------------------------------------------------------------
+String ClipboardGetText() {
+	return Clipboard()->AsText;
 }
 
 // ---------------------------------------------------------------------------
