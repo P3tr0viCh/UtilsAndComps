@@ -81,13 +81,15 @@ public:
 class TStringGridOptions : public TObject {
 	TStringGrid * FGrid;
 
-	TColor FColorChanged;
 	TColor FColorReadOnly;
-	TColor FColorSelected;
-	TColor FColorSelectedRow;
+	TColor FColorMarkChanged;
+	TColor FColorMarkSelected;
+	TColor FColorRowSelected;
+	TColor FColorCellFocused;
+	TColor FColorCellSelected;
 
 	bool FDrawFocusedOnInactive;
-	bool FDrawSelectedRow;
+	bool FDrawRowSelected;
 
 	// -----------------------------------------------------------------------
 	void Init();
@@ -106,22 +108,26 @@ public:
 	// -----------------------------------------------------------------------
 	__property TStringGrid * Grid = {read = FGrid, write = FGrid};
 
-	__property TColor ColorChanged = {
-		read = FColorChanged, write = FColorChanged};
 	__property TColor ColorReadOnly = {
 		read = FColorReadOnly, write = FColorReadOnly};
-	__property TColor ColorSelected = {
-		read = FColorSelected, write = FColorSelected};
-	__property TColor ColorSelectedRow = {
-		read = FColorSelectedRow, write = FColorSelectedRow};
+	__property TColor ColorMarkChanged = {
+		read = FColorMarkChanged, write = FColorMarkChanged};
+	__property TColor ColorMarkSelected = {
+		read = FColorMarkSelected, write = FColorMarkSelected};
+	__property TColor ColorRowSelected = {
+		read = FColorRowSelected, write = FColorRowSelected};
+	__property TColor ColorCellFocused = {
+		read = FColorCellFocused, write = FColorCellFocused};
+	__property TColor ColorCellSelected = {
+		read = FColorCellSelected, write = FColorCellSelected};
 
 	__property bool Editing = {read = GetEditing, write = SetEditing};
 	__property bool ColSizing = {read = GetColSizing, write = SetColSizing};
 
 	__property bool DrawFocusedOnInactive = {
 		read = FDrawFocusedOnInactive, write = FDrawFocusedOnInactive};
-	__property bool DrawSelectedRow = {
-		read = FDrawSelectedRow, write = FDrawSelectedRow};
+	__property bool DrawRowSelected = {
+		read = FDrawRowSelected, write = FDrawRowSelected};
 };
 
 // ---------------------------------------------------------------------------

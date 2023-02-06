@@ -53,13 +53,15 @@ __fastcall TStringGridColService::TStringGridColService(TStringGrid * Grid) {
 
 // ---------------------------------------------------------------------------
 void TStringGridOptions::Init() {
-	FColorChanged = clMax;
-	FColorReadOnly = clMax;
-	FColorSelected = clMax;
-	FColorSelectedRow = clMax;
+	FColorReadOnly = TColor(0x00E8E8E8);
+	FColorMarkChanged = TColor(0x000085FB);
+	FColorMarkSelected = clHotLight;
+	FColorRowSelected = TColor(0x00D0D0D0);
+	FColorCellFocused = TColor(0x00A0A0A0);
+	FColorCellSelected = TColor(0x00C0C0C0);
 
 	FDrawFocusedOnInactive = true;
-	FDrawSelectedRow = false;
+	FDrawRowSelected = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -287,15 +289,14 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 				}
 			}
 			else {
-				if (Options->DrawSelectedRow && ARow == Grid->Row &&
-					Options->ColorSelectedRow != clMax) {
+				if (Options->DrawRowSelected && ARow == Grid->Row) {
 					if (Grid->Focused()) {
-						Grid->Canvas->Brush->Color = Options->ColorSelectedRow;
+						Grid->Canvas->Brush->Color = Options->ColorRowSelected;
 					}
 					else {
 						if (Options->DrawFocusedOnInactive) {
 							Grid->Canvas->Brush->Color =
-								Options->ColorSelectedRow;
+								Options->ColorRowSelected;
 						}
 						else {
 							if ((ColService != NULL && ColService->ReadOnly) ||
@@ -335,14 +336,14 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 				ChangedRect.Right = ChangedRect.Right - 2;
 				ChangedRect.Left = ChangedRect.Right - 4;
 
-				Grid->Canvas->Brush->Color = Options->ColorChanged;
+				Grid->Canvas->Brush->Color = Options->ColorMarkChanged;
 
 				Grid->Canvas->FillRect(ChangedRect);
 
 				Grid->Canvas->Brush->Color = Grid->FixedColor;
 			}
 
-			if (Options->ColorSelected != clMax && ARow == Grid->Row) {
+			if (ARow == Grid->Row) {
 				TRect ChangedRect = Rect;
 
 				ChangedRect.Top = ChangedRect.Top + 2;
@@ -350,7 +351,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 				ChangedRect.Left = ChangedRect.Left + 2;
 				ChangedRect.Right = ChangedRect.Left + 4;
 
-				Grid->Canvas->Brush->Color = Options->ColorSelected;
+				Grid->Canvas->Brush->Color = Options->ColorMarkSelected;
 
 				Grid->Canvas->FillRect(ChangedRect);
 
