@@ -78,6 +78,21 @@ public:
 };
 
 // ---------------------------------------------------------------------------
+class TStringGridCellService : public TObject {
+	TStringGrid * FGrid;
+
+	TColor FColor;
+
+public:
+	__fastcall TStringGridCellService(TStringGrid * Grid);
+
+	// -----------------------------------------------------------------------
+	__property TStringGrid * Grid = {read = FGrid, write = FGrid};
+
+	__property TColor Color = {read = FColor, write = FColor};
+};
+
+// ---------------------------------------------------------------------------
 class TStringGridOptions : public TObject {
 	TStringGrid * FGrid;
 
@@ -144,6 +159,8 @@ void StringGridDeleteRow(TStringGrid * Grid, int ARow, int AColCount = -1);
 // ---------------------------------------------------------------------------
 TStringGridRowService * StringGridGetRowService(TStringGrid * Grid, int ARow);
 TStringGridColService * StringGridGetColService(TStringGrid * Grid, int ACol);
+TStringGridCellService * StringGridGetCellService(TStringGrid * Grid, int ACol,
+	int ARow);
 
 // ---------------------------------------------------------------------------
 void StringGridSetHeader(TStringGrid * Grid, int ACol, String ColName,

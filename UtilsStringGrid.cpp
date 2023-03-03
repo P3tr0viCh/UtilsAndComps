@@ -5,6 +5,7 @@
 #include "UtilsStringGrid.h"
 
 #include "UtilsStr.h"
+#include "UtilsLog.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -49,6 +50,13 @@ __fastcall TStringGridColService::TStringGridColService(TStringGrid * Grid) {
 	FReadOnly = false;
 	FAlignment = taCenter;
 	FEditorType = etText;
+}
+
+// ---------------------------------------------------------------------------
+__fastcall TStringGridCellService::TStringGridCellService(TStringGrid * Grid) {
+	FGrid = Grid;
+
+	FColor = Grid->Color;
 }
 
 // ---------------------------------------------------------------------------
@@ -144,9 +152,14 @@ int StringGridAddRow(TStringGrid * Grid) {
 
 // ---------------------------------------------------------------------------
 void StringGridClear(TStringGrid * Grid) {
-	for (int i = 1; i < Grid->RowCount; i++) {
-		Grid->Rows[i]->Clear();
+	for (int ARow = 1; ARow < Grid->RowCount; ARow++) {
+		for (int ACol = 0; ACol < Grid->ColCount; ACol++) {
+			Grid->Objects[ACol][ARow]->Free();
+		}
+
+		Grid->Rows[ARow]->Clear();
 	}
+
 	Grid->RowCount = 2;
 }
 
@@ -203,6 +216,12 @@ TStringGridColService * StringGridGetColService(TStringGrid * Grid, int ACol) {
 }
 
 // ---------------------------------------------------------------------------
+TStringGridCellService * StringGridGetCellService(TStringGrid * Grid, int ACol,
+	int ARow) {
+	return ((TStringGridCellService*)Grid->Objects[ACol][ARow]);
+}
+
+// ---------------------------------------------------------------------------
 void StringGridSetHeader(TStringGrid * Grid, int ACol, String ColName,
 	int ColWidth) {
 	Grid->Cells[ACol][0] = ColName;
@@ -250,6 +269,14 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 
 	TStringGridRowService * RowService = StringGridGetRowService(Grid, ARow);
 	TStringGridColService * ColService = StringGridGetColService(Grid, ACol);
+	TStringGridCellService * CellService =
+		StringGridGetCellService(Grid, ACol, ARow);
+
+	TColor CellColor = Grid->Color;
+
+	if (CellService != NULL) {
+		CellColor = CellService->Color;
+	}
 
 	if (State.Contains(gdFixed)) {
 		Grid->Canvas->Brush->Color = Grid->FixedColor;
@@ -283,7 +310,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 							Grid->Canvas->Brush->Color = Options->ColorReadOnly;
 						}
 						else {
-							Grid->Canvas->Brush->Color = Grid->Color;
+							Grid->Canvas->Brush->Color = CellColor;
 						}
 					}
 				}
@@ -305,7 +332,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 									Options->ColorReadOnly;
 							}
 							else {
-								Grid->Canvas->Brush->Color = Grid->Color;
+								Grid->Canvas->Brush->Color = CellColor;
 							}
 						}
 					}
@@ -316,7 +343,7 @@ void StringGridDrawCell(TStringGrid * Grid, int ACol, int ARow, TRect Rect,
 						Grid->Canvas->Brush->Color = Options->ColorReadOnly;
 					}
 					else {
-						Grid->Canvas->Brush->Color = Grid->Color;
+						Grid->Canvas->Brush->Color = CellColor;
 					}
 				}
 			}
