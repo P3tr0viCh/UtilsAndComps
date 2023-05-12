@@ -59,6 +59,11 @@ void SQLReplace(TADOQuery * Query, NativeUInt OldPattern, NativeUInt NewPattern)
 }
 
 // ---------------------------------------------------------------------------
+void SQLReplace(TADOQuery * Query, NativeUInt OldPattern, String NewPattern) {
+	SQLReplace(Query, LoadStr(OldPattern), NewPattern);
+}
+
+// ---------------------------------------------------------------------------
 TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType) {
 	TParameter * Parameter = Query->Parameters->ParamByName(Name);
 	Parameter->DataType = DataType;

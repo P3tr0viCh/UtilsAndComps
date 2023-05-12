@@ -86,8 +86,14 @@ void ShowAbout(int iFontSize, Byte bLineBreak, Byte bDatePos, Byte bVersionPos,
 				(((PIMAGE_DOS_HEADER) HInstance)->e_lfanew)))
 				->FileHeader.TimeDateStamp));
 		}
+
 		if (sVersion == NULL) {
-			sVersion = FileVersion;
+			sVersion = Format("%01.1d.%01.1d.%01.1d.%01.1d",
+				ARRAYOFCONST((HIWORD(FileVersionInfo.dwFileVersionMS),
+				LOWORD(FileVersionInfo.dwFileVersionMS),
+				HIWORD(FileVersionInfo.dwFileVersionLS),
+				LOWORD(FileVersionInfo.dwFileVersionLS))));
+
 			if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
 				sVersion = sVersion + LoadStr(IDS_ABOUT_DEBUG);
 			}

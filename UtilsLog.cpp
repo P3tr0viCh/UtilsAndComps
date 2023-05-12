@@ -117,7 +117,11 @@ void WriteToLogProgramStart() {
 		OriginalFilename, ProductName, ProductVersion)) {
 		Name = InternalName;
 
-		Version = SmallFileVersion(FileVersion);
+		Version = Format("%01.1d.%01.1d.%01.1d.%01.1d",
+			ARRAYOFCONST((HIWORD(FileVersionInfo.dwFileVersionMS),
+			LOWORD(FileVersionInfo.dwFileVersionMS),
+			HIWORD(FileVersionInfo.dwFileVersionLS),
+			LOWORD(FileVersionInfo.dwFileVersionLS))));
 
 		if (IsValueInWord(FileVersionInfo.dwFileFlags, VS_FF_DEBUG)) {
 			Version = Version + " (Debug build)";

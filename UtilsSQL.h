@@ -23,6 +23,7 @@ void SQLSetText(TADOQuery * Query, NativeUInt Ident);
 void SQLReplace(TADOQuery * Query, String OldPattern, String NewPattern);
 void SQLReplace(TADOQuery * Query, NativeUInt OldPattern,
 	NativeUInt NewPattern);
+void SQLReplace(TADOQuery * Query, NativeUInt OldPattern, String NewPattern);
 
 // ---------------------------------------------------------------------------
 TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType);
