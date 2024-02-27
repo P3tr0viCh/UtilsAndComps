@@ -10,6 +10,7 @@
 #include <Data.Win.ADODB.hpp>
 
 const TDateTime DEFAULT_DATETIME = 0;
+const int DEFAULT_CODE = 0;
 
 // ---------------------------------------------------------------------------
 String SQLLoad(NativeUInt Ident);

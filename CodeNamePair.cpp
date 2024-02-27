@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <UtilsStr.h>
+#include <UtilsSQL.h>
 #include <UtilsMisc.h>
 #include <UtilsLog.h>
 
@@ -13,7 +14,7 @@
 
 // ---------------------------------------------------------------------------
 __fastcall TCodeNamePair::TCodeNamePair() {
-	FCode = CODE_NAME_CODE_NONE;
+	FCode = DEFAULT_CODE;
 	FName = "";
 }
 

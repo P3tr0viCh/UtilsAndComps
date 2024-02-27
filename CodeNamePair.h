@@ -8,8 +8,6 @@
 
 #include <ObjList.h>
 
-const CODE_NAME_CODE_NONE = 0;
-
 // ---------------------------------------------------------------------------
 class TCodeNamePair : public TObject {
 private:
