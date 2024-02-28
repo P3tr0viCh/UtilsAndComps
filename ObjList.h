@@ -46,6 +46,16 @@ public:
 		return true;
 	}
 
+	bool __fastcall Find(T * AObject) {
+		for (int i = 0; i < Count; i++) {
+			if (Items[i]->Equals(AObject)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void __fastcall Assign(TObjList * ObjList) {
 		Clear();
 
