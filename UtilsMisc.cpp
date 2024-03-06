@@ -432,3 +432,37 @@ void DebugEnumWindowControls(HWND hWnd, TStringList * Result, int Level) {
 }
 
 // ---------------------------------------------------------------------------
+int GetRusControlNumberInternal(String Value, int x) {
+	int Sum = 0;
+
+	for (int i = 1; i <= Value.Length(); i++) {
+		Sum += StrToInt(Value[i]) * x;
+
+		x++;
+	}
+
+	return Sum % 11;
+}
+
+// ---------------------------------------------------------------------------
+int GetRusControlNumber(int Value, int ValueDigits) {
+	if (Value <= 0) {
+		return 0;
+	}
+
+	String S = IToS_0(Value, ValueDigits);
+
+	int Result = GetRusControlNumberInternal(S, 1);
+
+	if (Result == 10) {
+		Result = GetRusControlNumberInternal(S, 3);
+	}
+
+	if (Result == 10) {
+		Result = 0;
+	}
+
+	return Result;
+}
+
+// ---------------------------------------------------------------------------

@@ -77,4 +77,7 @@ HWND GetWindowChildByIndex(HWND hWnd, int Index);
 void DebugEnumWindowControls(HWND hWnd, TStringList * Result, int Level = -1);
 
 // ---------------------------------------------------------------------------
+int GetRusControlNumber(int Value, int ValueDigits);
+
+// ---------------------------------------------------------------------------
 #endif
