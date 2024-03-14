@@ -31,6 +31,10 @@ TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType);
 String SQLParamsToStr(TADOQuery * Query);
 
 // ---------------------------------------------------------------------------
+int SQLGetStringAsInt(TADOQuery * Query, String Name, int Default =
+	DEFAULT_CODE);
+
+// ---------------------------------------------------------------------------
 String DateTimeToSQLStr(TDateTime ADateTime);
 
 // ---------------------------------------------------------------------------

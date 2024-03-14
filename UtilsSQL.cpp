@@ -71,6 +71,13 @@ TParameter * SQLGetParam(TADOQuery * Query, String Name, TFieldType DataType) {
 }
 
 // ---------------------------------------------------------------------------
+int SQLGetStringAsInt(TADOQuery * Query, String Name, int Default) {
+	String Value = Trim(Query->FieldByName(Name)->AsString);
+
+	return StrToIntDef(Value, DEFAULT_CODE);
+}
+
+// ---------------------------------------------------------------------------
 String SQLParamsToStr(TADOQuery * Query) {
 	String Result = "";
 	for (int i = 0; i < Query->Parameters->Count; i++) {
