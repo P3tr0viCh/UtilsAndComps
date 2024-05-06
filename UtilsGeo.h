@@ -12,12 +12,14 @@
 struct TGPXPointDeg {
 	Extended Latitude;
 	Extended Longitude;
+	float Altitude;
 };
 
 // ---------------------------------------------------------------------------
 struct TGPXPointRad {
 	Extended Latitude;
 	Extended Longitude;
+	float Altitude;
 };
 
 // ---------------------------------------------------------------------------
