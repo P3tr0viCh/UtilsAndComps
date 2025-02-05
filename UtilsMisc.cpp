@@ -4,8 +4,9 @@
 
 #pragma package(smart_init)
 
-#include <System.hpp>
 #include <stdio.h>
+
+#include <System.hpp>
 #include <Vcl.Clipbrd.hpp>
 #include <System.DateUtils.hpp>
 

@@ -5,6 +5,7 @@
 
 #include <System.Types.hpp>
 #include <System.Classes.hpp>
+#include <System.DateUtils.hpp>
 
 // ---------------------------------------------------------------------------
 void DecodeMilliseconds(ULONGLONG Value, DWORD &Day, BYTE &Hour, BYTE &Minute,
@@ -16,5 +17,7 @@ String MillisecondsToDateTimeString(ULONGLONG Value,
 
 String FormatDate(String Format, TSystemTime SystemTime);
 String FormatTime(String Format, TSystemTime SystemTime);
+
+String GetTimeZone(TDateTime Value);
 // ---------------------------------------------------------------------------
 #endif

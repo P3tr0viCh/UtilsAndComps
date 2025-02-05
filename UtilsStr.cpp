@@ -339,9 +339,21 @@ String IToS(int Value) {
 
 // ---------------------------------------------------------------------------
 String IToS_0(int Value, int MinLength) {
+	bool Neg = Value < 0;
+
+	if (Neg) {
+		Value = -Value;
+	}
+
 	String Result = IToS(Value);
+
 	while (Result.Length() < MinLength)
 		Result = "0" + Result;
+
+	if (Neg) {
+		Result = "-" + Result;
+	}
+
 	return Result;
 }
 

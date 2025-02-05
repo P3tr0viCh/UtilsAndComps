@@ -2,6 +2,8 @@
 
 #pragma hdrstop
 
+#include <math.h>
+
 #include "UtilsDate.h"
 
 #pragma package(smart_init)
@@ -94,4 +96,20 @@ String FormatTime(String Format, TSystemTime SystemTime) {
 
 	return Buffer;
 }
+
+// ---------------------------------------------------------------------------
+String GetTimeZone(TDateTime Value) {
+	TTimeSpan TimeSpan = TTimeZone::Local->GetUtcOffset(Value);
+
+	String Result = IToS_0(abs(TimeSpan.Hours), 2) + ":" + IToS_0(abs(TimeSpan.Minutes), 2);
+
+	if (TimeSpan.Hours >= 0) {
+		Result = "+" + Result;
+	} else {
+		Result = "-" + Result;
+	}
+
+	return Result;
+}
+
 // ---------------------------------------------------------------------------
