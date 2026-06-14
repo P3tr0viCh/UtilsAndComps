@@ -6,6 +6,8 @@
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+#include "UtilsStr.h"
+
 using namespace P3tr0viCh;
 
 // ---------------------------------------------------------------------------
@@ -192,14 +194,18 @@ void TSystemInfo::GetAdapterInfoList() {
 				AdapterInfo->FDescription = pAdapter->Description;
 
 				String Address;
-				for (UINT i = 0; i < pAdapter->AddressLength - 1; i++) {
-					Address =
-						Address + Format("%0.2X",
-						ARRAYOFCONST((pAdapter->Address[i]))) + "-";
+
+				if (pAdapter->AddressLength > 0) {
+					for (UINT i = 0; i < pAdapter->AddressLength; i++) {
+						Address =
+							ConcatStrings(Address,
+							Format("%0.2X",
+							ARRAYOFCONST((pAdapter->Address[i]))), "-");
+					}
 				}
-				Address = Address + Format("%0.2X",
-					ARRAYOFCONST(
-					(pAdapter->Address[pAdapter->AddressLength - 1])));
+				else {
+					Address = "00-00-00-00-00-00";
+				}
 
 				AdapterInfo->FMACAddress = Address;
 
